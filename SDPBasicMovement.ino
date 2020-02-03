@@ -80,7 +80,7 @@ void loop(){
         // Wait till for start command
         while(!Serial.find("start"));
 	int timeMove = 2500;
-        int moveDelay = 5000;
+        int moveDelay = 2500;
         
         // Movement tests
 	moveForward(timeMove);
@@ -105,7 +105,6 @@ void loop(){
     
         // Raise sensor arm
         raiseArm();
-        delay(1000);
         motorAllStop();
 }
 
