@@ -3,6 +3,7 @@
 
 #define SENSOR_PIN A0
 
+//mapping of motors on motor board
 #define SENSOR_DEPLOYMENT_MOTOR 0
 //#define UNUSED_MOTOR 1
 #define FRONT_LEFT_MOTOR 2
@@ -10,6 +11,7 @@
 #define BACK_LEFT_MOTOR 4
 #define BACK_RIGHT_MOTOR 5
 
+//mapping of the direction that is considered forward by the motors
 #define SENSOR_DEPLOYMENT_POLARITY 0
 #define UNUSED_POLARITY 0
 #define FRONT_LEFT_POLARITY 1
@@ -17,15 +19,17 @@
 #define BACK_LEFT_POLARITY 1
 #define BACK_RIGHT_POLARITY 
 
-#define SAMPLING_NUMBER 500 //number of samples to take, average and then return
-#define SAMPLING_DELAY 1 //wait 1ms between each sample
+//number of samples to take, average and then return
+#define SAMPLING_NUMBER 500
+//wait 1ms between each sample
+#define SAMPLING_DELAY 1
 
 #define MOTOR_POWER_LEVEL 50
-#define SENSOR_DEPLOYMENT_TIME 700 //time motors should turn for to deploy and retract mechanism
+//time motors should turn for to deploy and retract mechanism
+#define SENSOR_DEPLOYMENT_TIME 700
 
 bool safeToDeploySensors;
-int[] motorPolarites = [SENSOR_DEPLOYMENT_POLARITY, UNUSED_POLARITY, FRONT_LEFT_POLARITY, FRONT_RIGHT_POLARITY,
-                        BACK_LEFT_POLARITY, BACK_RIGHT_POLARITY];
+int motorPolarities[6] = {SENSOR_DEPLOYMENT_POLARITY, UNUSED_POLARITY, FRONT_LEFT_POLARITY, FRONT_RIGHT_POLARITY, BACK_LEFT_POLARITY, BACK_RIGHT_POLARITY};
 
 void setup(){
   SDPsetup();
@@ -53,59 +57,79 @@ void setMoveBackward(int motorNumber) { //sets the motor to go backward taking i
 }
 
 void moveForward(int time) {
-  safeToDeploySensors = false;
-
-  Serial.println("Move forward");
-
-  setMoveForward(FRONT_LEFT_MOTOR);
-  setMoveForward(FRONT_RIGHT_MOTOR);
-  setMoveForward(BACK_LEFT_MOTOR);
-  setMoveForward(BACK_RIGHT_MOTOR);
-  delay(time);
-  motorAllStop();
-  safeToDeploySensors = true;
+  if (safeToDeploySensors) {
+    safeToDeploySensors = false;
+  
+    Serial.println("Move forward");
+  
+    setMoveForward(FRONT_LEFT_MOTOR);
+    setMoveForward(FRONT_RIGHT_MOTOR);
+    setMoveForward(BACK_LEFT_MOTOR);
+    setMoveForward(BACK_RIGHT_MOTOR);
+    delay(time);
+    motorAllStop();
+    safeToDeploySensors = true;
+  }
+  else {
+    Serial.println("Could not move forward as sensor arm is still deployed");
+  }
 }
 
 void moveBackward(int time) {
-  safeToDeploySensors = false;
-
-  Serial.println("Moving backward");
-
-  setMoveBackward(FRONT_LEFT_MOTOR);
-  setMoveBackward(FRONT_RIGHT_MOTOR);
-  setMoveBackward(BACK_LEFT_MOTOR);
-  setMoveBackward(BACK_RIGHT_MOTOR);
-  delay(time);
-  motorAllStop();
-  safeToDeploySensors = true;
+  if (safeToDeploySensors) {
+    safeToDeploySensors = false;
+  
+    Serial.println("Moving backward");
+  
+    setMoveBackward(FRONT_LEFT_MOTOR);
+    setMoveBackward(FRONT_RIGHT_MOTOR);
+    setMoveBackward(BACK_LEFT_MOTOR);
+    setMoveBackward(BACK_RIGHT_MOTOR);
+    delay(time);
+    motorAllStop();
+    safeToDeploySensors = true;
+  }
+  else {
+    Serial.println("Could not move backward as sensor arm is still deployed");
+  }
 }
 
 void turnLeft(int time) {
-  safeToDeploySensors = false;
-
-  Serial.println("Turning left");
-
-  setMoveForward(FRONT_LEFT_MOTOR);
-  setMoveForward(BACK_LEFT_MOTOR);
-  setMoveBackward(FRONT_RIGHT_MOTOR);
-  setMoveBackward(BACK_RIGHT_MOTOR);
-  delay(time);
-  motorAllStop();
-  safeToDeploySensors = true;
+  if (safeToDeploySensors) {
+    safeToDeploySensors = false;
+  
+    Serial.println("Turning left");
+  
+    setMoveForward(FRONT_LEFT_MOTOR);
+    setMoveForward(BACK_LEFT_MOTOR);
+    setMoveBackward(FRONT_RIGHT_MOTOR);
+    setMoveBackward(BACK_RIGHT_MOTOR);
+    delay(time);
+    motorAllStop();
+    safeToDeploySensors = true;
+  }
+  else {
+    Serial.println("Could not turn left as sensor arm is still deployed");
+  }
 }
 
 void turnRight(int time) {
-  safeToDeploySensors = false;
-
-  Serial.println("Turning right");
+  if (safeToDeploySensors) {
+    safeToDeploySensors = false;
   
-  setMoveBackward(FRONT_LEFT_MOTOR);
-  setMoveBackward(BACK_LEFT_MOTOR);
-  setMoveForward(FRONT_RIGHT_MOTOR);
-  setMoveForward(BACK_RIGHT_MOTOR);
-  delay(time);
-  motorAllStop();
-  safeToDeploySensors = true;
+    Serial.println("Turning right");
+    
+    setMoveBackward(FRONT_LEFT_MOTOR);
+    setMoveBackward(BACK_LEFT_MOTOR);
+    setMoveForward(FRONT_RIGHT_MOTOR);
+    setMoveForward(BACK_RIGHT_MOTOR);
+    delay(time);
+    motorAllStop();
+    safeToDeploySensors = true;
+  }
+  else {
+    Serial.println("Could not turn right as sensor arm is still deployed");
+  }
 }
 
 void ensureSafeToDeploy() { //software interlock that stops robot movement to deploy sensors
@@ -123,7 +147,7 @@ void lowerArm()
     motorStop(SENSOR_DEPLOYMENT_MOTOR);
   }
   else {
-    Serial.println("Could not deploy sensor as the robot is still moving.")
+    Serial.println("Could not deploy sensor as the robot is still moving.");
   }
 }
 
@@ -137,7 +161,7 @@ void raiseArm()
     motorStop(SENSOR_DEPLOYMENT_MOTOR);
   }
   else {
-    Serial.println("Could not deploy sensor as the robot is still moving.")
+    Serial.println("Could not deploy sensor as the robot is still moving.");
   }
 }
 
@@ -147,11 +171,10 @@ double getMoistureReading() {
     float sensorValueTotal;
     for (int i = 0; i < SAMPLING_NUMBER; i++) {
       sensorValueTotal = analogRead(SENSOR_PIN);
-      Serial.println(sensorValue);
       delay(SAMPLING_DELAY);
     }
 
-    Serial.println("Average moisture reading taken")
+    Serial.println("Average moisture reading taken");
 
     return (double) sensorValueTotal / (double) SAMPLING_NUMBER;
 }
@@ -184,6 +207,6 @@ void runTestSequence() {
 void loop(){
   
         // Wait till for start command
-        while(!Serial.find("start test"));
+        //while(!Serial.find("start test"));
         runTestSequence();
 }
