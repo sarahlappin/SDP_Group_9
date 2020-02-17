@@ -2,6 +2,7 @@
 #include <Wire.h>
 #include <ctime>
 #include <format>
+#include <string.h>
 
 #define SENSOR_PIN A0
 
@@ -38,6 +39,8 @@
 
 #define MAX_NUMBER_OF_GPS_REQUESTS 5
 
+#define LOCATION_NOT_KNOWN "unknown"
+
 using namespace std;
 
 bool safeToDeploySensors;
@@ -47,7 +50,7 @@ int motorPolarities[6] = {SENSOR_DEPLOYMENT_POLARITY, UNUSED_POLARITY, FRONT_LEF
 class GPSGridCoordinate {
     private:
         double latitude;
-        double longitude
+        double longitude;
 
     public:
         GPSGridCoordinate(double lat, double longi) {
@@ -56,8 +59,8 @@ class GPSGridCoordinate {
         }
 
         GPSGridCoordinate(String coordinateString) {
-            latitude = coordinateString.substr(0, coordinateString.find(','));
-            longitude = coordinateString.substr(coordinateString.find(','), coordinateString.length);
+            latitude = coordinateString.substring(0, coordinateString.indexOf(',')).toFloat();
+            longitude = coordinateString.substring(coordinateString.indexOf(','), coordinateString.length()).toFloat();
         }
 
         double getLatitude() {
@@ -74,6 +77,14 @@ class GPSGridCoordinate {
 
         void setLongitude(double val) {
             longitude = val;
+        }
+        
+        String toCSV() {
+            String lat = String(getLatitude());
+            String longi = String(getLongitude());
+            lat += ",";
+            lat += longi;
+            return lat;
         }
 }
 
@@ -144,8 +155,11 @@ class robot {
         String askForLocation(int attemptNumber) {
             if (attemptNumber > MAX_NUMBER_OF_GPS_REQUESTS) {
                 Serial.println("Max number of GPS requests recieved with no matching responses");
-                return NULL;
+                return LOCATION_NOT_KNOWN;
             }
+            
+            int timeoutCounter = 0;
+            
             Serial.println("<getLocation/>"); //sends to the user
             delay(MESSAGE_TIME_DELAY); //give some time before retransmitting
 
@@ -154,7 +168,7 @@ class robot {
             int positionCounter;
 
             //finds the first tag
-            while (positionCounter <= openingTag.length && timeoutCounter <= MAX_MESSAGE_TIMEOUT) {
+            while (positionCounter <= openingTag.length() && timeoutCounter <= MAX_MESSAGE_TIMEOUT) {
                 if (Serial.available()) { //characters are being sent
                     char character = Serial.read(); //read one char
                     if(character == openingTag[positionCounter]) {
@@ -168,7 +182,7 @@ class robot {
             if (timeoutCounter > MAX_MESSAGE_TIMEOUT) { Serial.println("Timeout reached when looking for GPS data."); return askForLocation(attemptNumber++);}
 
             //get the first GPS coordinate
-            coordinate1 = "";
+            String coordinate1 = "";
             while (timeoutCounter <= MAX_MESSAGE_TIMEOUT) {
                 if (Serial.available()) { //characters are being sent
                     char character = Serial.read(); //read one char
@@ -186,7 +200,7 @@ class robot {
             if (timeoutCounter > MAX_MESSAGE_TIMEOUT) { Serial.println("Timeout reached when looking for GPS data."); return askForLocation(attemptNumber++);;}
 
             //get the second GPS coordinate
-            coordinate2 = "";
+            String coordinate2 = "";
             while (timeoutCounter <= MAX_MESSAGE_TIMEOUT) {
                 if (Serial.available()) { //characters are being sent
                     char character = Serial.read(); //read one char
@@ -203,7 +217,7 @@ class robot {
 
             if (timeoutCounter > MAX_MESSAGE_TIMEOUT) { Serial.println("Timeout reached when looking for GPS data."); return askForLocation(attemptNumber++);;}
 
-            if (coordinate1.compare(coordinate2)) { //if they're the same
+            if (coordinate1.equals(coordinate2)) { //if they're the same
                 return coordinate1;
             }
             else {
@@ -212,18 +226,18 @@ class robot {
             }
         }
 
-        GPSGridCoordinate getLocation() { //method would be replaced with a GPS module in final product
-            coordinateString = askForLocation(0);
-            if (coordinateString == NULL) {
-                return new GPSCoordinate(0, 0); //no idea where you are
+        GPSGridCoordinate* getLocation() { //method would be replaced with a GPS module in final product
+            String coordinateString = askForLocation(0);
+            if (coordinateString.equals(LOCATION_NOT_KNOWN)) {
+                return new GPSGridCoordinate(0, 0); //no idea where you are
             }
             else {
-                return new GPSCoordinate(coordinateString);
+                return new GPSGridCoordinate(coordinateString);
             }
         }
-        void sendSample(double time, GPSCoordinate sampleLocation, double moistureValue) { //should this be void? Maybe return an error?
-            sampleText = format("{},{},{}", to_string(time), to_string(sampleLocation), to_string(moistureValue));
-            messageText = format("<sample>{}|{}</sample>", sampleText, sampleText); //sends twice and keeps sending until DICE confirms that it has recieved
+        void sendSample(double time, GPSGridCoordinate sampleLocation, double moistureValue) { //should this be void? Maybe return an error?
+            String sampleText = format("{},{},{}", String(time), sampleLocation.toCSV(), String(moistureValue));
+            String messageText = format("<sample>{}|{}</sample>", sampleText, sampleText); //sends twice and keeps sending until DICE confirms that it has recieved
 
             Serial.println(messageText); //sends to the user
             delay(MESSAGE_TIME_DELAY); //give some time before retransmitting
@@ -331,6 +345,8 @@ class robot {
             //this will likely need rewritten so that samples can be taken concurrently
             //check if Arduino is actually more efficient doing this before making concurrent
             raiseArm();
+            
+            delete(sampleLocation);
         }
 
         void initiateSurvey(GPSGridCoordinate startPosition, GPSGridCoordinate endPosition, double samplingFrequency) {
