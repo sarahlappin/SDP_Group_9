@@ -35,15 +35,19 @@
 
 //number of attempts to send a sample before throwing error
 #define MAX_MESSAGE_TIMEOUT 50
-#define MESSAGE_TIME_DELAY 5
+#define MESSAGE_TIME_DELAY 50
 
 #define MAX_NUMBER_OF_GPS_REQUESTS 5
+
+//number of seconds to move for each of the moves in manual mode
+#define MOVEMENT_TIME 1
 
 #define LOCATION_NOT_KNOWN "unknown"
 
 using namespace std;
 
 bool safeToDeploySensors;
+Robot *robot;
 int motorPolarities[6] = {SENSOR_DEPLOYMENT_POLARITY, UNUSED_POLARITY, FRONT_LEFT_POLARITY, FRONT_RIGHT_POLARITY, BACK_LEFT_POLARITY, BACK_RIGHT_POLARITY};
 
 
@@ -86,9 +90,9 @@ class GPSGridCoordinate {
             lat += longi;
             return lat;
         }
-}
+};
 
-class robot {
+class Robot {
     private:
         void setMoveForward(int motorNumber) { //sets the motor to go forward taking into account polarity
             if (motorPolarities[motorNumber] == 1) {
@@ -235,9 +239,21 @@ class robot {
                 return new GPSGridCoordinate(coordinateString);
             }
         }
-        void sendSample(double time, GPSGridCoordinate sampleLocation, double moistureValue) { //should this be void? Maybe return an error?
-            String sampleText = format("{},{},{}", String(time), sampleLocation.toCSV(), String(moistureValue));
-            String messageText = format("<sample>{}|{}</sample>", sampleText, sampleText); //sends twice and keeps sending until DICE confirms that it has recieved
+        void sendSample(unsigned long time, GPSGridCoordinate sampleLocation, double moistureValue) { //should this be void? Maybe return an error?
+            String sampleText = String(time);
+            sampleText += ",";
+            sampleText += sampleLocation.toCSV();
+            sampleText += ",";
+            sampleText += String(moistureValue);
+            
+            //if you are reading this comment then don't judge - Arduino is awkward when it comes to strings
+            //please do better next time
+            
+            String messageText = "<sample>";
+            messageText += sampleText;
+            messageText += "|";
+            messageText += sampleText;
+            messageText += "</sample>"; //sends twice and keeps sending until DICE confirms that it has recieved
 
             Serial.println(messageText); //sends to the user
             delay(MESSAGE_TIME_DELAY); //give some time before retransmitting
@@ -251,7 +267,7 @@ class robot {
 
             //Check if it was transmitted
             if (timeoutCounter <= MAX_MESSAGE_TIMEOUT) { //failed to send - timeout
-                Serial.println(format("Failed to transmit sample: {}", sampleText));
+                Serial.println("Failed to transmit sample: " + sampleText);
             }
             else {
                 Serial.println("Managed to transmit sample.");
@@ -338,10 +354,10 @@ class robot {
         void takeSamples() { //method takes all samples and return them to the DICE machine
             Serial.println("Starting sampling");
             lowerArm();
-            double time = time(0); //timestamp
-            GPSGridCoordinate sampleLocation = getLocation();
+            unsigned long time = millis(); //timestamp
+            GPSGridCoordinate *sampleLocation = getLocation();
             double moistureValue = getMoistureReading();
-            sendSample(time, sampleLocation, moistureValue);
+            sendSample(time, *sampleLocation, moistureValue);
             //this will likely need rewritten so that samples can be taken concurrently
             //check if Arduino is actually more efficient doing this before making concurrent
             raiseArm();
@@ -352,10 +368,10 @@ class robot {
         void initiateSurvey(GPSGridCoordinate startPosition, GPSGridCoordinate endPosition, double samplingFrequency) {
             Serial.println("Starting survey...");
             Serial.print("Start position: ");
-            Serial.println(startPosition.toString());
+            Serial.println(startPosition.toCSV());
             
             Serial.print("End position: ");
-            Serial.println(endPosition.toString());
+            Serial.println(endPosition.toCSV());
             
             Serial.print("Sampling frequency: ");
             Serial.println(samplingFrequency);
@@ -404,21 +420,45 @@ class robot {
             raiseArm();
             motorAllStop();
         } 
-}
+};
 
 void setup(){
-  SDPsetup();
-  Serial.begin(BAUD_RATE);
-  Serial.println("Connection established!");
-  Serial.println("Entering wireless control mode...");
-  safeToDeploySensors = true; //ready to deploy
+    SDPsetup();
+    Serial.begin(BAUD_RATE);
+    Serial.println("Connection established!");
+    Serial.println("Entering wireless control mode...");
+    safeToDeploySensors = true; //ready to deploy
+    robot = new Robot();
 }
 
 
 
 void loop(){
-  
-        // Wait till for start command
-        //while(!Serial.find("start test"));
-        runTestSequence();
+        if (Serial.find("<manual/>")) {
+            while(!Serial.find("<endManual/>")) {
+                  if (!Serial.find("<stop/>")) {
+                    if (Serial.find("<forward/>") {
+                        robot->moveForward(MOVEMENT_TIME);
+                    }
+                    else if (Serial.find("<backward/>") {
+                        robot->moveBackward(MOVEMENT_TIME);
+                    }
+                    else if (Serial.find("<right/>") {
+                        robot->turnRight(MOVEMENT_TIME);
+                    }
+                    else if (Serial.find("<left/>") {
+                        robot->turnLeft(MOVEMENT_TIME);
+                    }
+                    else if (Serial.find("<takeSample/>")) {
+                        robot->takeSample();
+                    }
+                }
+            }
+        }
+        else if (Serial.find("<test/>")) {
+            robot->runTestSequence();
+        }
+        else {
+            Serial.println("Awaiting instructions.");
+        }
 }
