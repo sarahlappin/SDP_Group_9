@@ -1,6 +1,7 @@
 import serial
 from time import sleep
 import sys
+import imageFilter
 
 BAUD = 9600
 
@@ -15,7 +16,7 @@ sampleRecieved = "<sampleRecieved/>"
 
 
 def getLocation():
-    return 1,2
+    return imageFilter.getCoordinates()
 
 def getSurvey():
     return 1.2, 2.3, 4.5, 6.76, 1.1
@@ -28,7 +29,7 @@ def interpretLine(line):
     if getLocationTag in line:
         latitude, longitude = getLocation()
         location = b"<location>" + str(latitude) + "," + str(longitude) + b"</location>"
-        print "==>" + location
+        print("==>" + location)
         serial.write(location)
     if getSurveyTag in line:
         startLat, startLong, endLat, endLong, samplingFrequency = getSurvey()
@@ -40,7 +41,7 @@ def interpretLine(line):
         sample2 = line[(line.index(verificationDeliminator) + len(verificationDeliminator)): line.index(closingSampleTag)]
         if sample1 == sample2: #if they match then the sample has been correctly received
             serial.write(sampleRecieved) #let the robot know that it has recieved it
-            print "Sample received ====> " + sample1
+            print("Sample received ====> " + sample1)
             saveSample(sample1)
 
 manualMode = False
@@ -74,6 +75,4 @@ while True:
             line = str(serial.readline().decode().strip('\n').strip('\r')) #get each line and decode it
             interpretLine(line)
         except:
-            print "****** Exception while reading data - probably from an encoding error"
-
-	
+            print("****** Exception while reading data - probably from an encoding error")
