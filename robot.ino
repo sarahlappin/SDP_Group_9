@@ -37,12 +37,12 @@
 #define MAX_MESSAGE_TIMEOUT 50
 #define MESSAGE_TIME_DELAY 50
 
-#define MAX_NUMBER_OF_GPS_REQUESTS 5
+#define MAX_NUMBER_OF_REQUESTS 5
 
 //number of seconds to move for each of the moves in manual mode
 #define MOVEMENT_TIME 1
 
-#define LOCATION_NOT_KNOWN "unknown"
+#define NOT_KNOWN "unknown"
 
 using namespace std;
 
@@ -156,10 +156,83 @@ class Robot {
 
             return (double) sensorValueTotal / (double) SAMPLING_NUMBER;
         }
+        String getSurveyDetailsString(int attemptNumber) {
+            if (attemptNumber > MAX_NUMBER_OF_REQUESTS) {
+                Serial.println("Max number of survey requests recieved with no matching responses");
+                return NOT_KNOWN;
+            }
+
+            int timeoutCounter = 0;
+            
+            Serial.println("<getSurvey/>"); //sends to the user
+            delay(MESSAGE_TIME_DELAY); //give some time before retransmitting
+
+            String openingTag = "<survey>";
+            String closingTag = "</survey>";
+            int positionCounter;
+
+            //finds the first tag
+            while (positionCounter <= openingTag.length() && timeoutCounter <= MAX_MESSAGE_TIMEOUT) {
+                if (Serial.available()) { //characters are being sent
+                    char character = Serial.read(); //read one char
+                    if(character == openingTag[positionCounter]) {
+                        positionCounter++;
+                        timeoutCounter = 0;
+                    }
+                }
+                timeoutCounter++;
+            }
+
+            if (timeoutCounter > MAX_MESSAGE_TIMEOUT) { Serial.println("Timeout reached when looking for survey details."); return askForLocation(attemptNumber++);}
+
+            //get the first of the survey details string
+            String surveyDetails1 = "";
+            while (timeoutCounter <= MAX_MESSAGE_TIMEOUT) {
+                if (Serial.available()) { //characters are being sent
+                    char character = Serial.read(); //read one char
+                    if((character >= '0' && character <= '9') || character == '.' || character == ',') {
+                        surveyDetails1 = surveyDetails1 + character;
+                    }
+                    else {
+                        timeoutCounter = 0;
+                        break;
+                    }
+                }
+                timeoutCounter++;
+
+            if (timeoutCounter > MAX_MESSAGE_TIMEOUT) { Serial.println("Timeout reached when looking for survey details."); return askForLocation(attemptNumber++);;}
+
+            //get the second of the survey details string
+            String surveyDetails2 = "";
+            while (timeoutCounter <= MAX_MESSAGE_TIMEOUT) {
+                if (Serial.available()) { //characters are being sent
+                    char character = Serial.read(); //read one char
+                    if((character >= '0' && character <= '9') || character == '.' || character == ',') {
+                        surveyDetails2 = surveyDetails2 + character;
+                    }
+                    else {
+                        timeoutCounter = 0;
+                        break;
+                    }
+                }
+                timeoutCounter++;
+            }
+
+            if (timeoutCounter > MAX_MESSAGE_TIMEOUT) { Serial.println("Timeout reached when looking for survey details"); return askForLocation(attemptNumber++);;}
+
+            if (surveyDetails1.equals(surveyDetails2)) { //if they're the same
+                return surveyDetails1;
+            }
+            else {
+                //try again
+                return getSurveyDetailsString(attemptNumber++);
+            }
+        }
+
         String askForLocation(int attemptNumber) {
-            if (attemptNumber > MAX_NUMBER_OF_GPS_REQUESTS) {
+            if (attemptNumber > MAX_NUMBER_OF_REQUESTS) {
                 Serial.println("Max number of GPS requests recieved with no matching responses");
-                return LOCATION_NOT_KNOWN;
+                return NOT_KNOWN;
             }
             
             int timeoutCounter = 0;
@@ -232,7 +305,7 @@ class Robot {
 
         GPSGridCoordinate* getLocation() { //method would be replaced with a GPS module in final product
             String coordinateString = askForLocation(0);
-            if (coordinateString.equals(LOCATION_NOT_KNOWN)) {
+            if (coordinateString.equals(NOT_KNOWN)) {
                 return new GPSGridCoordinate(0, 0); //no idea where you are
             }
             else {
@@ -365,7 +438,7 @@ class Robot {
             delete(sampleLocation);
         }
 
-        void initiateSurvey(GPSGridCoordinate startPosition, GPSGridCoordinate endPosition, double samplingFrequency) {
+        void runSurvey(GPSGridCoordinate startPosition, GPSGridCoordinate endPosition, double samplingFrequency) {
             Serial.println("Starting survey...");
             Serial.print("Start position: ");
             Serial.println(startPosition.toCSV());
@@ -393,6 +466,45 @@ class Robot {
             //
             //
             //
+        }
+
+        void initiateSurvey() {
+            String surveyRequest = getSurveyDetailsString(0); //get survey details (starting at attempt 0)
+            if (!surveyRequest.equals(NOT_KNOWN)) {
+                //parse the survey string
+                int startLatPos  = 0;
+                int startLongPos = surveyRequest.indexOf(',');
+                int endLatPos    = surveyRequest.indexOf(',', startLongPos);
+                int endLongPos   = surveyRequest.indexOf(',', endLatPos);
+                int samplingFrequencyPos = surveyRequest.indexOf(',', endLongPos);
+
+                if (endLatPos > 0 && startLongPos > 0 && endLongPos > 0 && samplingFrequencyPos > 0) { //ensure that there are enough values
+                    String startLat  = surveyRequest.substring(startLatPos, startLongPos);
+                    String startLong = surveyRequest.substring(startLongPos, endLatPos);
+                    String endLat    = surveyRequest.substring(endLatPos, endLongPos);
+                    String endLong   = surveyRequest.substring(endLongPos, samplingFrequencyPos);
+                    String samplingFrequency = surveyRequest.substring(samplingFrequencyPos, surveyRequest.length());
+
+                    Serial.println("Survey data given was as follows: ");
+                    Serial.println(startLat);
+                    Serial.println(startLong);
+                    Serial.println(endLat);
+                    Serial.println(endLong);
+                    Serial.println(samplingFrequency);
+
+                    GPSGridCoordinate startPosition = new GPSGridCoordinate(startLat.toFloat(), startLong.toFloat());
+                    GPSGridCoordinate endPosition   = new GPSGridCoordinate(endLat.toFloat(), endLong.toFloat());
+                    runSurvey(startPosition, endPostiion, samplingFrequency.toFloat()); //begin surveying
+                    delete(startPosition);
+                    delete(endPosition);
+                }
+                else {
+                    Serial.println("Could not start survey as not enough parameters were given. Should be given: start latitude, start longitude, end latitude, end longitude, sampling frequency")
+                }
+            }
+            else {
+                Serial.println("Could not start survey as details were not sent by workstation.");
+            }
         }
 
         void runTestSequence() {
@@ -457,6 +569,9 @@ void loop(){
         }
         else if (Serial.find("<test/>")) {
             robot->runTestSequence();
+        }
+        else if (Serial.find("<survey/>")) {
+            robot->initiateSurvey();
         }
         else {
             Serial.println("Awaiting instructions.");
