@@ -45,7 +45,7 @@ void motorForward(int motorNum, int motorPower) { //Makes Motor motorNum go forw
     uint8_t sender[2] = {motor1, motor2};
     Wire.beginTransmission(MotorBoardI2CAddress); //open I2C communation to Motor Board.
     Wire.write(sender,2);                    //send data. 
-    byte fred = Wire.endTransmission();		//end I2C communcation.
+    byte fred = Wire.endTransmission();    //end I2C communcation.
   }
 }
 
@@ -62,7 +62,7 @@ void motorBackward(int motorNum, int motorPower) { //Makes Motor motorNum go bac
     byte motor2 = int(motorPower * 2.55); //Power Byte.
     uint8_t sender[2] = {motor1, motor2};
     Wire.beginTransmission(MotorBoardI2CAddress); //open I2C communation to Motor Board.
-    Wire.write(sender,2);        	 // sends two byte  
+    Wire.write(sender,2);          // sends two byte  
     byte fred = Wire.endTransmission();//end I2C communcation.
 
   }
@@ -70,22 +70,22 @@ void motorBackward(int motorNum, int motorPower) { //Makes Motor motorNum go bac
 
 void motorStop(int motorNum) { // stop motor motorNum
   if (motorNum >= 0 and motorNum <= 5){
-    int motorMode = 0;				   //Mode 0, floats the motor.
+    int motorMode = 0;           //Mode 0, floats the motor.
     byte motor1 = motorNum<<5 | 16 | motorMode<<1; //Set up I2C byte to be send.
     uint8_t sender[1] = {motor1};
     Wire.beginTransmission(MotorBoardI2CAddress); //open I2C communation to Motor Board.
-    Wire.write(sender,1);        	          // sends a byte  
-    byte fred = Wire.endTransmission();		  // close commucation.
+    Wire.write(sender,1);                   // sends a byte  
+    byte fred = Wire.endTransmission();     // close commucation.
   }
 }
 
 void motorAllStop() {
   //I2C command to stop all Motors. 
-  byte allStop = 1;				//Motor Board stops all motors if bit 0 is high.
+  byte allStop = 1;       //Motor Board stops all motors if bit 0 is high.
   uint8_t sender[1] = {allStop};
   Wire.beginTransmission(MotorBoardI2CAddress); //open I2C communation to Motor Board.
-  Wire.write(sender,1);        			// sends a byte
-  byte fred = Wire.endTransmission();		//end I2C commucation.
+  Wire.write(sender,1);             // sends a byte
+  byte fred = Wire.endTransmission();   //end I2C commucation.
 }
 
 void setPWMpin(int portNum, int power){ //PortNum is the Sensor port used, pwm is the power of the output (between 0-100)
@@ -114,7 +114,7 @@ void setPWMpin(int portNum, int power){ //PortNum is the Sensor port used, pwm i
   }  
 }
 
-int readAnalogSensorData(int portNum){	//PortNum is the Sensor port used
+int readAnalogSensorData(int portNum){  //PortNum is the Sensor port used
   if (portNum >= 0 and portNum <= 3){
     int sensorData = -1;
     switch (portNum) {
@@ -161,5 +161,3 @@ int readDigitalSensorData(int portNum){ //PortNum is the Sensor port used
     return -2; 
   }
 }
-
-

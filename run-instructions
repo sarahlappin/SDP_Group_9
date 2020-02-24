@@ -1,0 +1,7 @@
+Setup Instructions
+
+Upload arduino code first
+make sure you have conda for python installed
+put the SDP virtual encironment folder into miniconda3/envs
+conda activate SDP
+run python workstation.py
