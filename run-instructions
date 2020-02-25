@@ -1,0 +1,10 @@
+Setup Instructions
+
+Rename the root folder to "robot"
+Upload arduino code first
+
+make sure you have conda for python installed
+try "conda import -f environment.yml"
+if it fails try "conda update --all" a few times
+conda activate SDP
+run python workstation.py
