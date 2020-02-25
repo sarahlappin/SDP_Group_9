@@ -29,8 +29,8 @@
 //wait 1ms between each sample
 #define SAMPLING_DELAY 1
 
-#define MOTOR_POWER_LEVEL 35
-#define DEPLOYMENT_MOTOR_POWER 30
+#define MOTOR_POWER_LEVEL 50
+#define DEPLOYMENT_MOTOR_POWER 100
 
 //Turning power
 #define TURNING_FORWARDS_POWER 70 // for motors going forwards
@@ -529,22 +529,26 @@ class Robot {
                 setMoveForward(FRONT_LEFT_MOTOR, MOTOR_POWER_LEVEL);
                 delay(1000);
                 motorAllStop();
+                delay(1000);
                 setMoveForward(FRONT_RIGHT_MOTOR, MOTOR_POWER_LEVEL);
                 delay(1000);
                 motorAllStop();
+                delay(1000);
                 setMoveForward(BACK_LEFT_MOTOR, MOTOR_POWER_LEVEL);
                 delay(1000);
                 motorAllStop();
+                delay(1000);
                 setMoveForward(BACK_RIGHT_MOTOR, MOTOR_POWER_LEVEL);
                 delay(1000);
                 motorAllStop();
-                
+                delay(1000);
                 setMoveForward(FRONT_LEFT_MOTOR, MOTOR_POWER_LEVEL);
                 setMoveForward(FRONT_RIGHT_MOTOR, MOTOR_POWER_LEVEL);
                 setMoveForward(BACK_LEFT_MOTOR, MOTOR_POWER_LEVEL);
                 setMoveForward(BACK_RIGHT_MOTOR, MOTOR_POWER_LEVEL);
                 delay(1000);
                 motorAllStop();
+                delay(5000);
             }
             else {
                 Serial.println("Could not move backward as sensor arm is still deployed");
@@ -567,6 +571,16 @@ class Robot {
             }
 
             ensureSafeToDeploy();
+        }
+
+        void testArmMotor() {
+
+            Serial.println("Testing arm motors");
+            lowerArm();
+            delay(2000);
+            raiseArm();
+            delay(2000);
+            Serial.println("Stopping testing arm motors");
         }
         
         void turnRight(int time) {
@@ -697,19 +711,15 @@ class Robot {
             // Movement tests
             moveForward(2500);
 
-            
-            unsigned int distance = sonar.ping_cm();
-
             //check for objects
               if (objectDetected()) {
-
-                
+              
                 moveBackward(2000);
                 delay(1000);
-                turnLeft(5000);
+                turnLeft(3000);
                 delay(1000);
-                turnRight(5000);
-                delay(1000);
+                //turnRight(3000);
+                //delay(1000);
                 
                 Serial.println("detected object!");
               }
@@ -737,8 +747,8 @@ void setup(){
     delay(2000);
     gyro.init();
     gyro.zeroCalibrate(200, 10); //sample 200 times to calibrate and it will take 200*10ms
-    Serial.println("Connection established!");
-    Serial.println("Entering wireless control mode...");
+    //Serial.println("Connection established!");
+    //Serial.println("Entering wireless control mode...");
     safeToDeploySensors = true; //ready to deploy
     robot = new Robot();
     counter = 0;
@@ -808,8 +818,9 @@ void loop(){
         
         robot->runTestSequence();
 
-        //robot->testTurning();
+        //robot->testArmMotor();
         
+        delay(10000);
         /*while (true) {
 
             GPSGridCoordinate *g = robot->getLocation();
