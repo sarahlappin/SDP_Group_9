@@ -6,7 +6,7 @@
 
 #define SENSOR_PIN A0
 
-#define BAUD_RATE 19200
+#define BAUD_RATE 300
 
 //mapping of motors on motor board
 #define SENSOR_DEPLOYMENT_MOTOR 0
@@ -33,8 +33,8 @@
 #define DEPLOYMENT_MOTOR_POWER 40
 
 //Turning power
-#define TURNING_FORWARDS_POWER 60 // for motors going forwards
-#define TURNING_BACKWARDS_POWER 40 // for motors going backwards
+#define TURNING_FORWARDS_POWER 70 // for motors going forwards
+#define TURNING_BACKWARDS_POWER -12 // for motors going backwards
 
 //time motors should turn for to deploy and retract mechanism
 #define SENSOR_DEPLOYMENT_TIME 700
@@ -558,9 +558,9 @@ class Robot {
             if (safeToDeploySensors) {          
             
                 turnLeft(3000);
-                delay(1000);
+                delay(3000);
                 turnRight(3000);
-                delay(1000);
+                delay(3000);
             }
             else {
                 Serial.println("Could not test turning as sensor arm is still deployed");
