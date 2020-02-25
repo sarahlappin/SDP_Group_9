@@ -3,7 +3,7 @@ from time import sleep
 import sys
 import imageFilter
 
-BAUD = 9600 #11500 ?
+BAUD = 9600
 
 serial = serial.Serial("/dev/ttyACM0", BAUD, timeout = .1)
 
@@ -20,9 +20,10 @@ greenHistory = [0,0]
 orangeHistory = [0,0]
 
 def getLocation():
-    #a = imageFilter.findCoordinates(redHistory, blueHistory, greenHistory, orangeHistory)
+    a = imageFilter.findCoordinates(redHistory, blueHistory, greenHistory, orangeHistory)
     #print(a)
-    return 1.2,3.4#a
+    #serial.write(a.encode)
+    return a
 
 def getSurvey():
     return 1.2, 2.3, 4.5, 6.76, 1.1
@@ -75,7 +76,6 @@ while True:
     #     manualMode = True
     # elif keyboard.press('2'):
     #     surveyMode = True
-
 
     try:
         line = str(serial.readline().decode().strip('\n').strip('\r')) #get each line and decode it

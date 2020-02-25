@@ -1,20 +1,20 @@
-
 #include "SDPArduino.h"
 #include <Wire.h>
 #include <string.h>
+#include "NewPing.h"
 #include "ITG3200.h" // Gyroscope import
 
 #define SENSOR_PIN A0
 
-#define BAUD_RATE 115200
+#define BAUD_RATE 19200
 
 //mapping of motors on motor board
 #define SENSOR_DEPLOYMENT_MOTOR 0
 //#define UNUSED_MOTOR 1
 #define FRONT_LEFT_MOTOR 2
-#define FRONT_RIGHT_MOTOR 3
-#define BACK_LEFT_MOTOR 4
-#define BACK_RIGHT_MOTOR 5
+#define FRONT_RIGHT_MOTOR 4
+#define BACK_LEFT_MOTOR 5
+#define BACK_RIGHT_MOTOR 3
 
 //mapping of the direction that is considered forward by the motors
 #define SENSOR_DEPLOYMENT_POLARITY 0
@@ -22,14 +22,20 @@
 #define FRONT_LEFT_POLARITY 1
 #define FRONT_RIGHT_POLARITY 0
 #define BACK_LEFT_POLARITY 1
-#define BACK_RIGHT_POLARITY 
+#define BACK_RIGHT_POLARITY 0
 
 //number of samples to take, average and then return
 #define SAMPLING_NUMBER 500
 //wait 1ms between each sample
 #define SAMPLING_DELAY 1
 
-#define MOTOR_POWER_LEVEL 50
+#define MOTOR_POWER_LEVEL 35
+#define DEPLOYMENT_MOTOR_POWER 40
+
+//Turning power
+#define TURNING_FORWARDS_POWER 60 // for motors going forwards
+#define TURNING_BACKWARDS_POWER 40 // for motors going backwards
+
 //time motors should turn for to deploy and retract mechanism
 #define SENSOR_DEPLOYMENT_TIME 700
 
@@ -50,11 +56,19 @@
 // Starting angle in degrees
 #define START_ANGLE 90 
 
+#define TRIGGER_PIN 5    // defines trigger pin for ultrasonic sensor
+#define ECHO_PIN A2    // defines echo pin for ultrasonic sensor
+#define MAX_DISTANCE 200  // defines maximum distance at 20cm
+
 using namespace std;
 
 bool safeToDeploySensors;
 int motorPolarities[6] = {SENSOR_DEPLOYMENT_POLARITY, UNUSED_POLARITY, FRONT_LEFT_POLARITY, FRONT_RIGHT_POLARITY, BACK_LEFT_POLARITY, BACK_RIGHT_POLARITY};
 ITG3200 gyro;
+
+
+//NewPing setup of pins and maximum distance
+NewPing sonar(TRIGGER_PIN, ECHO_PIN, MAX_DISTANCE); 
 
 class GPSGridCoordinate {
     private:
@@ -69,7 +83,7 @@ class GPSGridCoordinate {
 
         GPSGridCoordinate(String coordinateString) {
             latitude = coordinateString.substring(0, coordinateString.indexOf(',')).toFloat();
-            longitude = coordinateString.substring(coordinateString.indexOf(','), coordinateString.length()).toFloat();
+            longitude = coordinateString.substring(coordinateString.indexOf(',') + 1, coordinateString.length()).toFloat();
         }
 
         double getLatitude() {
@@ -102,21 +116,21 @@ class Robot {
 
         double current_angle;
         
-        void setMoveForward(int motorNumber) { //sets the motor to go forward taking into account polarity
+        void setMoveForward(int motorNumber, int power) { //sets the motor to go forward taking into account polarity
             if (motorPolarities[motorNumber] == 1) {
-                motorForward(motorNumber, MOTOR_POWER_LEVEL);
+                motorForward(motorNumber, power);
             }
             else {
-                motorBackward(motorNumber, MOTOR_POWER_LEVEL);
+                motorBackward(motorNumber, power);
             }
         }
 
-        void setMoveBackward(int motorNumber) { //sets the motor to go backward taking into account polarity
+        void setMoveBackward(int motorNumber, int power) { //sets the motor to go backward taking into account polarity
             if (motorPolarities[motorNumber] == 1) {
-                motorBackward(motorNumber, MOTOR_POWER_LEVEL);
+                motorBackward(motorNumber, power);
             }
             else {
-                motorForward(motorNumber, MOTOR_POWER_LEVEL);
+                motorForward(motorNumber, power);
             }
         }
 
@@ -129,7 +143,7 @@ class Robot {
             Serial.println("Sensor deployment lowering");
             ensureSafeToDeploy();
             if (safeToDeploySensors) {
-                setMoveForward(SENSOR_DEPLOYMENT_MOTOR);
+                setMoveForward(SENSOR_DEPLOYMENT_MOTOR, DEPLOYMENT_MOTOR_POWER);
                 delay(SENSOR_DEPLOYMENT_TIME);
                 motorStop(SENSOR_DEPLOYMENT_MOTOR);
             }
@@ -142,7 +156,7 @@ class Robot {
             Serial.println("Sensor deployment mechanism rising");
             ensureSafeToDeploy();
             if (safeToDeploySensors) {
-                setMoveBackward(SENSOR_DEPLOYMENT_MOTOR);
+                setMoveBackward(SENSOR_DEPLOYMENT_MOTOR, DEPLOYMENT_MOTOR_POWER);
                 delay(SENSOR_DEPLOYMENT_TIME);
                 motorStop(SENSOR_DEPLOYMENT_MOTOR);
             }
@@ -307,6 +321,7 @@ class Robot {
             }
             else {
               if (coordinate1.equals(coordinate2)) { //if they're the same
+                  Serial.println(coordinate1);
                   return coordinate1;
               }
               else {
@@ -351,33 +366,33 @@ class Robot {
             }
         }
 
-        double calculateDistance(double startX, double startY, double destX, double destY) {
-            sqrt(pow(destX - startX, 2) + pow(destY - startY, 2));
-        }
-
-        double get_angle_clockwise_from_north(double startX, double startY, double destX, double destY) {
-            // calculates angle created by vector from start point to center and vector from start point to destination point
-            // Create vectors from the centre for both positions
-            double LineFromStartToNorth [2] = {startX, (startY + 1)};
-            double lineFromStartToDest [2] = {(destX - startX), (destY - startY)};
-
-            // Calculate the inner angle between them
-            double pq = (LineFromStartToNorth[0] * lineFromStartToDest[0]) + (LineFromStartToNorth[1] * lineFromStartToDest[1]);
-            double magPQ = sqrt(pow(LineFromStartToNorth[0], 2) + pow(LineFromStartToNorth[1], 2)) * sqrt(pow(lineFromStartToDest[0], 2) + pow(lineFromStartToDest[1], 2));   
-            double pqDivMag = pq/magPQ;
-
-            if (magPQ == 0) return -1; // Error for divide by 0
-
-            double angle = acos(pq/magPQ);
-
-            // If destination is right of robot then the inner angle is the bearing from north
-            // else return 360 - that angle for the clockwise bearing from north 
-            if (LineFromStartToNorth[0] <= lineFromStartToDest[0]) {
-                return (angle/M_PI * 180);
-            } else {
-                return 360 - (angle/M_PI * 180);
-            }
-        }
+//        double calculateDistance(double startX, double startY, double destX, double destY) {
+//            sqrt(pow(destX - startX, 2) + pow(destY - startY, 2));
+//        }
+//
+//        double get_angle_clockwise_from_north(double startX, double startY, double destX, double destY) {
+//            // calculates angle created by vector from start point to center and vector from start point to destination point
+//            // Create vectors from the centre for both positions
+//            double LineFromStartToNorth [2] = {startX, (startY + 1)};
+//            double lineFromStartToDest [2] = {(destX - startX), (destY - startY)};
+//
+//            // Calculate the inner angle between them
+//            double pq = (LineFromStartToNorth[0] * lineFromStartToDest[0]) + (LineFromStartToNorth[1] * lineFromStartToDest[1]);
+//            double magPQ = sqrt(pow(LineFromStartToNorth[0], 2) + pow(LineFromStartToNorth[1], 2)) * sqrt(pow(lineFromStartToDest[0], 2) + pow(lineFromStartToDest[1], 2));   
+//            double pqDivMag = pq/magPQ;
+//
+//            if (magPQ == 0) return -1; // Error for divide by 0
+//
+//            double angle = acos(pq/magPQ);
+//
+//            // If destination is right of robot then the inner angle is the bearing from north
+//            // else return 360 - that angle for the clockwise bearing from north 
+//            if (LineFromStartToNorth[0] <= lineFromStartToDest[0]) {
+//                return (angle/M_PI * 180);
+//            } else {
+//                return 360 - (angle/M_PI * 180);
+//            }
+//        }
 
     public:
 
@@ -395,72 +410,97 @@ class Robot {
             }
         }
 
-        void move(double destX, double destY)
-        {    
-            // Use vision system to get robot coordinates
-            Serial.println("get gpd");
-            GPSGridCoordinate* robot_pos = getLocation();
-            Serial.println("get gps");
+//        void move(double destX, double destY)
+//        {    
+//            // Use vision system to get robot coordinates
+//            Serial.println("get gpd");
+//            GPSGridCoordinate* robot_pos = getLocation();
+//            Serial.println("get gps");
+//
+//            double startX = robot_pos->getLongitude();
+//            double startY = robot_pos->getLatitude();
+//            
+//            // Calculate the distance between the positions
+//            double distance = calculateDistance(startX, startY, destX, destY);
+//
+//            while (distance > MAX_DISTANCE_ERROR) {
+//        
+//                // Get the angle to turn (if more than 180 then turn left 180 - angle)
+//                double angleStartToDest = get_angle_clockwise_from_north(startX, startY, destX, destY);
+//                double angle_to_turn = abs(current_angle - angleStartToDest) >= 180 ? abs(current_angle - angleStartToDest - 180) : abs(current_angle - angleStartToDest);
+//                bool turn_left = abs(current_angle - angleStartToDest) >= 180 ? true : false;
+//
+//                if (turn_left) {
+//                    while ( abs(current_angle - angleStartToDest) > MAX_ANGLE_ERROR) {
+//                        turnLeft(100);
+//                    }
+//                } else {
+//                    while ( abs(current_angle - angleStartToDest) > MAX_ANGLE_ERROR) {
+//                        turnRight(100);
+//                    }
+//                }
+//
+//                // move forward, probably needs to be more sophisticated
+//                // should be able to handle object detection to stop
+//                moveForward(1000); 
+//
+//                //Update angle using gyroscope
+//                float x, y, z;
+//                gyro.getAngularVelocity(&x, &y, &z);
+//                current_angle += double(z); // Current angle from north is previous plus the change
+//
+//                //update location and distance via vision system
+//                robot_pos = getLocation();
+//                startX = robot_pos->getLongitude();
+//                startY = robot_pos->getLatitude();
+//                distance = calculateDistance(startX, startY, destX, destY);
+//
+//            }
+//
+//        }
 
-            double startX = robot_pos->getLongitude();
-            double startY = robot_pos->getLatitude();
-            
-            // Calculate the distance between the positions
-            double distance = calculateDistance(startX, startY, destX, destY);
+        bool objectDetected() {
 
-            while (distance > MAX_DISTANCE_ERROR) {
-        
-                // Get the angle to turn (if more than 180 then turn left 180 - angle)
-                double angleStartToDest = get_angle_clockwise_from_north(startX, startY, destX, destY);
-                double angle_to_turn = abs(current_angle - angleStartToDest) >= 180 ? abs(current_angle - angleStartToDest - 180) : abs(current_angle - angleStartToDest);
-                bool turn_left = abs(current_angle - angleStartToDest) >= 180 ? true : false;
+            unsigned int distance = sonar.ping_cm();
+            Serial.print(distance);
+            Serial.print("cm ");
 
-                if (turn_left) {
-                    while ( abs(current_angle - angleStartToDest) > MAX_ANGLE_ERROR) {
-                        turnLeft(100);
-                    }
-                } else {
-                    while ( abs(current_angle - angleStartToDest) > MAX_ANGLE_ERROR) {
-                        turnRight(100);
-                    }
-                }
-
-                // move forward, probably needs to be more sophisticated
-                // should be able to handle object detection to stop
-                moveForward(1000); 
-
-                //Update angle using gyroscope
-                float x, y, z;
-                gyro.getAngularVelocity(&x, &y, &z);
-                current_angle += double(z); // Current angle from north is previous plus the change
-
-                //update location and distance via vision system
-                robot_pos = getLocation();
-                startX = robot_pos->getLongitude();
-                startY = robot_pos->getLatitude();
-                distance = calculateDistance(startX, startY, destX, destY);
-
+            if (distance < 15 && distance > 0) {
+                return true;
+            } else {
+                return false;
             }
-
         }
-
+        
         void moveForward(int time) {
             if (safeToDeploySensors) {
                 safeToDeploySensors = false;
             
                 Serial.println("Move forward");
             
-                setMoveForward(FRONT_LEFT_MOTOR);
-                setMoveForward(FRONT_RIGHT_MOTOR);
-                setMoveForward(BACK_LEFT_MOTOR);
-                setMoveForward(BACK_RIGHT_MOTOR);
-                delay(time);
-                motorAllStop();
-                safeToDeploySensors = true;
+                setMoveForward(FRONT_LEFT_MOTOR, MOTOR_POWER_LEVEL);
+                setMoveForward(FRONT_RIGHT_MOTOR, MOTOR_POWER_LEVEL);
+                setMoveForward(BACK_LEFT_MOTOR, MOTOR_POWER_LEVEL);
+                setMoveForward(BACK_RIGHT_MOTOR, MOTOR_POWER_LEVEL);
+
+                
+                for (int i = 0; i < time / 10; i++) {
+
+                                     
+                    if (objectDetected()) {
+                        ensureSafeToDeploy();
+                        return;
+                    } else {
+                        delay(10);
+                    }
+                } 
+
             }
             else {
                 Serial.println("Could not move forward as sensor arm is still deployed");
             }
+
+            ensureSafeToDeploy();
         }
 
         void moveBackward(int time) {
@@ -469,17 +509,83 @@ class Robot {
             
                 Serial.println("Moving backward");
             
-                setMoveBackward(FRONT_LEFT_MOTOR);
-                setMoveBackward(FRONT_RIGHT_MOTOR);
-                setMoveBackward(BACK_LEFT_MOTOR);
-                setMoveBackward(BACK_RIGHT_MOTOR);
+                setMoveBackward(FRONT_LEFT_MOTOR, MOTOR_POWER_LEVEL);
+                setMoveBackward(FRONT_RIGHT_MOTOR, MOTOR_POWER_LEVEL);
+                setMoveBackward(BACK_LEFT_MOTOR, MOTOR_POWER_LEVEL);
+                setMoveBackward(BACK_RIGHT_MOTOR, MOTOR_POWER_LEVEL);
                 delay(time);
-                motorAllStop();
-                safeToDeploySensors = true;
             }
             else {
                 Serial.println("Could not move backward as sensor arm is still deployed");
             }
+
+            ensureSafeToDeploy();
+        }
+
+        void testMotors() {
+            if (safeToDeploySensors) {
+                safeToDeploySensors = false;           
+            
+                setMoveForward(FRONT_LEFT_MOTOR, MOTOR_POWER_LEVEL);
+                delay(1000);
+                motorAllStop();
+                setMoveForward(FRONT_RIGHT_MOTOR, MOTOR_POWER_LEVEL);
+                delay(1000);
+                motorAllStop();
+                setMoveForward(BACK_LEFT_MOTOR, MOTOR_POWER_LEVEL);
+                delay(1000);
+                motorAllStop();
+                setMoveForward(BACK_RIGHT_MOTOR, MOTOR_POWER_LEVEL);
+                delay(1000);
+                motorAllStop();
+                
+                setMoveForward(FRONT_LEFT_MOTOR, MOTOR_POWER_LEVEL);
+                setMoveForward(FRONT_RIGHT_MOTOR, MOTOR_POWER_LEVEL);
+                setMoveForward(BACK_LEFT_MOTOR, MOTOR_POWER_LEVEL);
+                setMoveForward(BACK_RIGHT_MOTOR, MOTOR_POWER_LEVEL);
+                delay(1000);
+                motorAllStop();
+            }
+            else {
+                Serial.println("Could not move backward as sensor arm is still deployed");
+            }
+
+            ensureSafeToDeploy();
+        }
+
+        void testTurning() {
+
+            if (safeToDeploySensors) {          
+            
+                turnLeft(3000);
+                delay(1000);
+                turnRight(3000);
+                delay(1000);
+            }
+            else {
+                Serial.println("Could not test turning as sensor arm is still deployed");
+            }
+
+            ensureSafeToDeploy();
+        }
+        
+        void turnRight(int time) {
+            if (safeToDeploySensors) {
+                safeToDeploySensors = false;
+            
+                Serial.println("Turning right");
+            
+                setMoveForward(FRONT_LEFT_MOTOR, TURNING_FORWARDS_POWER);
+                setMoveForward(BACK_LEFT_MOTOR, TURNING_FORWARDS_POWER);
+                setMoveBackward(FRONT_RIGHT_MOTOR, TURNING_BACKWARDS_POWER);
+                setMoveBackward(BACK_RIGHT_MOTOR, TURNING_BACKWARDS_POWER);
+                delay(time);
+            }
+            else {
+                Serial.println("Could not turn right as sensor arm is still deployed");
+            }
+
+            ensureSafeToDeploy();
         }
 
         void turnLeft(int time) {
@@ -487,37 +593,19 @@ class Robot {
                 safeToDeploySensors = false;
             
                 Serial.println("Turning left");
-            
-                setMoveForward(FRONT_LEFT_MOTOR);
-                setMoveForward(BACK_LEFT_MOTOR);
-                setMoveBackward(FRONT_RIGHT_MOTOR);
-                setMoveBackward(BACK_RIGHT_MOTOR);
+                
+                setMoveBackward(FRONT_LEFT_MOTOR, TURNING_BACKWARDS_POWER);
+                setMoveBackward(BACK_LEFT_MOTOR, TURNING_BACKWARDS_POWER);
+                setMoveForward(FRONT_RIGHT_MOTOR, TURNING_FORWARDS_POWER);
+                setMoveForward(BACK_RIGHT_MOTOR, TURNING_FORWARDS_POWER);
                 delay(time);
                 motorAllStop();
-                safeToDeploySensors = true;
             }
             else {
                 Serial.println("Could not turn left as sensor arm is still deployed");
             }
-        }
 
-        void turnRight(int time) {
-            if (safeToDeploySensors) {
-                safeToDeploySensors = false;
-            
-                Serial.println("Turning right");
-                
-                setMoveBackward(FRONT_LEFT_MOTOR);
-                setMoveBackward(BACK_LEFT_MOTOR);
-                setMoveForward(FRONT_RIGHT_MOTOR);
-                setMoveForward(BACK_RIGHT_MOTOR);
-                delay(time);
-                motorAllStop();
-                safeToDeploySensors = true;
-            }
-            else {
-                Serial.println("Could not turn right as sensor arm is still deployed");
-            }
+            ensureSafeToDeploy();
         }
 
         void takeSamples() { //method takes all samples and return them to the DICE machine
@@ -610,19 +698,30 @@ class Robot {
             
             // Movement tests
             moveForward(timeMove);
-            delay(moveDelay);
-            moveBackward(timeMove);
-            delay(moveDelay);
-            turnLeft(timeMove);
-            delay(moveDelay);
-            turnRight(timeMove);
-            delay(moveDelay);
+
+            
+            unsigned int distance = sonar.ping_cm();
+
+            //check for objects
+              if (objectDetected()) {
+
+                
+                moveBackward(1000);
+                delay(1000);
+                turnLeft(3000);
+                delay(1000);
+                //turnRight(1000);
+                //delay(200);
+                
+                Serial.println("detected! : ");
+              }
+
             
             // Lower sensor arm
             lowerArm();
             delay(1000);
             
-            Serial.println(getMoistureReading());
+            //Serial.println(getMoistureReading());
 
             // Raise sensor arm
             raiseArm();
@@ -631,6 +730,7 @@ class Robot {
 };
 
 Robot *robot;
+int counter;
 
 void setup(){
     SDPsetup();
@@ -642,6 +742,7 @@ void setup(){
     Serial.println("Entering wireless control mode...");
     safeToDeploySensors = true; //ready to deploy
     robot = new Robot();
+    counter = 0;
 }
 
 
@@ -669,15 +770,35 @@ void loop(){
                     }
                 }
             }
-        }
-        else*/
+            
+        } 
         
-        if (Serial.find("<test/>")) {
-            //robot->runTestSequence();
+        else if (Serial.find("<testServer/>")) {
+
+            while (1) {
+
+                GPSGridCoordinate *g = robot->getLocation();
+                Serial.print(counter);
+                Serial.print(": ");
+                if (g->getLatitude() == 1.2 && g->getLongitude() == 3.4) {
+                    Serial.println("Success");
+                }
+                else {
+                    Serial.println(g->getLongitude());
+                }
+                counter++;
+            }
         }
+
+        
+        else if (Serial.find("<test/>")) {
+            robot->runTestSequence();
+        }
+        
         else if (Serial.find("<survey/>")) {
-            //robot->initiateSurvey();
-        } /*
+            robot->initiateSurvey();
+        }
+        
         else {
             Serial.println("Awaiting instructions.");
             robot->moveForward(1000);
@@ -685,9 +806,17 @@ void loop(){
             robot->getLocation();
             Serial.println("Location done");
         }*/
-    
-        Serial.println("Starting program");
-        GPSGridCoordinate *g = robot->getLocation();
-        Serial.println(g->getLatitude());
-        Serial.println("Program finished");
+        
+        //robot->runTestSequence();
+
+        robot->testTurning();
+        
+        /*while (true) {
+
+            GPSGridCoordinate *g = robot->getLocation();
+            Serial.println(g->getLatitude());
+            Serial.println(g->getLongitude());
+            
+            delay(1000);
+        }*/
 }

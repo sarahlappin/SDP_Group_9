@@ -51,7 +51,7 @@ def findCentre(img, previousPoint, dst):
 
 def findCoordinates(redHistory, blueHistory, greenHistory, orangeHistory):
     cap = cv2.VideoCapture(0)
-    pixelToMillimeter = (297 / 76.46)
+    pixelToCentimeters = 60/70
     testNo = 0
     nTests = 5
     while (True):
@@ -91,8 +91,8 @@ def findCoordinates(redHistory, blueHistory, greenHistory, orangeHistory):
         blueHistory = findCentre(blue, blueHistory, dst)
         orangeHistory = findCentre(orange, orangeHistory, dst)
 
-        blueCoordinates = np.round((np.array(blueHistory) - np.array(greenHistory)) * pixelToMillimeter)
-        orangeCoordinates = np.round((np.array(orangeHistory) - np.array(greenHistory)) * pixelToMillimeter)
+        blueCoordinates = np.round((np.array(blueHistory) - np.array(greenHistory)) * pixelToCentimeters)
+        orangeCoordinates = np.round((np.array(orangeHistory) - np.array(greenHistory)) * pixelToCentimeters)
 
         distanceP = calculateDistance(blueCoordinates, orangeCoordinates)
 
@@ -102,7 +102,8 @@ def findCoordinates(redHistory, blueHistory, greenHistory, orangeHistory):
         # Display the original image
         # cv2.imshow('Original Capture', image)
         # cv2.imshow('Calibrated Capture', dst)
-        #cv2.imwrite('123254.png', dst)
+        cv2.imwrite('123254.png', dst)
+        cv2.imwrite('12325.png', image)
         # cv2.imshow('Red Mask', red)
         # cv2.imshow('Green Mask', green)
         # cv2.imshow('Blue Mask', blue)
@@ -115,18 +116,17 @@ def findCoordinates(redHistory, blueHistory, greenHistory, orangeHistory):
             testNo+=1
             k = ord('t')
 
-        if k == ord('p'):  # press q to quit
-            print("Green: ", greenHistory)
-            print("BlueH: ", blueHistory)
-            print("OrangeH: ", orangeHistory)
-            print("Blue: ", blueCoordinates)
-            print("Orange: ", orangeCoordinates)
-            print("Distance: ", round(distanceP), "mm")
-            print("Angle: ", round(angleDegrees), "degrees")
-            print("")
-        elif k == ord('r'):
+        #if k == ord('p'):  # press q to quit
+        # print("Green: ", greenHistory)
+        # print("BlueH: ", blueHistory)
+        # print("OrangeH: ", orangeHistory)
+        # print("Blue: ", blueCoordinates)
+        # print("Orange: ", orangeCoordinates)
+        # print("Distance: ", round(distanceP), "mm")
+        # print("Angle: ", round(angleDegrees), "degrees")
+        # print("")
+        if k == ord('r'):
             return midpoint(blueCoordinates, orangeCoordinates)
-            break
         elif k == ord('q'):  # press q to quit
             break
 
@@ -134,3 +134,5 @@ def findCoordinates(redHistory, blueHistory, greenHistory, orangeHistory):
 
     cap.release()
     cv2.destroyAllWindows()
+
+#print(findCoordinates([0,0], [0,0], [0,0], [0,0]))
