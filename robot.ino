@@ -6,18 +6,18 @@
 
 #define SENSOR_PIN A0
 
-#define BAUD_RATE 9600
+#define BAUD_RATE 115200
 
 //mapping of motors on motor board
-#define SENSOR_DEPLOYMENT_MOTOR 0
-//#define UNUSED_MOTOR 1
+#define SENSOR_DEPLOYMENT_MOTOR 1
+//#define UNUSED_MOTOR 0
 #define FRONT_LEFT_MOTOR 2
 #define FRONT_RIGHT_MOTOR 4
 #define BACK_LEFT_MOTOR 5
 #define BACK_RIGHT_MOTOR 3
 
 //mapping of the direction that is considered forward by the motors
-#define SENSOR_DEPLOYMENT_POLARITY 0
+#define SENSOR_DEPLOYMENT_POLARITY 1
 #define UNUSED_POLARITY 0
 #define FRONT_LEFT_POLARITY 1
 #define FRONT_RIGHT_POLARITY 0
@@ -29,8 +29,8 @@
 //wait 1ms between each sample
 #define SAMPLING_DELAY 1
 
-#define MOTOR_POWER_LEVEL 50
-#define DEPLOYMENT_MOTOR_POWER 100
+#define MOTOR_POWER_LEVEL 30
+#define DEPLOYMENT_MOTOR_POWER 60
 
 //Turning power
 #define TURNING_FORWARDS_POWER 70 // for motors going forwards
@@ -63,7 +63,7 @@
 using namespace std;
 
 bool safeToDeploySensors;
-int motorPolarities[6] = {SENSOR_DEPLOYMENT_POLARITY, UNUSED_POLARITY, FRONT_LEFT_POLARITY, FRONT_RIGHT_POLARITY, BACK_LEFT_POLARITY, BACK_RIGHT_POLARITY};
+int motorPolarities[6] = {UNUSED_POLARITY, SENSOR_DEPLOYMENT_POLARITY, FRONT_LEFT_POLARITY, FRONT_RIGHT_POLARITY, BACK_LEFT_POLARITY, BACK_RIGHT_POLARITY};
 ITG3200 gyro;
 
 
@@ -140,10 +140,10 @@ class Robot {
         }
 
         void lowerArm() {
-            Serial.println("Sensor deployment lowering");
-            ensureSafeToDeploy();
+
             if (safeToDeploySensors) {
                 setMoveForward(SENSOR_DEPLOYMENT_MOTOR, DEPLOYMENT_MOTOR_POWER);
+                Serial.println("Sensor deployment lowering");
                 delay(SENSOR_DEPLOYMENT_TIME);
                 motorStop(SENSOR_DEPLOYMENT_MOTOR);
             }
@@ -153,15 +153,15 @@ class Robot {
         }
 
         void raiseArm() {
-            Serial.println("Sensor deployment mechanism rising");
-            ensureSafeToDeploy();
+
             if (safeToDeploySensors) {
                 setMoveBackward(SENSOR_DEPLOYMENT_MOTOR, DEPLOYMENT_MOTOR_POWER);
+                Serial.println("Sensor deployment rising");
                 delay(SENSOR_DEPLOYMENT_TIME);
                 motorStop(SENSOR_DEPLOYMENT_MOTOR);
             }
             else {
-                Serial.println("Could not deploy sensor as the robot is still moving.");
+                Serial.println("Could not retract sensor as the robot is still moving.");
             }
         }
 
@@ -747,8 +747,8 @@ void setup(){
     delay(2000);
     gyro.init();
     gyro.zeroCalibrate(200, 10); //sample 200 times to calibrate and it will take 200*10ms
-    //Serial.println("Connection established!");
-    //Serial.println("Entering wireless control mode...");
+    Serial.println("Connection established!");
+    Serial.println("Entering wireless control mode...");
     safeToDeploySensors = true; //ready to deploy
     robot = new Robot();
     counter = 0;
@@ -817,8 +817,6 @@ void loop(){
         }*/
         
         robot->runTestSequence();
-
-        //robot->testArmMotor();
         
         delay(10000);
         /*while (true) {
