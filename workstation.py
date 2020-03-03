@@ -9,6 +9,7 @@ serial = serial.Serial("/dev/ttyACM0", BAUD, timeout = .1)
 
 getLocationTag = "<getLocation/>"
 getSurveyTag = "<getSurvey/>"
+getAngleTag = "<getAngle/>"
 openingSampleTag = "<sample>"
 closingSampleTag = "</sample>"
 verificationDeliminator = "|"
@@ -20,14 +21,16 @@ greenHistory = [0,0]
 orangeHistory = [0,0]
 
 def getLocation():
-    a = imageFilter.findCoordinates(redHistory, blueHistory, greenHistory, orangeHistory)
+    a, _ = imageFilter.findCoordinates(redHistory, blueHistory, greenHistory, orangeHistory)
     #print(a)
     #serial.write(a.encode)
     return a
 
 def getSurvey():
     return 1.2, 2.3, 4.5, 6.76, 1.1
-
+def getAngle():
+    _, a = imageFilter.findCoordinates(redHistory, blueHistory, greenHistory, orangeHistory)
+    return  a
 def saveSample(sample):
     q = 1 #do nothing
 
@@ -38,6 +41,11 @@ def interpretLine(line):
         location = "<location>" + str(latitude) + "," + str(longitude) + "|" + str(latitude) + "," + str(longitude) + "</location>"
         print("==>" + location)
         serial.write(location.encode())
+    elif getAngleTag in line:
+        angle = getAngle()
+        location = "<angle>" + str(angle) + "|" + str(angle) + "</angle>"
+        print("==>" + angle)
+        serial.write(angle.encode())
     if getSurveyTag in line:
         startLat, startLong, endLat, endLong, samplingFrequency = getSurvey()
         messageText = str(startLat) + b"," + str(startLong) + b"," + str(endLat) + b"," + str(endLong) + b"," + str(samplingFrequency)
