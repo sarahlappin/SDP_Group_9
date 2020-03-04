@@ -443,31 +443,8 @@ class Robot {
             return sqrt(pow(destX - startX, 2) + pow(destY - startY, 2));
         }
 
-        double get_angle_clockwise_from_north(double startX, double startY, double destX, double destY) {
-            /*
-            // calculates angle created by vector from start point to center and vector from start point to destination point
-            // Create vectors from the centre for both positions
-            double LineFromStartToNorth [2] = {startX, (startY + 1)};
-            double lineFromStartToDest [2] = {(destX - startX), (destY - startY)};
-
-            // Calculate the inner angle between them
-            double pq = (LineFromStartToNorth[0] * lineFromStartToDest[0]) + (LineFromStartToNorth[1] * lineFromStartToDest[1]);
-            double magPQ = sqrt(pow(LineFromStartToNorth[0], 2) + pow(LineFromStartToNorth[1], 2)) * sqrt(pow(lineFromStartToDest[0], 2) + pow(lineFromStartToDest[1], 2));   
-            double pqDivMag = pq/magPQ;
-
-            if (magPQ == 0) return -1; // Error for divide by 0
-
-            double angle = acos(pq/magPQ);
-
-            // If destination is right of robot then the inner angle is the bearing from north
-            // else return 360 - that angle for the clockwise bearing from north 
-            if (LineFromStartToNorth[0] <= lineFromStartToDest[0]) {
-                return (angle/M_PI * 180);
-            } else {
-                return 360 - (angle/M_PI * 180);
-            }*/
-
-
+        double get_angle_clockwise_from_north(double startX, double startY, double destX, double destY) 
+		{
             return atan2(destY - startY, destX - startX)/M_PI * 180;
         }
 
@@ -490,101 +467,65 @@ class Robot {
               return askForAngle(0);
           }
 
-        void move(double destX, double destY)
-        {    
-            // Use vision system to get robot coordinates
-            Serial.println("get gpd");
-            GPSGridCoordinate* robot_pos = getLocation();
-            Serial.println("get gps");
-
-            double startX = robot_pos->getLongitude();
-            double startY = robot_pos->getLatitude();
-            
-            // Calculate the distance between the positions
-            double distance = calculateDistance(startX, startY, destX, destY);
-            Serial.print("Distance: ");
-            Serial.println(distance);
+		void printPositionDetails(double startX, double startY, double destX, double destY)
+		{
+			Serial.print("Current Position: ");
             Serial.print(startX);
             Serial.print(", ");
-            Serial.println(startY);
+            Serial.print(startY);
             
+			Serial.print("\tTarget Position")
             Serial.print(destX);
             Serial.print(", ");
             Serial.println(destY);
+		}
+
+		void printAngleDetails(double angleRobot, double angleTarget)
+		{
+			Serial.print("Current Angle: ");
+            Serial.print(angleRobot);
             
-                        
-            while (distance > MAX_DISTANCE_ERROR) {
+			Serial.print("\tTarget Angle")
+            Serial.print(angleTarget);
+		}
+		
+        void move(double destX, double destY)
+        {    
+            // Use vision system to get robot coordinates
+            GPSGridCoordinate* robot_pos = getLocation();
 
-               
-                // Get the angle to turn (if more than 180 then turn left 180 - angle)
-                //double angleStartToDest = get_angle_clockwise_from_north(startX, startY, destX, destY);
-                //double angle_to_turn = abs(current_angle - angleStartToDest) >= 180 ? abs(current_angle - angleStartToDest - 180) : abs(current_angle - angleStartToDest);
-                double angle_to_turn = get_angle_clockwise_from_north(startX, startY, destX, destY);
-                bool turn_left = angle_to_turn < 0 ? true : false;
-                double angleNeedTurn = angle_to_turn;
-                Serial.println("Angle to turn: ");
-                Serial.println(angle_to_turn);
-                        
-                while (abs(angleNeedTurn) > MAX_ANGLE_ERROR) 
-                {
-                    Serial.println(angleNeedTurn);
-                    unsigned long timeM = millis();
-                    if (turn_left) {
+            double startX = robot_pos->getLongitude();
+            double startY = robot_pos->getLatitude();
+       
+            double angleTarget = get_angle_clockwise_from_north(startX, startY, destX, destY);                
+			double robotAngle = getAngle();
+			double angleDifference = angleTarget - robotAngle;
 
-                        //Serial.println("Angle to Dest: ");
-                        //Serial.println(angleStartToDest);
-                        //Serial.println("Angle to Left: ");
-                        //Serial.println(angle_to_turn);
-                        turnLeft(500);
-                        
-                    } else {
+            while (abs(angleDifference) > MAX_ANGLE_ERROR) 
+            {
+				bool turnLeft = (angleDifference > 180 || ( angleDifference > -180 && angleDifference < 0)) ? true : false;
 
-                        //Serial.println("Angle to Dest: ");
-                        //Serial.println(angleStartToDest);
-                        //Serial.println("Angle to Right: ");
-                        //Serial.println(angle_to_turn);
-                        turnRight(500);
-                    }
+                if (turn_left) turnLeft(500);
+                else turnRight(500);
+				robotAngle = getAngle();
+				angleDifference = angleTarget - robotAngle;
+				printAngleDetails(robotAngle, angleTarget);
+                delay(200);
+            }
+				
+			// Calculate the distance between the positions
+            double distance = calculateDistance(startX, startY, destX, destY);
 
-                    //Update angle using gyroscope
-                    float x, y, z;
-                    gyro.getAngularVelocity(&x, &y, &z);
-                    //Serial.print("Angle: ");
-                    double angleDiff = getAngle();//z * (millis()-timeM)/1000;
-                    Serial.print("Angle: ");
-                    Serial.println(angleDiff);
-                    angleNeedTurn = angleDiff;
-                    //current_angle += double(z); // Current angle from north is previous plus the change
-                    //current_angle = ((int)current_angle)%360;
-                    
-                    // Get the angle to turn (if more than 180 then turn left 180 - angle)
-                    //angleStartToDest = get_angle_clockwise_from_north(startX, startY, destX, destY);
-                    //angle_to_turn = abs(current_angle - angleStartToDest) >= 180 ? abs(current_angle - angleStartToDest - 180) : abs(current_angle - angleStartToDest);
-                    
-                    //startX = robot_pos->getLongitude();
-                    //startY = robot_pos->getLatitude();
-                    
-                    //angle_to_turn = get_angle_clockwise_from_north(startX, startY, destX, destY);
-                    //turn_left = angle_to_turn < 0 ? true : false;
-                    delay(200);
-                }
-
-                // move forward, probably needs to be more sophisticated
-                // should be able to handle object detection to stop
-                moveForward(1000); 
-
-                //Update angle using gyroscope
-                float x, y, z;
-                gyro.getAngularVelocity(&x, &y, &z);
-                current_angle += double(z); // Current angle from north is previous plus the change
-                current_angle = ((int)current_angle)%360;
-                
+            while (distance > MAX_DISTANCE_ERROR) 
+			{
+                moveForward(1000);           
                 //update location and distance via vision system
                 robot_pos = getLocation();
                 startX = robot_pos->getLongitude();
                 startY = robot_pos->getLatitude();
                 distance = calculateDistance(startX, startY, destX, destY);
-
+				printPositionDetails(startX, startY, destX, destY);
+				delay(200);
             }
 
         }
