@@ -32,7 +32,7 @@ def findCentre(img, previousPoint, dst):
         approx = cv2.approxPolyDP(cnt, epsilon, True)
         area = cv2.contourArea(cnt)
         if (area > 65 and area < 200) or (len(contours) == 1 and area > 0):
-            print(len(approx))
+            #print(len(approx))
             cv2.drawContours(dst, [cnt], -1, (0, 0, 255), 1)
             #cv2.drawContours(dst, [approx], -1, (0, 0, 255), 1)
             #print(calculateDistance(approx[0], approx[1]))
@@ -94,7 +94,7 @@ def findCoordinates(redHistory, blueHistory, greenHistory, orangeHistory):
         # img = cv2.inRange(image_src, (15,105,200), (25,165,230))
         #red = cv2.inRange(image_src, (0, 70, 180), (15, 255, 255))
         #white = cv2.inRange(image_src, (0, 0, 134), (179, 30, 255))
-        green = cv2.inRange(image_src, (75, 65, 120), (95, 255, 255))
+        green = cv2.inRange(image_src, (75, 50, 115), (100, 255, 255))
         blue = cv2.inRange(image_src, (105, 50, 140), (125, 255, 255))
         orange = cv2.inRange(image_src, (0, 50, 120), (20, 255, 255))
 
@@ -128,7 +128,12 @@ def findCoordinates(redHistory, blueHistory, greenHistory, orangeHistory):
         # Display the original image
         #cv2.imshow('Original Capture', image)
         #cv2.imshow('Calibrated Capture', dst)
-        #cv2.imwrite('1.png', dst)
+
+        copyDst = dst
+        cv2.circle(copyDst, ((int)(midpoint(blueCoordinates, orangeCoordinates)[0])+ greenHistory[0], (int) (midpoint(blueCoordinates, orangeCoordinates)[1]) + greenHistory[1]),  1, (0, 0, 255), -1)
+        cv2.circle(copyDst, (150 + greenHistory[0],150 + greenHistory[1]), 1, (0, 0, 255), -1)
+
+        cv2.imwrite('1.png', copyDst)
         #cv2.imwrite('green.png', green)
         #cv2.imwrite('orange.png', orange)
 

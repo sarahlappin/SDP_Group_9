@@ -51,7 +51,7 @@
 #define NOT_KNOWN "unknown"
 
 #define MAX_DISTANCE_ERROR 1 // Margin of error for distance
-#define MAX_ANGLE_ERROR 15    // Margin of error for robot angle in Degrees
+#define MAX_ANGLE_ERROR 10    // Margin of error for robot angle in Degrees
 
 // Starting angle in degrees
 #define START_ANGLE 90 
@@ -340,7 +340,7 @@ class Robot {
             int timeoutCounter = 0;
             
             Serial.println("<getAngle/>"); //sends to the user
-            delay(MESSAGE_TIME_DELAY); //give some time before retransmitting
+            delay(MESSAGE_TIME_DELAY + 500); //give some time before retransmitting
 
             String openingTag = "<angle>";
             String closingTag = "</angle>";
@@ -467,65 +467,75 @@ class Robot {
               return askForAngle(0);
           }
 
-		void printPositionDetails(double startX, double startY, double destX, double destY)
-		{
-			Serial.print("Current Position: ");
-            Serial.print(startX);
-            Serial.print(", ");
-            Serial.print(startY);
-            
-			Serial.print("\tTarget Position")
-            Serial.print(destX);
-            Serial.print(", ");
-            Serial.println(destY);
-		}
+          void printPositionDetails(double startX, double startY, double destX, double destY)
+          {
+              Serial.print("Current Position: ");
+              Serial.print(startX);
+              Serial.print(", ");
+              Serial.print(startY);
+          
+              Serial.print("\tTarget Position: ");
+              Serial.print(destX);
+              Serial.print(", ");
+              Serial.println(destY);
+          }
 
-		void printAngleDetails(double angleRobot, double angleTarget)
-		{
-			Serial.print("Current Angle: ");
-            Serial.print(angleRobot);
-            
-			Serial.print("\tTarget Angle")
-            Serial.print(angleTarget);
-		}
+          void printAngleDetails(double angleRobot, double angleTarget, double angleDiff)
+          {
+              Serial.print("Current Angle: ");
+              Serial.print(angleRobot);
+              
+              Serial.print("\tTarget Angle: ");
+              Serial.print(angleTarget);
+
+              Serial.print("\tAngle Difference: ");
+              Serial.println(angleDiff);
+          }
 		
         void move(double destX, double destY)
         {    
             // Use vision system to get robot coordinates
             GPSGridCoordinate* robot_pos = getLocation();
 
-            double startX = robot_pos->getLongitude();
-            double startY = robot_pos->getLatitude();
+            double startY = robot_pos->getLongitude();
+            double startX = robot_pos->getLatitude();
        
             double angleTarget = get_angle_clockwise_from_north(startX, startY, destX, destY);                
-			double robotAngle = getAngle();
-			double angleDifference = angleTarget - robotAngle;
+            double robotAngle = getAngle();
+            double angleDifference = angleTarget - robotAngle;
 
+            Serial.println("Starting Movement:");
+            printAngleDetails(robotAngle, angleTarget, angleDifference);
+            printPositionDetails(startX, startY, destX, destY);
+
+            
             while (abs(angleDifference) > MAX_ANGLE_ERROR) 
             {
-				bool turnLeft = (angleDifference > 180 || ( angleDifference > -180 && angleDifference < 0)) ? true : false;
-
-                if (turn_left) turnLeft(500);
+                if (angleDifference > 180 || ( angleDifference > -180 && angleDifference < 0)) turnLeft(500);
                 else turnRight(500);
-				robotAngle = getAngle();
-				angleDifference = angleTarget - robotAngle;
-				printAngleDetails(robotAngle, angleTarget);
-                delay(200);
+                Serial.println("New angle...");
+                robotAngle = getAngle();
+                startY = robot_pos->getLongitude();
+                startX = robot_pos->getLatitude();
+           
+                angleTarget = get_angle_clockwise_from_north(startX, startY, destX, destY);                
+                angleDifference = angleTarget - robotAngle;
+                printAngleDetails(robotAngle, angleTarget, angleDifference);
             }
-				
-			// Calculate the distance between the positions
+
+      			// Calculate the distance between the positions
             double distance = calculateDistance(startX, startY, destX, destY);
 
             while (distance > MAX_DISTANCE_ERROR) 
-			{
+			      {
                 moveForward(1000);           
                 //update location and distance via vision system
                 robot_pos = getLocation();
                 startX = robot_pos->getLongitude();
                 startY = robot_pos->getLatitude();
                 distance = calculateDistance(startX, startY, destX, destY);
-				printPositionDetails(startX, startY, destX, destY);
-				delay(200);
+                printPositionDetails(startX, startY, destX, destY);
+                delay(200);
             }
 
         }
@@ -555,9 +565,7 @@ class Robot {
                 setMoveForward(BACK_RIGHT_MOTOR, MOTOR_POWER_LEVEL);
 
                 
-                for (int i = 0; i < time / 10; i++) {
-
-                                     
+                for (int i = 0; i < time / 10; i++) {           
                     if (objectDetected()) {
                         ensureSafeToDeploy();
                         return;

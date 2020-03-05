@@ -35,7 +35,6 @@ def saveSample(sample):
     q = 1 #do nothing
 
 def interpretLine(line):
-    #print line
     if getLocationTag in line:
         latitude, longitude = getLocation()
         location = "<location>" + str(latitude) + "," + str(longitude) + "|" + str(latitude) + "," + str(longitude) + "</location>"
@@ -43,9 +42,9 @@ def interpretLine(line):
         serial.write(location.encode())
     elif getAngleTag in line:
         angle = getAngle()
-        location = "<angle>" + str(angle) + "|" + str(angle) + "</angle>"
-        print("==>" + angle)
-        serial.write(angle.encode())
+        anglePrint = "<angle>" + str(angle) + "|" + str(angle) + "</angle>"
+        print("==>" + anglePrint)
+        serial.write(anglePrint.encode())
     if getSurveyTag in line:
         startLat, startLong, endLat, endLong, samplingFrequency = getSurvey()
         messageText = str(startLat) + b"," + str(startLong) + b"," + str(endLat) + b"," + str(endLong) + b"," + str(samplingFrequency)
