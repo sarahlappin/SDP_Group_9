@@ -50,8 +50,8 @@
 
 #define NOT_KNOWN "unknown"
 
-#define MAX_DISTANCE_ERROR 10 // Margin of error for distance
-#define MAX_ANGLE_ERROR 20    // Margin of error for robot angle in Degrees
+#define MAX_DISTANCE_ERROR 1 // Margin of error for distance
+#define MAX_ANGLE_ERROR 5    // Margin of error for robot angle in Degrees
 
 // Starting angle in degrees
 #define START_ANGLE 90 
@@ -86,11 +86,11 @@ class GPSGridCoordinate {
             longitude = coordinateString.substring(coordinateString.indexOf(',') + 1, coordinateString.length()).toFloat();
         }
 
-        double getLatitude() {
+        double getLatitudeX() {
             return latitude;
         }
 
-        double getLongitude() {
+        double getLongitudeY() {
             return longitude;
         }
 
@@ -103,8 +103,8 @@ class GPSGridCoordinate {
         }
         
         String toCSV() {
-            String lat = String(getLatitude());
-            String longi = String(getLongitude());
+            String lat = String(getLatitudeX());
+            String longi = String(getLongitudeY());
             lat += ",";
             lat += longi;
             return lat;
@@ -261,7 +261,7 @@ class Robot {
         String askForLocation(int attemptNumber) {
             if (attemptNumber > MAX_NUMBER_OF_REQUESTS) {
                 Serial.println("Max number of GPS requests recieved with no matching responses");
-                //return NOT_KNOWN;
+                return NOT_KNOWN;
             }
             
             int timeoutCounter = 0;
@@ -318,7 +318,6 @@ class Robot {
             
             if (timeoutCounter > MAX_MESSAGE_TIMEOUT){
               Serial.println("Getting location timed out");
-              return askForLocation(attemptNumber++);
             }
             else {
               if (coordinate1.equals(coordinate2)) { //if they're the same
@@ -335,13 +334,13 @@ class Robot {
         double askForAngle(int attemptNumber) {
             if (attemptNumber > MAX_NUMBER_OF_REQUESTS) {
                 Serial.println("Max number of angle requests recieved with no matching responses");
-                //return 0;
+                return 0;
             }
             
             int timeoutCounter = 0;
             
             Serial.println("<getAngle/>"); //sends to the user
-            delay(MESSAGE_TIME_DELAY + 500); //give some time before retransmitting
+            delay(MESSAGE_TIME_DELAY); //give some time before retransmitting
 
             String openingTag = "<angle>";
             String closingTag = "</angle>";
@@ -370,7 +369,7 @@ class Robot {
                         }
 
                         // coordinates
-                    } else if (positionInMessage < 3 && ((character >= '0' && character <= '9') || character == '.' || character == '-')) { //next set of coordinates begin
+                    } else if (positionInMessage < 3 && ((character >= '0' && character <= '9') || character == '.'|| character == '-')) { //next set of coordinates begin
                         
                         if (positionInMessage == 1) {
                             coordinate1 = coordinate1 + character;
@@ -392,7 +391,6 @@ class Robot {
             
             if (timeoutCounter > MAX_MESSAGE_TIMEOUT){
               Serial.println("Getting angle timed out");
-              return askForAngle(attemptNumber++);
             }
             else {
               if (coordinate1.equals(coordinate2)) { //if they're the same
@@ -446,7 +444,7 @@ class Robot {
         }
 
         double get_angle_clockwise_from_north(double startX, double startY, double destX, double destY) 
-		    {
+		{
             return atan2(destY - startY, destX - startX)/M_PI * 180;
         }
 
@@ -499,9 +497,9 @@ class Robot {
             // Use vision system to get robot coordinates
             GPSGridCoordinate* robot_pos = getLocation();
 
-            double startY = robot_pos->getLongitude();
-            double startX = robot_pos->getLatitude();
-       
+            double startX = robot_pos->getLatitudeX();
+            double startY = robot_pos->getLongitudeY();
+
             double angleTarget = get_angle_clockwise_from_north(startX, startY, destX, destY);                
             double robotAngle = getAngle();
             double angleDifference = angleTarget - robotAngle;
@@ -515,38 +513,26 @@ class Robot {
 
             while (distance > MAX_DISTANCE_ERROR) 
 			      {
-            
                 while (abs(angleDifference) > MAX_ANGLE_ERROR) 
                 {
-                    if (angleDifference > 180 || ( angleDifference > -180 && angleDifference < 0)) {
-                      turnLeft(500);
-                    } else {
-                      turnRight(500);
-                    }
-                    
-                    Serial.println("New angle...");
+                    if (angleDifference > 180 || ( angleDifference > -180 && angleDifference < 0)) turnLeft(500);
+                    else turnRight(500);
                     robotAngle = getAngle();
-                    startY = robot_pos->getLongitude();
-                    startX = robot_pos->getLatitude();
+                    startY = robot_pos->getLongitudeY();
+                    startX = robot_pos->getLatitudeX();
                
                     angleTarget = get_angle_clockwise_from_north(startX, startY, destX, destY);                
                     angleDifference = angleTarget - robotAngle;
                     printAngleDetails(robotAngle, angleTarget, angleDifference);
                 }
-                
-                moveForward(1200);           
+                moveForward(1000);           
                 //update location and distance via vision system
                 robot_pos = getLocation();
-                startX = robot_pos->getLongitude();
-                startY = robot_pos->getLatitude();
+                
+                startX = robot_pos->getLatitudeX();
+                startY = robot_pos->getLongitudeY();
                 distance = calculateDistance(startX, startY, destX, destY);
                 printPositionDetails(startX, startY, destX, destY);
-
-                robotAngle = getAngle();
-                angleTarget = get_angle_clockwise_from_north(startX, startY, destX, destY);                
-                angleDifference = angleTarget - robotAngle;
-                printAngleDetails(robotAngle, angleTarget, angleDifference);
-                delay(200);
             }
 
         }
@@ -835,8 +821,8 @@ void setup(){
     SDPsetup();
     Serial.begin(BAUD_RATE);
     delay(2000);
-    gyro.init();
-    gyro.zeroCalibrate(200, 10); //sample 200 times to calibrate and it will take 200*10ms
+    //gyro.init();
+    //gyro.zeroCalibrate(200, 10); //sample 200 times to calibrate and it will take 200*10ms
     Serial.println("Connection established!");
     Serial.println("Entering wireless control mode...");
     safeToDeploySensors = true; //ready to deploy
@@ -879,11 +865,11 @@ void loop(){
                 GPSGridCoordinate *g = robot->getLocation();
                 Serial.print(counter);
                 Serial.print(": ");
-                if (g->getLatitude() == 1.2 && g->getLongitude() == 3.4) {
+                if (g->getLatitudeX() == 1.2 && g->getLongitudeY() == 3.4) {
                     Serial.println("Success");
                 }
                 else {
-                    Serial.println(g->getLongitude());
+                    Serial.println(g->getLongitudeY());
                 }
                 counter++;
             }
@@ -906,18 +892,29 @@ void loop(){
             Serial.println("Location done");
         }*/
         //robot->takeSamples();
-        Serial.println("Start");
-        robot->move(0, 0);
-        Serial.println("Finish");
+        //Serial.println("Start");
+        //robot->move(150, 150);
+        //Serial.println("Finish");
+        //delay(5000);
+
+        
+        //Serial.println("Start");
+        //robot->move(0, 350);
+        //Serial.println("Finish");
         //robot->runTestSequence();
+        int i = 0;
+        while(5)
+        {
+            Serial.println(i);
+            delay(1000);
+            i++;
+        }
         
-        
-        delay(10000);
         /*while (true) {
 
             GPSGridCoordinate *g = robot->getLocation();
-            Serial.println(g->getLatitude());
-            Serial.println(g->getLongitude());
+            Serial.println(g->getLatitudeX());
+            Serial.println(g->getLongitudeY());
             
             delay(1000);
         }*/

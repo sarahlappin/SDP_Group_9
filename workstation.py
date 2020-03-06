@@ -28,9 +28,11 @@ def getLocation():
 
 def getSurvey():
     return 1.2, 2.3, 4.5, 6.76, 1.1
+
 def getAngle():
     _, a = imageFilter.findCoordinates(redHistory, blueHistory, greenHistory, orangeHistory)
     return  a
+
 def saveSample(sample):
     q = 1 #do nothing
 

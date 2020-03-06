@@ -38,6 +38,8 @@ phMin = psMin = pvMin = phMax = psMax = pvMax = 0
 output = image
 wait_time = 33
 
+image = cv2.imread('1.png')
+
 while(1):
 
     # get current positions of all trackbars

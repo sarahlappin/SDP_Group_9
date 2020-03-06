@@ -31,7 +31,7 @@ def findCentre(img, previousPoint, dst):
         epsilon = 0.001 * cv2.arcLength(cnt, True)
         approx = cv2.approxPolyDP(cnt, epsilon, True)
         area = cv2.contourArea(cnt)
-        if (area > 65 and area < 200) or (len(contours) == 1 and area > 0):
+        if (area > 50 and area < 200) or (len(contours) == 1 and area > 0):
             #print(len(approx))
             cv2.drawContours(dst, [cnt], -1, (0, 0, 255), 1)
             #cv2.drawContours(dst, [approx], -1, (0, 0, 255), 1)
@@ -94,8 +94,8 @@ def findCoordinates(redHistory, blueHistory, greenHistory, orangeHistory):
         # img = cv2.inRange(image_src, (15,105,200), (25,165,230))
         #red = cv2.inRange(image_src, (0, 70, 180), (15, 255, 255))
         #white = cv2.inRange(image_src, (0, 0, 134), (179, 30, 255))
-        green = cv2.inRange(image_src, (75, 50, 115), (100, 255, 255))
-        blue = cv2.inRange(image_src, (105, 50, 140), (125, 255, 255))
+        green = cv2.inRange(image_src, (75, 50, 120), (100, 255, 255))
+        blue = cv2.inRange(image_src, (105, 50, 120), (125, 255, 255))
         orange = cv2.inRange(image_src, (0, 50, 120), (20, 255, 255))
 
 
@@ -120,13 +120,6 @@ def findCoordinates(redHistory, blueHistory, greenHistory, orangeHistory):
         angleRadians = math.atan2(blueCoordinates[1] - orangeCoordinates[1], blueCoordinates[0] - orangeCoordinates[0])
         angleDegrees = math.degrees(angleRadians)
 
-        #print("Blue x?: ", blueCoordinates[0])
-        #print("Blue y?: ", blueCoordinates[1])
-        #print("Orange x?: ", orangeCoordinates[0])
-        #print("Orange y?: ", orangeCoordinates[1])
-
-        #if angleDegrees > 180:
-        #    angleDegrees = 180 - angleDegrees
 
         #target = (350, 100)
         #cv2.circle(dst, target, 10, 0, thickness=1, lineType=8, shift=0)
@@ -174,7 +167,7 @@ def findCoordinates(redHistory, blueHistory, greenHistory, orangeHistory):
     cv2.destroyAllWindows()
 
 
-print(findCoordinates([0,0], [0,0], [0,0], [0,0]))
+#print(findCoordinates([0,0], [0,0], [0,0], [0,0]))
 
 #print("Small Dist: ", calculateDistance((227,321), (249, 330)))
 #print("Large Dist: ", calculateDistance((227,321), (235, 282)))
