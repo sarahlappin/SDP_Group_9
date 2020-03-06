@@ -120,6 +120,13 @@ def findCoordinates(redHistory, blueHistory, greenHistory, orangeHistory):
         angleRadians = math.atan2(blueCoordinates[1] - orangeCoordinates[1], blueCoordinates[0] - orangeCoordinates[0])
         angleDegrees = math.degrees(angleRadians)
 
+        #print("Blue x?: ", blueCoordinates[0])
+        #print("Blue y?: ", blueCoordinates[1])
+        #print("Orange x?: ", orangeCoordinates[0])
+        #print("Orange y?: ", orangeCoordinates[1])
+
+        #if angleDegrees > 180:
+        #    angleDegrees = 180 - angleDegrees
 
         #target = (350, 100)
         #cv2.circle(dst, target, 10, 0, thickness=1, lineType=8, shift=0)

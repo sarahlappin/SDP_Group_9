@@ -50,8 +50,8 @@
 
 #define NOT_KNOWN "unknown"
 
-#define MAX_DISTANCE_ERROR 1 // Margin of error for distance
-#define MAX_ANGLE_ERROR 10    // Margin of error for robot angle in Degrees
+#define MAX_DISTANCE_ERROR 10 // Margin of error for distance
+#define MAX_ANGLE_ERROR 20    // Margin of error for robot angle in Degrees
 
 // Starting angle in degrees
 #define START_ANGLE 90 
@@ -261,7 +261,7 @@ class Robot {
         String askForLocation(int attemptNumber) {
             if (attemptNumber > MAX_NUMBER_OF_REQUESTS) {
                 Serial.println("Max number of GPS requests recieved with no matching responses");
-                return NOT_KNOWN;
+                //return NOT_KNOWN;
             }
             
             int timeoutCounter = 0;
@@ -296,7 +296,7 @@ class Robot {
                         }
 
                         // coordinates
-                    } else if (positionInMessage < 3 && ((character >= '0' && character <= '9') || character == '.' || character == ',')) { //next set of coordinates begin
+                    } else if (positionInMessage < 3 && ((character >= '0' && character <= '9') || character == '.' || character == ',' || character == '-')) { //next set of coordinates begin
                         
                         if (positionInMessage == 1) {
                             coordinate1 = coordinate1 + character;
@@ -318,6 +318,7 @@ class Robot {
             
             if (timeoutCounter > MAX_MESSAGE_TIMEOUT){
               Serial.println("Getting location timed out");
+              return askForLocation(attemptNumber++);
             }
             else {
               if (coordinate1.equals(coordinate2)) { //if they're the same
@@ -334,7 +335,7 @@ class Robot {
         double askForAngle(int attemptNumber) {
             if (attemptNumber > MAX_NUMBER_OF_REQUESTS) {
                 Serial.println("Max number of angle requests recieved with no matching responses");
-                return 0;
+                //return 0;
             }
             
             int timeoutCounter = 0;
@@ -369,7 +370,7 @@ class Robot {
                         }
 
                         // coordinates
-                    } else if (positionInMessage < 3 && ((character >= '0' && character <= '9') || character == '.')) { //next set of coordinates begin
+                    } else if (positionInMessage < 3 && ((character >= '0' && character <= '9') || character == '.' || character == '-')) { //next set of coordinates begin
                         
                         if (positionInMessage == 1) {
                             coordinate1 = coordinate1 + character;
@@ -391,6 +392,7 @@ class Robot {
             
             if (timeoutCounter > MAX_MESSAGE_TIMEOUT){
               Serial.println("Getting angle timed out");
+              return askForAngle(attemptNumber++);
             }
             else {
               if (coordinate1.equals(coordinate2)) { //if they're the same
@@ -444,7 +446,7 @@ class Robot {
         }
 
         double get_angle_clockwise_from_north(double startX, double startY, double destX, double destY) 
-		{
+		    {
             return atan2(destY - startY, destX - startX)/M_PI * 180;
         }
 
@@ -508,33 +510,42 @@ class Robot {
             printAngleDetails(robotAngle, angleTarget, angleDifference);
             printPositionDetails(startX, startY, destX, destY);
 
-            
-            while (abs(angleDifference) > MAX_ANGLE_ERROR) 
-            {
-                if (angleDifference > 180 || ( angleDifference > -180 && angleDifference < 0)) turnLeft(500);
-                else turnRight(500);
-                Serial.println("New angle...");
-                robotAngle = getAngle();
-                startY = robot_pos->getLongitude();
-                startX = robot_pos->getLatitude();
-           
-                angleTarget = get_angle_clockwise_from_north(startX, startY, destX, destY);                
-                angleDifference = angleTarget - robotAngle;
-                printAngleDetails(robotAngle, angleTarget, angleDifference);
-            }
-
       			// Calculate the distance between the positions
             double distance = calculateDistance(startX, startY, destX, destY);
 
             while (distance > MAX_DISTANCE_ERROR) 
 			      {
-                moveForward(1000);           
+            
+                while (abs(angleDifference) > MAX_ANGLE_ERROR) 
+                {
+                    if (angleDifference > 180 || ( angleDifference > -180 && angleDifference < 0)) {
+                      turnLeft(500);
+                    } else {
+                      turnRight(500);
+                    }
+                    
+                    Serial.println("New angle...");
+                    robotAngle = getAngle();
+                    startY = robot_pos->getLongitude();
+                    startX = robot_pos->getLatitude();
+               
+                    angleTarget = get_angle_clockwise_from_north(startX, startY, destX, destY);                
+                    angleDifference = angleTarget - robotAngle;
+                    printAngleDetails(robotAngle, angleTarget, angleDifference);
+                }
+                
+                moveForward(1200);           
                 //update location and distance via vision system
                 robot_pos = getLocation();
                 startX = robot_pos->getLongitude();
                 startY = robot_pos->getLatitude();
                 distance = calculateDistance(startX, startY, destX, destY);
                 printPositionDetails(startX, startY, destX, destY);
+
+                robotAngle = getAngle();
+                angleTarget = get_angle_clockwise_from_north(startX, startY, destX, destY);                
+                angleDifference = angleTarget - robotAngle;
+                printAngleDetails(robotAngle, angleTarget, angleDifference);
                 delay(200);
             }
 
@@ -896,7 +907,7 @@ void loop(){
         }*/
         //robot->takeSamples();
         Serial.println("Start");
-        robot->move(150, 150);
+        robot->move(0, 0);
         Serial.println("Finish");
         //robot->runTestSequence();
         
