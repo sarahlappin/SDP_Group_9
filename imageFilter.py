@@ -31,7 +31,7 @@ def findCentre(img, previousPoint, dst):
         epsilon = 0.001 * cv2.arcLength(cnt, True)
         approx = cv2.approxPolyDP(cnt, epsilon, True)
         area = cv2.contourArea(cnt)
-        if (area > 50 and area < 200) or (len(contours) == 1 and area > 0):
+        if (area > 30 and area < 200) or (len(contours) == 1 and area > 0):
             #print(len(approx))
             cv2.drawContours(dst, [cnt], -1, (0, 0, 255), 1)
             #cv2.drawContours(dst, [approx], -1, (0, 0, 255), 1)
@@ -57,7 +57,7 @@ def findCentre(img, previousPoint, dst):
 def findCoordinates(redHistory, blueHistory, greenHistory, orangeHistory):
     cap = cv2.VideoCapture(-1)
     testNo = 0
-    nTests = 5
+    nTests = 10
     # = 1
     while (True):
         #name = str(i) + ".png"
@@ -94,9 +94,9 @@ def findCoordinates(redHistory, blueHistory, greenHistory, orangeHistory):
         # img = cv2.inRange(image_src, (15,105,200), (25,165,230))
         #red = cv2.inRange(image_src, (0, 70, 180), (15, 255, 255))
         #white = cv2.inRange(image_src, (0, 0, 134), (179, 30, 255))
-        green = cv2.inRange(image_src, (75, 50, 120), (100, 255, 255))
-        blue = cv2.inRange(image_src, (105, 50, 120), (125, 255, 255))
-        orange = cv2.inRange(image_src, (0, 50, 120), (20, 255, 255))
+        green = cv2.inRange(image_src, (75, 50, 105), (100, 255, 255))
+        blue = cv2.inRange(image_src, (105, 50, 105), (125, 255, 255))
+        orange = cv2.inRange(image_src, (0, 50, 105), (20, 255, 255))
 
 
         #redHistory = findCentre(red, redHistory, dst)

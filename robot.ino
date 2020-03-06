@@ -50,8 +50,8 @@
 
 #define NOT_KNOWN "unknown"
 
-#define MAX_DISTANCE_ERROR 1 // Margin of error for distance
-#define MAX_ANGLE_ERROR 5    // Margin of error for robot angle in Degrees
+#define MAX_DISTANCE_ERROR 35 // Margin of error for distance
+#define MAX_ANGLE_ERROR 15    // Margin of error for robot angle in Degrees
 
 // Starting angle in degrees
 #define START_ANGLE 90 
@@ -500,12 +500,7 @@ class Robot {
             double startX = robot_pos->getLatitudeX();
             double startY = robot_pos->getLongitudeY();
 
-            double angleTarget = get_angle_clockwise_from_north(startX, startY, destX, destY);                
-            double robotAngle = getAngle();
-            double angleDifference = angleTarget - robotAngle;
-
             Serial.println("Starting Movement:");
-            printAngleDetails(robotAngle, angleTarget, angleDifference);
             printPositionDetails(startX, startY, destX, destY);
 
       			// Calculate the distance between the positions
@@ -513,13 +508,18 @@ class Robot {
 
             while (distance > MAX_DISTANCE_ERROR) 
 			      {
+                double angleTarget = get_angle_clockwise_from_north(startX, startY, destX, destY);                
+                double robotAngle = getAngle();
+                double angleDifference = angleTarget - robotAngle;
+                printAngleDetails(robotAngle, angleTarget, angleDifference);
                 while (abs(angleDifference) > MAX_ANGLE_ERROR) 
                 {
                     if (angleDifference > 180 || ( angleDifference > -180 && angleDifference < 0)) turnLeft(500);
                     else turnRight(500);
                     robotAngle = getAngle();
-                    startY = robot_pos->getLongitudeY();
+                    robot_pos = getLocation();
                     startX = robot_pos->getLatitudeX();
+                    startY = robot_pos->getLongitudeY();
                
                     angleTarget = get_angle_clockwise_from_north(startX, startY, destX, destY);                
                     angleDifference = angleTarget - robotAngle;
@@ -892,23 +892,17 @@ void loop(){
             Serial.println("Location done");
         }*/
         //robot->takeSamples();
-        //Serial.println("Start");
-        //robot->move(150, 150);
-        //Serial.println("Finish");
+        Serial.println("Start");
+        robot->move(150, 150);
+        Serial.println("Finish");
         //delay(5000);
 
         
-        //Serial.println("Start");
-        //robot->move(0, 350);
-        //Serial.println("Finish");
+        Serial.println("Start");
+        robot->move(0, 350);
+        Serial.println("Finish");
         //robot->runTestSequence();
-        int i = 0;
-        while(5)
-        {
-            Serial.println(i);
-            delay(1000);
-            i++;
-        }
+        
         
         /*while (true) {
 
