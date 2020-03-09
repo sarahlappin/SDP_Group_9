@@ -40,7 +40,7 @@
 #define SENSOR_DEPLOYMENT_TIME 2000
 
 //number of attempts to send a sample before throwing error
-#define MAX_MESSAGE_TIMEOUT 500
+#define MAX_MESSAGE_TIMEOUT 10
 #define MESSAGE_TIME_DELAY 50
 
 #define MAX_NUMBER_OF_REQUESTS 5
@@ -512,25 +512,24 @@ class Robot {
                 double robotAngle = getAngle();
                 double angleDifference = angleTarget - robotAngle;
                 printAngleDetails(robotAngle, angleTarget, angleDifference);
+
                 while (abs(angleDifference) > MAX_ANGLE_ERROR) 
                 {
                     if (angleDifference > 180 || ( angleDifference > -180 && angleDifference < 0)) turnLeft(500);
                     else turnRight(500);
                     robotAngle = getAngle();
-                    robot_pos = getLocation();
-                    startX = robot_pos->getLatitudeX();
-                    startY = robot_pos->getLongitudeY();
                
                     angleTarget = get_angle_clockwise_from_north(startX, startY, destX, destY);                
                     angleDifference = angleTarget - robotAngle;
                     printAngleDetails(robotAngle, angleTarget, angleDifference);
+
+                    moveForward(10000 / abs(angleDifference) + 1);
                 }
-                moveForward(1000);           
                 //update location and distance via vision system
                 robot_pos = getLocation();
-                
                 startX = robot_pos->getLatitudeX();
                 startY = robot_pos->getLongitudeY();
+                
                 distance = calculateDistance(startX, startY, destX, destY);
                 printPositionDetails(startX, startY, destX, destY);
             }
@@ -893,7 +892,7 @@ void loop(){
         }*/
         //robot->takeSamples();
         Serial.println("Start");
-        robot->move(150, 150);
+        robot->move(0.1, 0.1);
         Serial.println("Finish");
         //delay(5000);
 

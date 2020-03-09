@@ -26,7 +26,8 @@ def calculateDistance(a, b):
 def findCentre(img, previousPoint, dst):
     centers = []
     # Find contours with matching filters
-    contours, hierarchy = cv2.findContours(img, 1, 2)
+    print(len(cv2.findContours(img, 1, 2)))
+    _, contours, _ = cv2.findContours(img, 1, 2)
     for cnt in contours:
         epsilon = 0.001 * cv2.arcLength(cnt, True)
         approx = cv2.approxPolyDP(cnt, epsilon, True)
