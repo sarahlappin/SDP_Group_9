@@ -19,6 +19,7 @@
 
 //mapping of the direction that is considered forward by the motors
 #define SENSOR_DEPLOYMENT_POLARITY 1
+
 #define UNUSED_POLARITY 0
 #define FRONT_LEFT_POLARITY 1
 #define FRONT_RIGHT_POLARITY 0
@@ -313,6 +314,7 @@ class Robot {
 
                         // coordinates
                     } else if (positionInMessage < 3 && ((character >= '0' && character <= '9') || character == '.' || character == ',' || character == '-')) { //next set of coordinates begin
+
                         
                         if (positionInMessage == 1) {
                             coordinate1 = coordinate1 + character;
@@ -576,8 +578,9 @@ class Robot {
                 setMoveForward(BACK_LEFT_MOTOR, MOTOR_POWER_LEVEL);
                 setMoveForward(BACK_RIGHT_MOTOR, MOTOR_POWER_LEVEL);
 
-                
+
                 for (int i = 0; i < time / 10; i++) {           
+
                     if (objectDetected()) {
                         ensureSafeToDeploy();
                         return;

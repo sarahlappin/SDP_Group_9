@@ -11,6 +11,7 @@ serial = serial.Serial("/dev/ttyACM1", BAUD, timeout = .1)
 getLocationTag = "<getLocation/>"
 getSurveyTag = "<getSurvey/>"
 getAngleTag = "<getAngle/>"
+
 openingSampleTag = "<sample>"
 closingSampleTag = "</sample>"
 verificationDeliminator = "|"
@@ -27,6 +28,7 @@ orangeHistory = [0,0]
 def getLocation():
     a, _ = imageFilter.findCoordinates(redHistory, blueHistory, greenHistory, orangeHistory)
     print(a)
+
     #serial.write(a.encode)
     return a
 
