@@ -4,7 +4,8 @@
 #include "NewPing.h"
 #include "ITG3200.h" // Gyroscope import
 
-#define SENSOR_PIN A0
+#define MOISTURE_SENSOR_PIN A0
+#define C0_SENSOR_PIN A1
 
 #define BAUD_RATE 115200
 
@@ -170,14 +171,29 @@ class Robot {
 
             float sensorValueTotal = 0;
             for (int i = 0; i < SAMPLING_NUMBER; i++) {
-            sensorValueTotal += analogRead(SENSOR_PIN);
-            delay(SAMPLING_DELAY);
+                sensorValueTotal += analogRead(MOISTURE_SENSOR_PIN);
+                delay(SAMPLING_DELAY);
             }
 
             Serial.println("Average moisture reading taken");
 
             return (double) sensorValueTotal / (double) SAMPLING_NUMBER;
         }
+
+        double getC0Reading() {
+            Serial.println("Taking C0 reading");
+
+            float sensorValueTotal = 0;
+            for (int i = 0; i < SAMPLING_NUMBER; i++) {
+                sensorValueTotal += analogRead(C0_SENSOR_PIN);
+                delay(SAMPLING_DELAY);
+            }
+
+            Serial.println("Average C0 reading taken");
+
+            return (double) sensorValueTotal / (double) SAMPLING_NUMBER;
+        }
+
         String getSurveyDetailsString(int attemptNumber) {
             if (attemptNumber > MAX_NUMBER_OF_REQUESTS) {
                 Serial.println("Max number of survey requests recieved with no matching responses");
@@ -703,7 +719,8 @@ class Robot {
             unsigned long time = millis(); //timestamp
             GPSGridCoordinate *sampleLocation = getLocation();
             double moistureValue = getMoistureReading();
-            sendSample(time, *sampleLocation, moistureValue);
+            double c0Reading = getC0Reading();
+            sendSample(time, *sampleLocation, moistureValue, c0Reading);
             //this will likely need rewritten so that samples can be taken concurrently
             //check if Arduino is actually more efficient doing this before making concurrent
             raiseArm();
