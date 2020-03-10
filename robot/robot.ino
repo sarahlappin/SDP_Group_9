@@ -4,23 +4,20 @@
 #include "NewPing.h"
 #include "ITG3200.h" // Gyroscope import
 
-#define MOISTURE_SENSOR_PIN A0
-#define C0_SENSOR_PIN A1
+#define SENSOR_PIN A0
 
-#define BAUD_RATE 115200
-
-#define clickerPin 6    // the number of the clicker digital input pin
+#define BAUD_RATE 9600
 
 //mapping of motors on motor board
-#define SENSOR_DEPLOYMENT_MOTOR 1
-//#define UNUSED_MOTOR 0
+#define SENSOR_DEPLOYMENT_MOTOR 0
+//#define UNUSED_MOTOR 1
 #define FRONT_LEFT_MOTOR 2
 #define FRONT_RIGHT_MOTOR 4
 #define BACK_LEFT_MOTOR 5
 #define BACK_RIGHT_MOTOR 3
 
 //mapping of the direction that is considered forward by the motors
-#define SENSOR_DEPLOYMENT_POLARITY 1
+#define SENSOR_DEPLOYMENT_POLARITY 0
 #define UNUSED_POLARITY 0
 #define FRONT_LEFT_POLARITY 1
 #define FRONT_RIGHT_POLARITY 0
@@ -32,19 +29,18 @@
 //wait 1ms between each sample
 #define SAMPLING_DELAY 1
 
-#define MOTOR_POWER_LEVEL 30
-#define DEPLOYMENT_MOTOR_UP_POWER 60
-#define DEPLOYMENT_MOTOR_DOWN_POWER 30
+#define MOTOR_POWER_LEVEL 40
+#define DEPLOYMENT_MOTOR_POWER 40
 
 //Turning power
 #define TURNING_FORWARDS_POWER 70 // for motors going forwards
 #define TURNING_BACKWARDS_POWER -12 // for motors going backwards
 
-//time motors should turn for to retract mechanism
-#define SENSOR_RETRACT_TIME 1500
+//time motors should turn for to deploy and retract mechanism
+#define SENSOR_DEPLOYMENT_TIME 700
 
 //number of attempts to send a sample before throwing error
-#define MAX_MESSAGE_TIMEOUT 10
+#define MAX_MESSAGE_TIMEOUT 500
 #define MESSAGE_TIME_DELAY 50
 
 #define MAX_NUMBER_OF_REQUESTS 5
@@ -54,8 +50,8 @@
 
 #define NOT_KNOWN "unknown"
 
-#define MAX_DISTANCE_ERROR 35 // Margin of error for distance
-#define MAX_ANGLE_ERROR 15    // Margin of error for robot angle in Degrees
+#define MAX_DISTANCE_ERROR 1 // Margin of error for distance
+#define MAX_ANGLE_ERROR 1    // Margin of error for robot angle in Degrees
 
 // Starting angle in degrees
 #define START_ANGLE 90 
@@ -67,7 +63,7 @@
 using namespace std;
 
 bool safeToDeploySensors;
-int motorPolarities[6] = {UNUSED_POLARITY, SENSOR_DEPLOYMENT_POLARITY, FRONT_LEFT_POLARITY, FRONT_RIGHT_POLARITY, BACK_LEFT_POLARITY, BACK_RIGHT_POLARITY};
+int motorPolarities[6] = {SENSOR_DEPLOYMENT_POLARITY, UNUSED_POLARITY, FRONT_LEFT_POLARITY, FRONT_RIGHT_POLARITY, BACK_LEFT_POLARITY, BACK_RIGHT_POLARITY};
 ITG3200 gyro;
 
 
@@ -90,11 +86,11 @@ class GPSGridCoordinate {
             longitude = coordinateString.substring(coordinateString.indexOf(',') + 1, coordinateString.length()).toFloat();
         }
 
-        double getLatitudeX() {
+        double getLatitude() {
             return latitude;
         }
 
-        double getLongitudeY() {
+        double getLongitude() {
             return longitude;
         }
 
@@ -107,8 +103,8 @@ class GPSGridCoordinate {
         }
         
         String toCSV() {
-            String lat = String(getLatitudeX());
-            String longi = String(getLongitudeY());
+            String lat = String(getLatitude());
+            String longi = String(getLongitude());
             lat += ",";
             lat += longi;
             return lat;
@@ -143,77 +139,20 @@ class Robot {
             safeToDeploySensors = true;
         }
 
-        bool isLowered() {
-
-          int reading = digitalRead(clickerPin);
-          Serial.println(reading);
-          // if the input just went from LOW and HIGH and we've waited long enough
-          // to ignore any noise on the circuit, toggle the output pin and remember
-          // the time
-          if (reading == HIGH) {
-              return true;   
-          }
-          return false;
-        }
-        
-        void lowerArm() {
-
-            if (safeToDeploySensors) {
-                setMoveForward(SENSOR_DEPLOYMENT_MOTOR, DEPLOYMENT_MOTOR_DOWN_POWER);
-                Serial.println("Sensor deployment lowering");
-
-                while (!isLowered()) {
-                  delay(10);
-                }
-                
-                motorStop(SENSOR_DEPLOYMENT_MOTOR);
-            }
-            else {
-                Serial.println("Could not deploy sensor as the robot is still moving.");
-            }
-        }
-
-        void raiseArm() {
-
-            if (safeToDeploySensors) {
-                setMoveBackward(SENSOR_DEPLOYMENT_MOTOR, DEPLOYMENT_MOTOR_UP_POWER);
-                Serial.println("Sensor deployment rising");
-                delay(SENSOR_RETRACT_TIME);
-                motorStop(SENSOR_DEPLOYMENT_MOTOR);
-            }
-            else {
-                Serial.println("Could not retract sensor as the robot is still moving.");
-            }
-        }
 
         double getMoistureReading() {
             Serial.println("Taking moisture reading");
 
             float sensorValueTotal = 0;
             for (int i = 0; i < SAMPLING_NUMBER; i++) {
-                sensorValueTotal += analogRead(MOISTURE_SENSOR_PIN);
-                delay(SAMPLING_DELAY);
+            sensorValueTotal += analogRead(SENSOR_PIN);
+            delay(SAMPLING_DELAY);
             }
 
             Serial.println("Average moisture reading taken");
 
             return (double) sensorValueTotal / (double) SAMPLING_NUMBER;
         }
-
-        double getC0Reading() {
-            Serial.println("Taking C0 reading");
-
-            float sensorValueTotal = 0;
-            for (int i = 0; i < SAMPLING_NUMBER; i++) {
-                sensorValueTotal += analogRead(C0_SENSOR_PIN);
-                delay(SAMPLING_DELAY);
-            }
-
-            Serial.println("Average C0 reading taken");
-
-            return (double) sensorValueTotal / (double) SAMPLING_NUMBER;
-        }
-
         String getSurveyDetailsString(int attemptNumber) {
             if (attemptNumber > MAX_NUMBER_OF_REQUESTS) {
                 Serial.println("Max number of survey requests recieved with no matching responses");
@@ -332,7 +271,7 @@ class Robot {
                         }
 
                         // coordinates
-                    } else if (positionInMessage < 3 && ((character >= '0' && character <= '9') || character == '.' || character == ',' || character == '-')) { //next set of coordinates begin
+                    } else if (positionInMessage < 3 && ((character >= '0' && character <= '9') || character == '.' || character == ',')) { //next set of coordinates begin
                         
                         if (positionInMessage == 1) {
                             coordinate1 = coordinate1 + character;
@@ -367,80 +306,7 @@ class Robot {
             }
         }
 
-        double askForAngle(int attemptNumber) {
-            if (attemptNumber > MAX_NUMBER_OF_REQUESTS) {
-                Serial.println("Max number of angle requests recieved with no matching responses");
-                return 0;
-            }
-            
-            int timeoutCounter = 0;
-            
-            Serial.println("<getAngle/>"); //sends to the user
-            delay(MESSAGE_TIME_DELAY); //give some time before retransmitting
-
-            String openingTag = "<angle>";
-            String closingTag = "</angle>";
-            int positionCounter = 0;
-
-            //finds the first tag
-            int positionInMessage = 0;
-            char character;
-            String coordinate1 = "";
-            String coordinate2 = "";
-            String fullMessage = "";
-            
-            while (positionInMessage <= 2 && timeoutCounter <= MAX_MESSAGE_TIMEOUT) {
-                if (Serial.available()) { //characters are being sent
-                    character = Serial.read(); //read one char
-                    fullMessage += character;
-
-                    // First tag
-                    if (positionInMessage == 0) {
-                        if(character == openingTag[positionCounter]) {
-                            positionCounter++;
-                            timeoutCounter = 0;
-                        }
-                        if (positionCounter >= openingTag.length()) {
-                            positionInMessage = 1;
-                        }
-
-                        // coordinates
-                    } else if (positionInMessage < 3 && ((character >= '0' && character <= '9') || character == '.'|| character == '-')) { //next set of coordinates begin
-                        
-                        if (positionInMessage == 1) {
-                            coordinate1 = coordinate1 + character;
-                        }
-                        else if (positionInMessage == 2) {
-                            coordinate2 = coordinate2 + character;
-                        }
-                        
-                    } else if (character == '|') {                      
-                        positionInMessage = 2;
-                    } else if (character == '<') {
-                        positionInMessage = 3;
-                    } 
-                }
-                
-                delay(MESSAGE_TIME_DELAY);
-                timeoutCounter++;
-            }
-            
-            if (timeoutCounter > MAX_MESSAGE_TIMEOUT){
-              Serial.println("Getting angle timed out");
-            }
-            else {
-              if (coordinate1.equals(coordinate2)) { //if they're the same
-                  Serial.println(coordinate1);
-                  return coordinate1.toDouble();
-              }
-              else {
-                  //try again
-                  return askForAngle(attemptNumber++);
-              }
-            }
-        }
-
-        void sendSample(unsigned long time, GPSGridCoordinate sampleLocation, double moistureValue, double c0Reading) { //should this be void? Maybe return an error?
+        void sendSample(unsigned long time, GPSGridCoordinate sampleLocation, double moistureValue) { //should this be void? Maybe return an error?
             String sampleText = String(time);
             sampleText += ",";
             sampleText += sampleLocation.toCSV();
@@ -475,108 +341,131 @@ class Robot {
             }
         }
 
-        double calculateDistance(double startX, double startY, double destX, double destY) {
-            return sqrt(pow(destX - startX, 2) + pow(destY - startY, 2));
-        }
-
-        double get_angle_clockwise_from_north(double startX, double startY, double destX, double destY) 
-		{
-            return atan2(destY - startY, destX - startX)/M_PI * 180;
-        }
+//        double calculateDistance(double startX, double startY, double destX, double destY) {
+//            sqrt(pow(destX - startX, 2) + pow(destY - startY, 2));
+//        }
+//
+//        double get_angle_clockwise_from_north(double startX, double startY, double destX, double destY) {
+//            // calculates angle created by vector from start point to center and vector from start point to destination point
+//            // Create vectors from the centre for both positions
+//            double LineFromStartToNorth [2] = {startX, (startY + 1)};
+//            double lineFromStartToDest [2] = {(destX - startX), (destY - startY)};
+//
+//            // Calculate the inner angle between them
+//            double pq = (LineFromStartToNorth[0] * lineFromStartToDest[0]) + (LineFromStartToNorth[1] * lineFromStartToDest[1]);
+//            double magPQ = sqrt(pow(LineFromStartToNorth[0], 2) + pow(LineFromStartToNorth[1], 2)) * sqrt(pow(lineFromStartToDest[0], 2) + pow(lineFromStartToDest[1], 2));   
+//            double pqDivMag = pq/magPQ;
+//
+//            if (magPQ == 0) return -1; // Error for divide by 0
+//
+//            double angle = acos(pq/magPQ);
+//
+//            // If destination is right of robot then the inner angle is the bearing from north
+//            // else return 360 - that angle for the clockwise bearing from north 
+//            if (LineFromStartToNorth[0] <= lineFromStartToDest[0]) {
+//                return (angle/M_PI * 180);
+//            } else {
+//                return 360 - (angle/M_PI * 180);
+//            }
+//        }
 
     public:
 
         Robot() {
             current_angle = START_ANGLE;
         }
-  
-          GPSGridCoordinate* getLocation() { //method would be replaced with a GPS module in final product
-              String coordinateString = askForLocation(0);
-              if (coordinateString.equals(NOT_KNOWN)) {
-                  return new GPSGridCoordinate(0, 0); //no idea where you are
-              }
-              else {
-                  return new GPSGridCoordinate(coordinateString);
-              }
-          }
-          double getAngle() { //method would be replaced with a GPS module in final product
-              return askForAngle(0);
-          }
 
-          void printPositionDetails(double startX, double startY, double destX, double destY)
-          {
-              Serial.print("Current Position: ");
-              Serial.print(startX);
-              Serial.print(", ");
-              Serial.print(startY);
-          
-              Serial.print("\tTarget Position: ");
-              Serial.print(destX);
-              Serial.print(", ");
-              Serial.println(destY);
-          }
+        GPSGridCoordinate* getLocation() { //method would be replaced with a GPS module in final product
+            String coordinateString = askForLocation(0);
+            if (coordinateString.equals(NOT_KNOWN)) {
+                return new GPSGridCoordinate(0, 0); //no idea where you are
+            }
+            else {
+                return new GPSGridCoordinate(coordinateString);
+            }
+        }
 
-          void printAngleDetails(double angleRobot, double angleTarget, double angleDiff)
-          {
-              Serial.print("Current Angle: ");
-              Serial.print(angleRobot);
-              
-              Serial.print("\tTarget Angle: ");
-              Serial.print(angleTarget);
+//        void move(double destX, double destY)
+//        {    
+//            // Use vision system to get robot coordinates
+//            Serial.println("get gpd");
+//            GPSGridCoordinate* robot_pos = getLocation();
+//            Serial.println("get gps");
+//
+//            double startX = robot_pos->getLongitude();
+//            double startY = robot_pos->getLatitude();
+//            
+//            // Calculate the distance between the positions
+//            double distance = calculateDistance(startX, startY, destX, destY);
+//
+//            while (distance > MAX_DISTANCE_ERROR) {
+//        
+//                // Get the angle to turn (if more than 180 then turn left 180 - angle)
+//                double angleStartToDest = get_angle_clockwise_from_north(startX, startY, destX, destY);
+//                double angle_to_turn = abs(current_angle - angleStartToDest) >= 180 ? abs(current_angle - angleStartToDest - 180) : abs(current_angle - angleStartToDest);
+//                bool turn_left = abs(current_angle - angleStartToDest) >= 180 ? true : false;
+//
+//                if (turn_left) {
+//                    while ( abs(current_angle - angleStartToDest) > MAX_ANGLE_ERROR) {
+//                        turnLeft(100);
+//                    }
+//                } else {
+//                    while ( abs(current_angle - angleStartToDest) > MAX_ANGLE_ERROR) {
+//                        turnRight(100);
+//                    }
+//                }
+//
+//                // move forward, probably needs to be more sophisticated
+//                // should be able to handle object detection to stop
+//                moveForward(1000); 
+//
+//                //Update angle using gyroscope
+//                float x, y, z;
+//                gyro.getAngularVelocity(&x, &y, &z);
+//                current_angle += double(z); // Current angle from north is previous plus the change
+//
+//                //update location and distance via vision system
+//                robot_pos = getLocation();
+//                startX = robot_pos->getLongitude();
+//                startY = robot_pos->getLatitude();
+//                distance = calculateDistance(startX, startY, destX, destY);
+//
+//            }
+//
+//        }
 
-              Serial.print("\tAngle Difference: ");
-              Serial.println(angleDiff);
-          }
-		
-        void move(double destX, double destY)
-        {    
-            // Use vision system to get robot coordinates
-            GPSGridCoordinate* robot_pos = getLocation();
-
-            double startX = robot_pos->getLatitudeX();
-            double startY = robot_pos->getLongitudeY();
-
-            Serial.println("Starting Movement:");
-            printPositionDetails(startX, startY, destX, destY);
-
-      			// Calculate the distance between the positions
-            double distance = calculateDistance(startX, startY, destX, destY);
-
-            while (distance > MAX_DISTANCE_ERROR) 
-			      {
-                double angleTarget = get_angle_clockwise_from_north(startX, startY, destX, destY);                
-                double robotAngle = getAngle();
-                double angleDifference = angleTarget - robotAngle;
-                printAngleDetails(robotAngle, angleTarget, angleDifference);
-
-                while (abs(angleDifference) > MAX_ANGLE_ERROR) 
-                {
-                    if (angleDifference > 180 || ( angleDifference > -180 && angleDifference < 0)) turnLeft(500);
-                    else turnRight(500);
-                    robotAngle = getAngle();
-               
-                    angleTarget = get_angle_clockwise_from_north(startX, startY, destX, destY);                
-                    angleDifference = angleTarget - robotAngle;
-                    printAngleDetails(robotAngle, angleTarget, angleDifference);
-
-                    moveForward(10000 / abs(angleDifference) + 1);
-                }
-                //update location and distance via vision system
-                robot_pos = getLocation();
-                startX = robot_pos->getLatitudeX();
-                startY = robot_pos->getLongitudeY();
-                
-                distance = calculateDistance(startX, startY, destX, destY);
-                printPositionDetails(startX, startY, destX, destY);
+      void lowerArm() {
+            Serial.println("Sensor deployment lowering");
+            ensureSafeToDeploy();
+            if (safeToDeploySensors) {
+                setMoveForward(SENSOR_DEPLOYMENT_MOTOR, 100);
+                delay(SENSOR_DEPLOYMENT_TIME-50);
+                motorStop(SENSOR_DEPLOYMENT_MOTOR);
+            }
+            else {
+                Serial.println("Could not deploy sensor as the robot is still moving.");
             }
 
+        }
+
+        void raiseArm() {
+            Serial.println("Sensor deployment mechanism rising");
+            ensureSafeToDeploy();
+            if (safeToDeploySensors) {
+                setMoveBackward(SENSOR_DEPLOYMENT_MOTOR, 100);
+                delay(SENSOR_DEPLOYMENT_TIME + 50);
+                motorStop(SENSOR_DEPLOYMENT_MOTOR);
+            }
+            else {
+                Serial.println("Could not deploy sensor as the robot is still moving.");
+            }
         }
 
         bool objectDetected() {
 
             unsigned int distance = sonar.ping_cm();
-            //Serial.print(distance);
-            //Serial.print("cm ");
+            Serial.print(distance);
+            Serial.print("cm ");
 
             if (distance < 15 && distance > 0) {
                 return true;
@@ -597,7 +486,9 @@ class Robot {
                 setMoveForward(BACK_RIGHT_MOTOR, MOTOR_POWER_LEVEL);
 
                 
-                for (int i = 0; i < time / 10; i++) {           
+                for (int i = 0; i < time / 10; i++) {
+
+                                     
                     if (objectDetected()) {
                         ensureSafeToDeploy();
                         return;
@@ -640,26 +531,22 @@ class Robot {
                 setMoveForward(FRONT_LEFT_MOTOR, MOTOR_POWER_LEVEL);
                 delay(1000);
                 motorAllStop();
-                delay(1000);
                 setMoveForward(FRONT_RIGHT_MOTOR, MOTOR_POWER_LEVEL);
                 delay(1000);
                 motorAllStop();
-                delay(1000);
                 setMoveForward(BACK_LEFT_MOTOR, MOTOR_POWER_LEVEL);
                 delay(1000);
                 motorAllStop();
-                delay(1000);
                 setMoveForward(BACK_RIGHT_MOTOR, MOTOR_POWER_LEVEL);
                 delay(1000);
                 motorAllStop();
-                delay(1000);
+                
                 setMoveForward(FRONT_LEFT_MOTOR, MOTOR_POWER_LEVEL);
                 setMoveForward(FRONT_RIGHT_MOTOR, MOTOR_POWER_LEVEL);
                 setMoveForward(BACK_LEFT_MOTOR, MOTOR_POWER_LEVEL);
                 setMoveForward(BACK_RIGHT_MOTOR, MOTOR_POWER_LEVEL);
                 delay(1000);
                 motorAllStop();
-                delay(5000);
             }
             else {
                 Serial.println("Could not move backward as sensor arm is still deployed");
@@ -682,16 +569,6 @@ class Robot {
             }
 
             ensureSafeToDeploy();
-        }
-
-        void testArmMotor() {
-
-            Serial.println("Testing arm motors");
-            lowerArm();
-            delay(2000);
-            raiseArm();
-            delay(2000);
-            Serial.println("Stopping testing arm motors");
         }
         
         void turnRight(int time) {
@@ -739,8 +616,7 @@ class Robot {
             unsigned long time = millis(); //timestamp
             GPSGridCoordinate *sampleLocation = getLocation();
             double moistureValue = getMoistureReading();
-            double c0Reading = getC0Reading();
-            sendSample(time, *sampleLocation, moistureValue, c0Reading);
+            sendSample(time, *sampleLocation, moistureValue);
             //this will likely need rewritten so that samples can be taken concurrently
             //check if Arduino is actually more efficient doing this before making concurrent
             raiseArm();
@@ -819,34 +695,39 @@ class Robot {
 
         void runTestSequence() {
             Serial.println("Running test sequence...");
+            int timeMove = 2500;
+            int moveDelay = 2500;
             
             // Movement tests
-            moveForward(2500);
+            moveForward(timeMove);
+
+            
+            unsigned int distance = sonar.ping_cm();
 
             //check for objects
               if (objectDetected()) {
-              
-                moveBackward(2000);
+
+                
+                moveBackward(1000);
                 delay(1000);
                 turnLeft(3000);
                 delay(1000);
-                //turnRight(3000);
-                //delay(1000);
+                //turnRight(1000);
+                //delay(200);
                 
-                Serial.println("detected object!");
+                Serial.println("detected! : ");
               }
 
             
             // Lower sensor arm
             lowerArm();
-            delay(2000);
+            delay(1000);
             
             //Serial.println(getMoistureReading());
 
             // Raise sensor arm
             raiseArm();
             motorAllStop();
-            delay(5000);
         } 
 };
 
@@ -857,8 +738,8 @@ void setup(){
     SDPsetup();
     Serial.begin(BAUD_RATE);
     delay(2000);
-    //gyro.init();
-    //gyro.zeroCalibrate(200, 10); //sample 200 times to calibrate and it will take 200*10ms
+    gyro.init();
+    gyro.zeroCalibrate(200, 10); //sample 200 times to calibrate and it will take 200*10ms
     Serial.println("Connection established!");
     Serial.println("Entering wireless control mode...");
     safeToDeploySensors = true; //ready to deploy
@@ -870,20 +751,74 @@ void setup(){
 
 void loop(){
 
+        /*
+        if (Serial.find("<manual/>")) {
+            while(!Serial.find("<endManual/>")) {
+                  if (!Serial.find("<stop/>")) {
+                    if (Serial.find("<forward/>")) {
+                        robot->moveForward(MOVEMENT_TIME);
+                    }
+                    else if (Serial.find("<backward/>")) {
+                        robot->moveBackward(MOVEMENT_TIME);
+                    }
+                    else if (Serial.find("<right/>")) {
+                        robot->turnRight(MOVEMENT_TIME);
+                    }
+                    else if (Serial.find("<left/>")) {
+                        robot->turnLeft(MOVEMENT_TIME);
+                    }
+                    else if (Serial.find("<takeSample/>")) {
+                        robot->takeSamples();
+                    }
+                }
+            }
+            
+        } 
+        
+        else if (Serial.find("<testServer/>")) {
+
+            while (1) {
+
+                GPSGridCoordinate *g = robot->getLocation();
+                Serial.print(counter);
+                Serial.print(": ");
+                if (g->getLatitude() == 1.2 && g->getLongitude() == 3.4) {
+                    Serial.println("Success");
+                }
+                else {
+                    Serial.println(g->getLongitude());
+                }
+                counter++;
+            }
+        }
 
         
-        //robot->takeSamples();
-        Serial.println("Start");
-        robot->move(0.1, 0.1);
-        Serial.println("Finish");
-        //delay(5000);
+        else if (Serial.find("<test/>")) {
+            robot->runTestSequence();
+        }
+        
+        else if (Serial.find("<survey/>")) {
+            robot->initiateSurvey();
+        }
+        
+        else {
+            Serial.println("Awaiting instructions.");
+            robot->moveForward(1000);
+            Serial.println("Location:");
+            robot->getLocation();
+            Serial.println("Location done");
+        }*/
+        
+        robot->runTestSequence();
+//        robot->testTurning();/
 
         
-        Serial.println("Start");
-        robot->move(0, 350);
-        Serial.println("Finish");
+        /*while (true) {
 
-
-        //robot->runTestSequence();
-        //robot->testArmMotor();
+            GPSGridCoordinate *g = robot->getLocation();
+            Serial.println(g->getLatitude());
+            Serial.println(g->getLongitude());
+            
+            delay(1000);
+        }*/
 }
