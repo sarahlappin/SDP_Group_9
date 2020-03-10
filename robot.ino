@@ -9,6 +9,8 @@
 
 #define BAUD_RATE 115200
 
+#define clickerPin 6    // the number of the clicker digital input pin
+
 //mapping of motors on motor board
 #define SENSOR_DEPLOYMENT_MOTOR 1
 //#define UNUSED_MOTOR 0
@@ -19,7 +21,6 @@
 
 //mapping of the direction that is considered forward by the motors
 #define SENSOR_DEPLOYMENT_POLARITY 1
-
 #define UNUSED_POLARITY 0
 #define FRONT_LEFT_POLARITY 1
 #define FRONT_RIGHT_POLARITY 0
@@ -32,14 +33,15 @@
 #define SAMPLING_DELAY 1
 
 #define MOTOR_POWER_LEVEL 30
-#define DEPLOYMENT_MOTOR_POWER 60
+#define DEPLOYMENT_MOTOR_UP_POWER 60
+#define DEPLOYMENT_MOTOR_DOWN_POWER 30
 
 //Turning power
 #define TURNING_FORWARDS_POWER 70 // for motors going forwards
 #define TURNING_BACKWARDS_POWER -12 // for motors going backwards
 
-//time motors should turn for to deploy and retract mechanism
-#define SENSOR_DEPLOYMENT_TIME 2000
+//time motors should turn for to retract mechanism
+#define SENSOR_RETRACT_TIME 1500
 
 //number of attempts to send a sample before throwing error
 #define MAX_MESSAGE_TIMEOUT 10
@@ -141,12 +143,29 @@ class Robot {
             safeToDeploySensors = true;
         }
 
+        bool isLowered() {
+
+          int reading = digitalRead(clickerPin);
+          Serial.println(reading);
+          // if the input just went from LOW and HIGH and we've waited long enough
+          // to ignore any noise on the circuit, toggle the output pin and remember
+          // the time
+          if (reading == HIGH) {
+              return true;   
+          }
+          return false;
+        }
+        
         void lowerArm() {
 
             if (safeToDeploySensors) {
-                setMoveForward(SENSOR_DEPLOYMENT_MOTOR, DEPLOYMENT_MOTOR_POWER);
+                setMoveForward(SENSOR_DEPLOYMENT_MOTOR, DEPLOYMENT_MOTOR_DOWN_POWER);
                 Serial.println("Sensor deployment lowering");
-                delay(SENSOR_DEPLOYMENT_TIME);
+
+                while (!isLowered()) {
+                  delay(10);
+                }
+                
                 motorStop(SENSOR_DEPLOYMENT_MOTOR);
             }
             else {
@@ -157,9 +176,9 @@ class Robot {
         void raiseArm() {
 
             if (safeToDeploySensors) {
-                setMoveBackward(SENSOR_DEPLOYMENT_MOTOR, DEPLOYMENT_MOTOR_POWER);
+                setMoveBackward(SENSOR_DEPLOYMENT_MOTOR, DEPLOYMENT_MOTOR_UP_POWER);
                 Serial.println("Sensor deployment rising");
-                delay(SENSOR_DEPLOYMENT_TIME);
+                delay(SENSOR_RETRACT_TIME);
                 motorStop(SENSOR_DEPLOYMENT_MOTOR);
             }
             else {
@@ -314,7 +333,6 @@ class Robot {
 
                         // coordinates
                     } else if (positionInMessage < 3 && ((character >= '0' && character <= '9') || character == '.' || character == ',' || character == '-')) { //next set of coordinates begin
-
                         
                         if (positionInMessage == 1) {
                             coordinate1 = coordinate1 + character;
@@ -422,7 +440,7 @@ class Robot {
             }
         }
 
-        void sendSample(unsigned long time, GPSGridCoordinate sampleLocation, double moistureValue) { //should this be void? Maybe return an error?
+        void sendSample(unsigned long time, GPSGridCoordinate sampleLocation, double moistureValue, double c0Reading) { //should this be void? Maybe return an error?
             String sampleText = String(time);
             sampleText += ",";
             sampleText += sampleLocation.toCSV();
@@ -578,9 +596,8 @@ class Robot {
                 setMoveForward(BACK_LEFT_MOTOR, MOTOR_POWER_LEVEL);
                 setMoveForward(BACK_RIGHT_MOTOR, MOTOR_POWER_LEVEL);
 
-
+                
                 for (int i = 0; i < time / 10; i++) {           
-
                     if (objectDetected()) {
                         ensureSafeToDeploy();
                         return;
@@ -853,63 +870,8 @@ void setup(){
 
 void loop(){
 
-        /*
-        if (Serial.find("<manual/>")) {
-            while(!Serial.find("<endManual/>")) {
-                  if (!Serial.find("<stop/>")) {
-                    if (Serial.find("<forward/>")) {
-                        robot->moveForward(MOVEMENT_TIME);
-                    }
-                    else if (Serial.find("<backward/>")) {
-                        robot->moveBackward(MOVEMENT_TIME);
-                    }
-                    else if (Serial.find("<right/>")) {
-                        robot->turnRight(MOVEMENT_TIME);
-                    }
-                    else if (Serial.find("<left/>")) {
-                        robot->turnLeft(MOVEMENT_TIME);
-                    }
-                    else if (Serial.find("<takeSample/>")) {
-                        robot->takeSamples();
-                    }
-                }
-            }
-            
-        } 
-        
-        else if (Serial.find("<testServer/>")) {
-
-            while (1) {
-
-                GPSGridCoordinate *g = robot->getLocation();
-                Serial.print(counter);
-                Serial.print(": ");
-                if (g->getLatitudeX() == 1.2 && g->getLongitudeY() == 3.4) {
-                    Serial.println("Success");
-                }
-                else {
-                    Serial.println(g->getLongitudeY());
-                }
-                counter++;
-            }
-        }
 
         
-        else if (Serial.find("<test/>")) {
-            robot->runTestSequence();
-        }
-        
-        else if (Serial.find("<survey/>")) {
-            robot->initiateSurvey();
-        }
-        
-        else {
-            Serial.println("Awaiting instructions.");
-            robot->moveForward(1000);
-            Serial.println("Location:");
-            robot->getLocation();
-            Serial.println("Location done");
-        }*/
         //robot->takeSamples();
         Serial.println("Start");
         robot->move(0.1, 0.1);
@@ -920,15 +882,8 @@ void loop(){
         Serial.println("Start");
         robot->move(0, 350);
         Serial.println("Finish");
-        //robot->runTestSequence();
-        
-        
-        /*while (true) {
 
-            GPSGridCoordinate *g = robot->getLocation();
-            Serial.println(g->getLatitudeX());
-            Serial.println(g->getLongitudeY());
-            
-            delay(1000);
-        }*/
+
+        //robot->runTestSequence();
+        //robot->testArmMotor();
 }
