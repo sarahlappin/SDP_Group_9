@@ -3,6 +3,7 @@ from time import sleep
 import sys
 import imageFilter
 import fileTransfer
+import datetime
 
 BAUD = 9600
 
@@ -10,14 +11,19 @@ serial = serial.Serial("/dev/ttyACM1", BAUD, timeout = .1)
 
 getLocationTag = "<getLocation/>"
 getSurveyTag = "<getSurvey/>"
+surveyOpeningTag = "<survey>"
+surveyClosingTag = "</survey>"
 getAngleTag = "<getAngle/>"
+
+completeSurveyOpening = "<surveyComplete>"
+completeSurveyClosing = "</surveyComplete>"
 
 openingSampleTag = "<sample>"
 closingSampleTag = "</sample>"
 verificationDeliminator = "|"
 sampleRecieved = "<sampleRecieved/>"
 
-sampleCSVHeading = "LandID,Latitude,Longitude,TimeStamp,C0(ppmv),Moisture(%)\n"
+sampleCSVHeading = "LandID,Latitude,Longitude,TimeStamp,Moisture(%),C0(ppmv),pH\n"
 tempFileAddress = "tempSampleData.csv"
 
 redHistory = [0,0]
@@ -81,15 +87,33 @@ def receiveSample(line):
                 print("** Could not manage to transmit sample to MongoDB, trying again...")
         print("** Sample transmitted")
 
+def sendNextSurvey():
+    surveyID, startLatitude, startLongitude, endLatitude, endLongitude, samplingFrequency = fileTransfer.getNextSurvey()
+    if surveyID != False: #survey was found else do nothing
+        surveyString = str(surveyID) + str(startLatitude) + str(startLongitude) + str(endLatitude) + str(endLongitude) + str(samplingFrequency)
+        outputSurveyString = surveyOpeningTag + surveyString + "|" + surveyString + surveyClosingTag
+        print("** Sending survey details ==> " + outputSurveyString)
+        serial.write(outputSurveyString)
+    else:
+        print("Survey request was recieved but no surveys were ready to be completed")
+
+def markSurveyAsComplete(line):
+    id = line[(line.index(completeSurveyOpening) + len(completeSurveyOpening)) : line.index(completeSurveyClosing)]
+    fileTransfer.markSurveyComplete(id, datetime.datetime.now().timestamp())
+
 def interpretLine(line):
     if getLocationTag in line:
         sendLocation()
-    elif getAngleTag in line:
+    if getAngleTag in line:
         sendAngle()
     if getSurveyTag in line:
         sendSurveyDetails()
     if openingSampleTag in line and closingSampleTag in line and verificationDeliminator in line:
         receiveSample(line)
+    if getSurveyTag in line:
+        sendNextSurvey()
+    if completeSurveyOpening in line and completeSurveyClosing in line:
+        markSurveyAsComplete(line)
 
 manualMode = False
 surveyMode = False

@@ -440,12 +440,16 @@ class Robot {
             }
         }
 
-        void sendSample(unsigned long time, GPSGridCoordinate sampleLocation, double moistureValue, double c0Reading) { //should this be void? Maybe return an error?
+        void sendSample(unsigned long time, GPSGridCoordinate sampleLocation, double moistureValue, double c0Reading, double pHReading) { //should this be void? Maybe return an error?
             String sampleText = String(time);
             sampleText += ",";
             sampleText += sampleLocation.toCSV();
             sampleText += ",";
             sampleText += String(moistureValue);
+            sampleText += ",";
+            sampleText += String(c0Reading);
+            sampleText += ",";
+            sampleText += String(pHReading);
             
             //if you are reading this comment then don't judge - Arduino is awkward when it comes to strings
             //please do better next time
@@ -482,6 +486,12 @@ class Robot {
         double get_angle_clockwise_from_north(double startX, double startY, double destX, double destY) 
 		{
             return atan2(destY - startY, destX - startX)/M_PI * 180;
+        }
+
+        void returnSuccessfulSurvey(String surveyID) { //tells the workstation that the survey has finished
+            Serial.print("<surveyComplete>");
+            Serial.print(surveyID);
+            Serial.println("</surveyComplete>")
         }
 
     public:
@@ -740,7 +750,8 @@ class Robot {
             GPSGridCoordinate *sampleLocation = getLocation();
             double moistureValue = getMoistureReading();
             double c0Reading = getC0Reading();
-            sendSample(time, *sampleLocation, moistureValue, c0Reading);
+            double pHReading = round(random(0, 14), 2); //generate a random pH value
+            sendSample(time, *sampleLocation, moistureValue, c0Reading, pHReading);
             //this will likely need rewritten so that samples can be taken concurrently
             //check if Arduino is actually more efficient doing this before making concurrent
             raiseArm();
@@ -748,7 +759,7 @@ class Robot {
             delete(sampleLocation);
         }
 
-        void runSurvey(GPSGridCoordinate startPosition, GPSGridCoordinate endPosition, double samplingFrequency) {
+        bool runSurvey(GPSGridCoordinate startPosition, GPSGridCoordinate endPosition, double samplingFrequency) {
             Serial.println("Starting survey...");
             Serial.print("Start position: ");
             Serial.println(startPosition.toCSV());
@@ -762,33 +773,26 @@ class Robot {
             //Need to implement this function
             //
             //
-            //
-            //
-            //
-            //
-            Serial.println("Function still to be implemented");
-            runTestSequence();
-            //
-            //
-            //
-            //
-            //
-            //
-            //
-            //
+            move(startPosition.getLatitudeX, startPosition.getLongitudeY);
+            takeSamples();
+
+            //once end location reached
+            return EXIT_SUCCESS;
         }
 
         void initiateSurvey() {
             String surveyRequest = getSurveyDetailsString(0); //get survey details (starting at attempt 0)
             if (!surveyRequest.equals(NOT_KNOWN)) {
                 //parse the survey string
-                int startLatPos  = 0;
+                int surveyIDPos  = 0;
+                int startLatPos  = surveyRequest.indexOf(',', surveyIDPos);
                 int startLongPos = surveyRequest.indexOf(',');
                 int endLatPos    = surveyRequest.indexOf(',', startLongPos);
                 int endLongPos   = surveyRequest.indexOf(',', endLatPos);
                 int samplingFrequencyPos = surveyRequest.indexOf(',', endLongPos);
 
                 if (endLatPos > 0 && startLongPos > 0 && endLongPos > 0 && samplingFrequencyPos > 0) { //ensure that there are enough values
+                    String surveyID  = surveyRequest.substring(surveyIDPos, startLatPos);
                     String startLat  = surveyRequest.substring(startLatPos, startLongPos);
                     String startLong = surveyRequest.substring(startLongPos, endLatPos);
                     String endLat    = surveyRequest.substring(endLatPos, endLongPos);
@@ -804,7 +808,10 @@ class Robot {
 
                     GPSGridCoordinate* startPosition = new GPSGridCoordinate(startLat.toFloat(), startLong.toFloat());
                     GPSGridCoordinate* endPosition   = new GPSGridCoordinate(endLat.toFloat(), endLong.toFloat());
-                    runSurvey(*startPosition, *endPosition, samplingFrequency.toFloat()); //begin surveying
+                    bool surveyCompleted = runSurvey(*startPosition, *endPosition, samplingFrequency.toFloat()); //begin surveying
+                    if (surveyCompleted) {
+                        returnSuccessfulSurvey(surveyID);
+                    }
                     delete(startPosition);
                     delete(endPosition);
                 }
@@ -864,26 +871,13 @@ void setup(){
     safeToDeploySensors = true; //ready to deploy
     robot = new Robot();
     counter = 0;
+
+    randomSeed(analogRead(0)); //for spoofing pH readings
 }
 
 
 
 void loop(){
-
-
-        
-        //robot->takeSamples();
-        Serial.println("Start");
-        robot->move(0.1, 0.1);
-        Serial.println("Finish");
-        //delay(5000);
-
-        
-        Serial.println("Start");
-        robot->move(0, 350);
-        Serial.println("Finish");
-
-
-        //robot->runTestSequence();
-        //robot->testArmMotor();
+    //start a survey - will ask workstation for where to do this
+    robot->initiateSurvey();
 }
