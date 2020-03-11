@@ -37,8 +37,18 @@ def getAverageValues(results, type):
     for reading in results:
         values.append(reading[type])
 
-    average = sum(values)/len(values)
-    return average
+    if len(values) != 0:
+        average = sum(values)/len(values)
+        return average
+    else:
+        return 0
+
+
+# def defineQuadrants(numQuadrants, ne_lat, ne_lon, ):
+#     if numQuadrants == 6
+
+# def getSoilTrend(result):
+    
 
 
    
