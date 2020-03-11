@@ -80,7 +80,7 @@ while not closeWindow:
             for j in range(x, x + w):
                 if not arrayStates[arrayCounter][i][j]:
                     maskImage[i][j] = (0, 255, 0)
-                    arrayStates[arrayCounter][i][j] = True
+                    arrayStates[arrayCounter][i][j] = 1
 
         alpha = 0.15
         dst = cv2.addWeighted(maskImage, alpha, dst, 1 - alpha, 0, dst)
@@ -96,4 +96,26 @@ while not closeWindow:
         btn4 = tkinter.Button(bottom_frame, text="Quit", command=quitButton).pack(side="left")
         window.mainloop()
 
-cv2.imwrite("Image.png", dst)
+foundL = False
+leftMostPoint = 0, 0
+for i in range(0, 480):
+    for j in range(0,640):
+        if arrayStates[arrayCounter][i][j] == 1 and not foundL:
+            leftMostPoint = i, j
+            foundL = True
+
+leftX, leftY = leftMostPoint
+stepX = 50
+stepY = 50
+imageGrid = dst.copy()
+for i in range(leftX, 480, stepX):
+    for j in range(0, 640):
+        if arrayStates[arrayCounter][i][j] == 1:
+            imageGrid[i][j] = (255,255,255)
+for i in range(0, 480):
+    for j in range(leftY, 640, stepY):
+        if arrayStates[arrayCounter][i][j] == 1:
+            imageGrid[i][j] = (255, 255, 255)
+
+cv2.imwrite("imageGrid.png", imageGrid)
+
