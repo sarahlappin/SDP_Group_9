@@ -491,7 +491,7 @@ class Robot {
         void returnSuccessfulSurvey(String surveyID) { //tells the workstation that the survey has finished
             Serial.print("<surveyComplete>");
             Serial.print(surveyID);
-            Serial.println("</surveyComplete>")
+            Serial.println("</surveyComplete>");
         }
 
     public:
@@ -750,7 +750,7 @@ class Robot {
             GPSGridCoordinate *sampleLocation = getLocation();
             double moistureValue = getMoistureReading();
             double c0Reading = getC0Reading();
-            double pHReading = round(random(0, 14), 2); //generate a random pH value
+            double pHReading = random(0, 14); //generate a random pH value
             sendSample(time, *sampleLocation, moistureValue, c0Reading, pHReading);
             //this will likely need rewritten so that samples can be taken concurrently
             //check if Arduino is actually more efficient doing this before making concurrent
@@ -759,13 +759,13 @@ class Robot {
             delete(sampleLocation);
         }
 
-        bool runSurvey(GPSGridCoordinate startPosition, GPSGridCoordinate endPosition, double samplingFrequency) {
+        bool runSurvey(GPSGridCoordinate *startPosition, GPSGridCoordinate *endPosition, double samplingFrequency) {
             Serial.println("Starting survey...");
             Serial.print("Start position: ");
-            Serial.println(startPosition.toCSV());
+            Serial.println(startPosition->toCSV());
             
             Serial.print("End position: ");
-            Serial.println(endPosition.toCSV());
+            Serial.println(endPosition->toCSV());
             
             Serial.print("Sampling frequency: ");
             Serial.println(samplingFrequency);
@@ -773,7 +773,7 @@ class Robot {
             //Need to implement this function
             //
             //
-            move(startPosition.getLatitudeX, startPosition.getLongitudeY);
+            move(startPosition->getLatitudeX(), startPosition->getLongitudeY());
             takeSamples();
 
             //once end location reached
@@ -808,7 +808,7 @@ class Robot {
 
                     GPSGridCoordinate* startPosition = new GPSGridCoordinate(startLat.toFloat(), startLong.toFloat());
                     GPSGridCoordinate* endPosition   = new GPSGridCoordinate(endLat.toFloat(), endLong.toFloat());
-                    bool surveyCompleted = runSurvey(*startPosition, *endPosition, samplingFrequency.toFloat()); //begin surveying
+                    bool surveyCompleted = runSurvey(startPosition, endPosition, samplingFrequency.toFloat()); //begin surveying
                     if (surveyCompleted) {
                         returnSuccessfulSurvey(surveyID);
                     }
