@@ -26,7 +26,7 @@ collection = db["Land"]
 def getSoilMoisture(LandID):
 
     # Get current time
-    now = datetime.now()
+    now = datetime.datetime.now()
 
     try:
         # Query database to find most recent set of readings
@@ -44,7 +44,7 @@ def getSoilMoisture(LandID):
 
 
 @app.route("/getCO", methods=['GET'])
-def getSoilMoisture(LandID):
+def getCO(LandID):
 
     # Get current time
     now = datetime.now()
@@ -84,7 +84,7 @@ def getAverageMoisture(LandID):
 
 
 @app.route("/addLand", methods=['POST'])
-def getAverageMoisture(ne_latitude, ne_longitude, sw_latatitude, sw_longitude, land_name, user):
+def addLand(ne_latitude, ne_longitude, sw_latatitude, sw_longitude, land_name, user):
 
     # Input validation
     if ne_lat < sw_lat or ne_lon < sw_lon:
@@ -95,7 +95,7 @@ def getAverageMoisture(ne_latitude, ne_longitude, sw_latatitude, sw_longitude, l
 
     try:
         # need to get user id
-         land_json = {ne_lat: ne_latitude, ne_lon: ne_longitude, sw_lat: sw_longitude, sw_lon: sw_longitude, name: land_name}
+        land_json = {ne_lat: ne_latitude, ne_lon: ne_longitude, sw_lat: sw_longitude, sw_lon: sw_longitude, name: land_name}
         result = db.Land.insert_one(land_json)
 
         output = result.objectid
@@ -107,7 +107,7 @@ def getAverageMoisture(ne_latitude, ne_longitude, sw_latatitude, sw_longitude, l
 
 @app.route("/getLand", methods=["GET"])
 def getLand(userID):
-    try:
+    pass
         # check userID
         # Get all land ID with corresponding userID
 
