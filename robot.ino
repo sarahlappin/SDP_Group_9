@@ -44,7 +44,7 @@
 #define SENSOR_RETRACT_TIME 1500
 
 //number of attempts to send a sample before throwing error
-#define MAX_MESSAGE_TIMEOUT 10
+#define MAX_MESSAGE_TIMEOUT 100
 #define MESSAGE_TIME_DELAY 50
 
 #define MAX_NUMBER_OF_REQUESTS 5
@@ -227,70 +227,61 @@ class Robot {
 
             String openingTag = "<survey>";
             String closingTag = "</survey>";
-            int positionCounter;
+            int positionCounter = 0;
 
             //finds the first tag
-            while (positionCounter <= openingTag.length() && timeoutCounter <= MAX_MESSAGE_TIMEOUT) {
+            int positionInMessage = 0;
+            char character;
+            String coordinate1 = "";
+            String coordinate2 = "";
+            String fullMessage = "";
+
+            while (positionInMessage <= 2 && timeoutCounter <= MAX_MESSAGE_TIMEOUT) {
                 if (Serial.available()) { //characters are being sent
-                    char character = Serial.read(); //read one char
-                    if(character == openingTag[positionCounter]) {
-                        positionCounter++;
-                        timeoutCounter = 0;
-                    }
+                    character = Serial.read(); //read one char
+                    fullMessage += character;
+                    Serial.println(coordinate1);
+
+                    // First tag
+                    if (positionInMessage == 0) {
+                        if(character == openingTag[positionCounter]) {
+                            positionCounter++;
+                            timeoutCounter = 0;
+                        }
+                        if (positionCounter >= openingTag.length()) {
+                            positionInMessage = 1;
+                        }
+
+                        // coordinates
+                    } else if (positionInMessage < 3 && ((character >= '0' && character <= '9') || character == '.' || character == ',' || character == '-')) { //next set of coordinates begin
+                        
+                        if (positionInMessage == 1) {
+                            coordinate1 = coordinate1 + character;
+                        }
+                        else if (positionInMessage == 2) {
+                            coordinate2 = coordinate2 + character;
+                        }
+                        
+                    } else if (character == '|') {                      
+                        positionInMessage = 2;
+                    } else if (character == '<') {
+                        positionInMessage = 3;
+                    } 
                 }
-                timeoutCounter++;
             }
-
-            if (timeoutCounter > MAX_MESSAGE_TIMEOUT) { Serial.println("Timeout reached when looking for survey details."); return askForLocation(attemptNumber++);}
-
-            //get the first of the survey details string
-            String surveyDetails1 = "";
-            while (timeoutCounter <= MAX_MESSAGE_TIMEOUT) {
-                if (Serial.available()) { //characters are being sent
-                    char character = Serial.read(); //read one char
-                    if((character >= '0' && character <= '9') || character == '.' || character == ',') {
-                        surveyDetails1 = surveyDetails1 + character;
-                    }
-                    else {
-                        timeoutCounter = 0;
-                        break;
-                    }
-                }
-                timeoutCounter++;
-            }
-            
-            if (timeoutCounter > MAX_MESSAGE_TIMEOUT) { 
-              Serial.println("Timeout reached when looking for survey details."); 
-              return askForLocation(attemptNumber++);
-            }
-
-            //get the second of the survey details string
-            String surveyDetails2 = "";
-            while (timeoutCounter <= MAX_MESSAGE_TIMEOUT) {
-                if (Serial.available()) { //characters are being sent
-                    char character = Serial.read(); //read one char
-                    if((character >= '0' && character <= '9') || character == '.' || character == ',') {
-                        surveyDetails2 = surveyDetails2 + character;
-                    }
-                    else {
-                        timeoutCounter = 0;
-                        break;
-                    }
-                }
-                timeoutCounter++;
-            }
-
-            if (timeoutCounter > MAX_MESSAGE_TIMEOUT) { 
-              Serial.println("Timeout reached when looking for survey details"); 
-              return askForLocation(attemptNumber++);
-            }
-
-            if (surveyDetails1.equals(surveyDetails2)) { //if they're the same
-                return surveyDetails1;
+            if (timeoutCounter > MAX_MESSAGE_TIMEOUT){
+              Serial.println("Getting survey timed out");
             }
             else {
-                //try again
-                return getSurveyDetailsString(attemptNumber++);
+              Serial.println(coordinate1);
+              Serial.println(coordinate2);
+              if (coordinate1.equals(coordinate2)) { //if they're the same
+                  return coordinate1;
+              }
+              else {
+                  //try again
+                  return getSurveyDetailsString(attemptNumber++);
+              }
             }
         }
 
@@ -782,16 +773,18 @@ class Robot {
 
         void initiateSurvey() {
             String surveyRequest = getSurveyDetailsString(0); //get survey details (starting at attempt 0)
+            Serial.print("Survey string is as follows: ");
+            Serial.println(surveyRequest);
             if (!surveyRequest.equals(NOT_KNOWN)) {
                 //parse the survey string
                 int surveyIDPos  = 0;
                 int startLatPos  = surveyRequest.indexOf(',', surveyIDPos);
-                int startLongPos = surveyRequest.indexOf(',');
+                int startLongPos = surveyRequest.indexOf(',', startLatPos);
                 int endLatPos    = surveyRequest.indexOf(',', startLongPos);
                 int endLongPos   = surveyRequest.indexOf(',', endLatPos);
                 int samplingFrequencyPos = surveyRequest.indexOf(',', endLongPos);
 
-                if (endLatPos > 0 && startLongPos > 0 && endLongPos > 0 && samplingFrequencyPos > 0) { //ensure that there are enough values
+                if (startLatPos > 0 && endLatPos > 0 && startLongPos > 0 && endLongPos > 0 && samplingFrequencyPos > 0) { //ensure that there are enough values
                     String surveyID  = surveyRequest.substring(surveyIDPos, startLatPos);
                     String startLat  = surveyRequest.substring(startLatPos, startLongPos);
                     String startLong = surveyRequest.substring(startLongPos, endLatPos);

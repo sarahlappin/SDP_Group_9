@@ -37,8 +37,8 @@ def markSurveyComplete(id, timeStamp):
         collection = db["Survey"]
 
 
-        surveyDetails = collection.find_one({"surveyID" : id}) # find the given survey
-        surveyDetails["endDate"] = timeStamp # update the timestamp
+        surveyDetails = collection.find_one({"_id" : id}) # find the given survey
+        surveyDetails["end_date"] = timeStamp # update the timestamp
         collection.save({"surveyID" : id}, surveyDetails)
         
     except Exception as e:
@@ -55,13 +55,14 @@ def getNextSurvey():
         collection = db["Survey"]
 
 
-        nextSurveyDetails = collection.find_one({"endDate" : 0}) # find a survey where the end date has not been set (so need to perform survey)
+        nextSurveyDetails = collection.find_one({"end_time" : 0}) # find a survey where the end date has not been set (so need to perform survey)
+        #print(collection.find_one())
 
         if nextSurveyDetails == None:
             print("Tried to find a survey but no surveys are still to be completed")
             return False, False, False, False, False, False
         else:
-            return nextSurveyDetails["surveyID"], nextSurveyDetails["startLatitude"], nextSurveyDetails["startLongitude"], nextSurveyDetails["endLatitude"], nextSurveyDetails["endLongitude"], nextSurveyDetails["samplingFrequency"]
+            return nextSurveyDetails["_id"], nextSurveyDetails["start_latitude"], nextSurveyDetails["start_longitude"], nextSurveyDetails["end_latitude"], nextSurveyDetails["end_longitude"], nextSurveyDetails["sampling_frequency"]
         
     except Exception as e:
         print("Failed to get the next survey: " + str(e))
@@ -76,4 +77,4 @@ def getNextSurvey():
 #        "longitude": "55.94587364601307", "Moisture": "0.00", "pH": "0.00"}
 #collection.insert_one(d)
 """
-sendCSV("SDPTestData.csv")
+#sendCSV("SDPTestData.csv")
