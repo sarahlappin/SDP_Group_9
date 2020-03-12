@@ -17,15 +17,7 @@ import tkinter
     finalImage = image
 """
 
-finalImage = cv2.imread("1.png")
-with np.load('calib3.npz') as X:
-    mtx, dist, _, _ = [X[i] for i in ('mtx', 'dist', 'rvecs', 'tvecs')]
-
-h, w = finalImage.shape[:2]
-newcameramtx, roi = cv2.getOptimalNewCameraMatrix(mtx, dist, (w, h), 1, (w, h))
-
-# Undistort
-dst = cv2.undistort(finalImage, mtx, dist, None, newcameramtx)
+dst = cv2.imread("1.png")
 
 arrayCounter = 0
 maxCounter = 0
@@ -41,6 +33,7 @@ while not closeWindow:
     roi = cv2.selectROI('Image', dst, False, False)
     x, y, w, h = roi
 
+
     def undoButton():
         global arrayCounter
         if arrayCounter > 0:
@@ -48,6 +41,7 @@ while not closeWindow:
         global dst
         dst = imageStates[arrayCounter].copy()
         cv2.imshow("Image", dst)
+
 
     def redoButton():
         global arrayCounter
@@ -57,17 +51,20 @@ while not closeWindow:
         dst = imageStates[arrayCounter].copy()
         cv2.imshow("Image", dst)
 
+
     def confirmButton():
         global dst
         dst = imageStates[arrayCounter].copy()
         cv2.imshow("Image", dst)
         window.destroy()
 
+
     def quitButton():
         cv2.destroyAllWindows()
         window.destroy()
         global closeWindow
         closeWindow = True
+
 
     if w is not 0 and h is not 0:
         arrayCounter += 1
@@ -97,25 +94,76 @@ while not closeWindow:
         window.mainloop()
 
 foundL = False
-leftMostPoint = 0, 0
+topMostPoint = 0, 0
 for i in range(0, 480):
-    for j in range(0,640):
+    for j in range(0, 640):
         if arrayStates[arrayCounter][i][j] == 1 and not foundL:
-            leftMostPoint = i, j
+            topMostPoint = i, j
             foundL = True
 
-leftX, leftY = leftMostPoint
-stepX = 50
-stepY = 50
+topCordY, topCordX = topMostPoint
+moveY = 50
+moveX = 50
 imageGrid = dst.copy()
-for i in range(leftX, 480, stepX):
+gridLines = np.zeros((480, 640))
+
+for i in range(topCordY, 480, moveY):
     for j in range(0, 640):
         if arrayStates[arrayCounter][i][j] == 1:
-            imageGrid[i][j] = (255,255,255)
+            imageGrid[i][j] = (0, 0, 0)
+            gridLines[i][j] = 1
 for i in range(0, 480):
-    for j in range(leftY, 640, stepY):
+    for j in range(topCordX, 640, moveX):
         if arrayStates[arrayCounter][i][j] == 1:
-            imageGrid[i][j] = (255, 255, 255)
+            imageGrid[i][j] = (0, 0, 0)
+            gridLines[i][j] = 1
+
+for i in range(topCordY, 0, -moveY):
+    for j in range(0, 640):
+        if arrayStates[arrayCounter][i][j] == 1:
+            imageGrid[i][j] = (0, 0, 0)
+            gridLines[i][j] = 1
+for i in range(0, 480):
+    for j in range(topCordX, 0, -moveX):
+        if arrayStates[arrayCounter][i][j] == 1:
+            imageGrid[i][j] = (0, 0, 0)
+            gridLines[i][j] = 1
+
+for i in range(1, 479):
+    for j in range(1, 639):
+        if arrayStates[arrayCounter][i][j] == 1:
+            if (arrayStates[arrayCounter][i][j + 1] == 0 or
+                    arrayStates[arrayCounter][i][j - 1] == 0 or
+                    arrayStates[arrayCounter][i + 1][j] == 0 or
+                    arrayStates[arrayCounter][i - 1][j] == 0):
+                imageGrid[i][j] = (0, 0, 0)
+                gridLines[i][j] = 1
+
+for i in range(topCordY, 480, moveY):
+    for j in range(topCordX, 640, moveX):
+        squareGrid = np.zeros((480, 640))
+        for k in range(i, i + moveY):
+            for l in range(j, j + moveX):
+                if k < 480 and l < 640:
+                    if arrayStates[arrayCounter][k][l] == 1:
+                        squareGrid[k][l] = 1
+        M = cv2.moments(squareGrid)
+        if M["m00"] != 0:
+            cX = int(M["m10"] / M["m00"])
+            cY = int(M["m01"] / M["m00"])
+            cv2.circle(imageGrid, (cX, cY), 1, (0, 0, 255), -1)
+    for j in range(topCordX, 0, -moveX):
+        squareGrid = np.zeros((480, 640))
+        for k in range(i, i + moveY):
+            for l in range(j, j + moveX):
+                if k < 480 and l < 640:
+                    if arrayStates[arrayCounter][k][l] == 1:
+                        squareGrid[k][l] = 1
+        M = cv2.moments(squareGrid)
+        if M["m00"] != 0:
+            cX = int(M["m10"] / M["m00"])
+            cY = int(M["m01"] / M["m00"])
+            cv2.circle(imageGrid, (cX, cY), 1, (0, 0, 255), -1)
+
 
 cv2.imwrite("imageGrid.png", imageGrid)
-
