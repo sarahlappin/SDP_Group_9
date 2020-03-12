@@ -6,18 +6,25 @@ import time
 import tkinter
 
 """""
-    cap = cv2.VideoCapture(-1)
-    testNo = 0
-    nTests = 10
+cap = cv2.VideoCapture(-1)
+testNo = 0
+nTests = 10
 
-    while testNo < nTests:
-        ret, image = cap.read()  # ret = 1 if the video is captured; frame is the image
-        testNo += 1
+while testNo < nTests:
+    ret, image = cap.read()  # ret = 1 if the video is captured; frame is the image
+    testNo += 1
 
-    finalImage = image
+with np.load('calib3.npz') as X:
+    mtx, dist, _, _ = [X[i] for i in ('mtx', 'dist', 'rvecs', 'tvecs')]
+
+h, w = image.shape[:2]
+newcameramtx, roi = cv2.getOptimalNewCameraMatrix(mtx, dist, (w, h), 1, (w, h))
+
+# Undistort
+dst = cv2.undistort(image, mtx, dist, None, newcameramtx)
+cv2.imwrite("test.png", dst)
 """
-
-dst = cv2.imread("1.png")
+dst = cv2.imread("test.png")
 
 arrayCounter = 0
 maxCounter = 0
@@ -102,10 +109,12 @@ for i in range(0, 480):
             foundL = True
 
 topCordY, topCordX = topMostPoint
-moveY = 50
-moveX = 50
+moveY = 20
+moveX = 20
 imageGrid = dst.copy()
 gridLines = np.zeros((480, 640))
+
+targetCoordinates = []
 
 for i in range(topCordY, 480, moveY):
     for j in range(0, 640):
@@ -164,6 +173,36 @@ for i in range(topCordY, 480, moveY):
             cX = int(M["m10"] / M["m00"])
             cY = int(M["m01"] / M["m00"])
             cv2.circle(imageGrid, (cX, cY), 1, (0, 0, 255), -1)
+            targetCoordinates.append((cX, cY))
 
+print(targetCoordinates)
+
+pointsClicked = []
+
+def findTarget(xCord, yCord):
+    global gridLines
+    global arrayStates
+    global arrayCounter
+    i = xCord
+    j = yCord
+
+    #while (arrayStates[arrayCounter][i][j] != 1):
+
+
+def clickCoord(event, mouseX, mouseY, flags, param):
+    if event == cv2.EVENT_LBUTTONDOWN:
+        global pointsClicked
+        cv2.circle(imageGrid, (mouseX, mouseY), 1, (0, 0, 255), -1)
+        pointsClicked.append((mouseX, mouseY))
+
+
+cv2.namedWindow("Select Targets")
+cv2.setMouseCallback("Select Targets", clickCoord)
+
+while True:
+    cv2.imshow("Select Targets", imageGrid)
+    k = cv2.waitKey(1)
+    if k == ord('q'):
+        break
 
 cv2.imwrite("imageGrid.png", imageGrid)
