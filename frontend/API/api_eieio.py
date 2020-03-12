@@ -47,7 +47,7 @@ def getSoilMoisture(LandID):
 def getCO(LandID):
 
     # Get current time
-    now = datetime.now()
+    now = datetime.datetime.now()
 
     try:
         # Query database to find most recent set of readings
@@ -67,7 +67,7 @@ def getCO(LandID):
 def getAverageMoisture(LandID):
     
     # Get current time
-    now = datetime.now()
+    now = datetime.datetime.now()
 
     try:
         # Query database to find most recent set of readings
@@ -87,11 +87,11 @@ def getAverageMoisture(LandID):
 def addLand(ne_latitude, ne_longitude, sw_latatitude, sw_longitude, land_name, user):
 
     # Input validation
-    if ne_lat < sw_lat or ne_lon < sw_lon:
+    if ne_latitude < sw_latatitude or ne_longitude < sw_longitude:
         return "Invalid input: coordinates", 404
 
-    if name is None:
-        return "Invalid input: no name", 404
+    if user is None:
+        return "Invalid input: no user", 404
 
     try:
         # need to get user id
