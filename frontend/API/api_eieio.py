@@ -1,6 +1,7 @@
 # import flask_pymongo
 from flask_pymongo import PyMongo
 from flask import Flask
+from flask_cors import CORS              # pip install -U flask-cors
 from pymongo import MongoClient
 from bson.objectid import ObjectId       # install bson before pymongo or it breaks
 from bson.json_util import dumps
@@ -14,6 +15,7 @@ import dns
 from heatmaps import *
 
 app = Flask(__name__)
+CORS(app)
 app.config["MONGO_URI"] = "mongodb://localhost:27017/Land"
 app.config['MONGO_DBNAME'] = 'Land'
 mongo = PyMongo(app)
