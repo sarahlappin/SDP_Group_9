@@ -1,13 +1,20 @@
-#!/usr/bin/env python3
 import datetime
 import argparse
 import pymongo
 import json
 
+"""
+PARAMS
 
+results = 
+[{'_id': ObjectId('5e696194fb7d480a94906177'), 'SurveyID': ObjectId('5e68f59d99b1a6270ccd7730'), 'Quadrant': 1, 'latitude': -3.1904, 'longitude': 55.9458, 'TimeStamp': '25/2/2020 12:18:10PM +00:00', 'CO': 0.03412, 'moisture': 27.1, 'pH': 5.2}, {'_id': ObjectId('5e696194fb7d480a94906178'), 'SurveyID': ObjectId('5e68f59d99b1a6270ccd7730'), 'Quadrant': 2, 'latitude': -3.1901, 'longitude': 55.9502, 'TimeStamp': '25/2/2020 12:19:02PM +00:00', 'CO': 0.03032, 'moisture': 34.1, 'pH': 5.7}, {'_id': ObjectId('5e696194fb7d480a94906179'), 'SurveyID': ObjectId('5e68f59d99b1a6270ccd7730'), 'Quadrant': 3, 'latitude': -3.19, 'longitude': 55.949, 'TimeStamp': '25/2/2020 12:19:30PM +00:00', 'CO': 0.04771, 'moisture': 32.2, 'pH': 3.1}, {'_id': ObjectId('5e696194fb7d480a9490617a'), 'SurveyID': ObjectId('5e68f59d99b1a6270ccd7730'), 'Quadrant': 4, 'latitude': -3.19026, 'longitude': 55.9456, 'TimeStamp': '28/2/2020 12:17:55PM +00:00', 'CO': 0.03121, 'moisture': 33.7, 'pH': 5.7}, {'_id': ObjectId('5e696194fb7d480a9490617b'), 'SurveyID': ObjectId('5e68f59d99b1a6270ccd7730'), 'Quadrant': 5, 'latitude': -3.1903, 'longitude': 55.94588, 'TimeStamp': '28/2/2020 12:18:10PM +00:00', 'CO': 0.05212, 'moisture': 35.2, 'pH': 5.8}, {'_id': ObjectId('5e696194fb7d480a9490617c'), 'SurveyID': ObjectId('5e68f59d99b1a6270ccd7730'), 'Quadrant': 6, 'latitude': -3.1904, 'longitude': 55.94592, 'TimeStamp': '28/2/2020 12:18:35PM +00:00', 'CO': 0.03991, 'moisture': 32.2, 'pH': 5.0}]
+
+reading_type = "moisture"
+"""
 def getHeatmapValues(results, reading_type):
     box_readings = {1:[],2:[],3:[],4:[],5:[],6:[]}
     for reading in results:
+        print(reading)
         box = reading["Quadrant"]
         moisture = reading[reading_type]
         print("Box: {}, Reading: {}".format(box, moisture))
@@ -28,7 +35,9 @@ def getHeatmapValues(results, reading_type):
         #         box = 6
 
         if box is not None:
-            box_readings[box].append(moisture)
+            box_readings[int(box)].append(moisture)
+
+    print(box_readings)
 
     return box_readings
 
