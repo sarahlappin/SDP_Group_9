@@ -1,6 +1,6 @@
 # import flask_pymongo
 from flask_pymongo import PyMongo
-from flask import Flask
+from flask import Flask, jsonify
 from flask_cors import CORS              # pip install -U flask-cors
 from pymongo import MongoClient
 from bson.objectid import ObjectId       # install bson before pymongo or it breaks
@@ -27,8 +27,19 @@ surv = db["Survey"]
 
 
 
-@app.route("/getSoilMoisture/<landID>", methods=['GET'])
-def getSoilMoisture(landID):
+class JSONEncoder(json.JSONEncoder):
+    def default(self, o):
+        if isinstance(o, ObjectId):
+            return str(o)
+        return json.JSONEncoder.default(self, o)
+
+
+"""
+http://127.0.0.1:5000/getLandInfo/5e68ef5199b1a6270ccd772a/CO
+returns: "{\"1\": [0.03412], \"2\": [0.03032], \"3\": [0.04771], \"4\": [0.03121], \"5\": [0.05212], \"6\": [0.03991]}"
+"""
+@app.route("/getLandInfo/<landID>/<reading_type>", methods=['GET'])
+def getLandInfo(landID, reading_type):
     print(landID)
 
     try:
@@ -42,28 +53,36 @@ def getSoilMoisture(landID):
         return ("Error connecting to Survey: {}".format(e)), 404
 
     try:
-        # Query database to find most recent set of readings
-        readings = db.Readings.find({"SurveyID": survey_id})
-        # .sort({'end_time': -1}).limit(0)
+        readings = []
+        raw_readings = db["Readings"].find({"SurveyID": survey_id})
+        for i in raw_readings:
+            readings.append(i)
+
+        print(readings)
+        if reading_type == "all": # ALL READINGS FROM ALL QUADRANTS
+            return JSONEncoder().encode(readings)
     except Exception as e:
         return "Error: {}".format(e), 404
 
     
     try:
         # print(dumps(readings))
-        output = getHeatmapValues(readings, "moisture")
+        output = JSONEncoder().encode(getHeatmapValues(readings, reading_type)) 
 
         print("returning...")
         return dumps(output), 200
     except Exception as e:
         return "ERROR: Failed to run heatmaps.py: {}".format(e), 404
         
+"""
+http://127.0.0.1:5000/getLandAverage/5e68ef5199b1a6270ccd772a/CO
 
-@app.route("/getCO/<landID>", methods=['GET'])
-def getCO(landID):
+returns 0.04
+"""
+@app.route("/getLandAverage/<landID>/<reading_type>", methods=['GET'])
+def getLandAverage(landID, reading_type):
+    print(landID)
 
-
-   # return landID, 200
     try:
         land_id = ObjectId(landID)
         print(land_id)
@@ -75,152 +94,26 @@ def getCO(landID):
         return ("Error connecting to Survey: {}".format(e)), 404
 
     try:
-        # Query database to find most recent set of readings
-        readings = db.Readings.find({"SurveyID": survey_id})
-        # .sort({'end_time': -1}).limit(0)
+        readings = []
+        raw_readings = db["Readings"].find({"SurveyID": survey_id})
+        for i in raw_readings:
+            readings.append(i)
+
+        print(readings)
+        if reading_type == "all": # ALL READINGS FROM ALL QUADRANTS
+            return JSONEncoder().encode(readings)
     except Exception as e:
         return "Error: {}".format(e), 404
 
     
     try:
-        # print(dumps(readings))
-        output = getHeatmapValues(readings, "CO")
+        output = JSONEncoder().encode(getAverageValues(readings, reading_type)) 
 
         print("returning...")
         return dumps(output), 200
     except Exception as e:
         return "ERROR: Failed to run heatmaps.py: {}".format(e), 404
-        
 
-@app.route("/getPH/<landID>", methods=["GET"])
-def getPH(landID):
-    # return landID, 200
-    try:
-        land_id = ObjectId(landID)
-        print(land_id)
-        survey = db.Survey.find({"landID": land_id}).sort("end_time", pymongo.DESCENDING).limit(1)
-        print(survey[0]["end_time"])
-        survey_id = survey[0]["_id"]
-        print(survey_id)
-    except Exception as e:
-        return ("Error connecting to Survey: {}".format(e)), 404
-
-    try:
-        # Query database to find most recent set of readings
-        readings = db.Readings.find({"SurveyID": survey_id})
-        # .sort({'end_time': -1}).limit(0)
-    except Exception as e:
-        return "Error: {}".format(e), 404
-
-    
-    try:
-        # print(dumps(readings))
-        output = getHeatmapValues(readings, "pH")
-
-        print("returning...")
-        return dumps(output), 200
-    except Exception as e:
-        return "ERROR: Failed to run heatmaps.py: {}".format(e), 404
-        
-
-@app.route("/getAverageMoisture/<landID>", methods=['GET'])
-def getAverageMoisture(landID):
-
-        # output = getAverageValues(result, "Moisture(%)")
-
-    try:
-        land_id = ObjectId(landID)
-        print(land_id)
-        survey = db.Survey.find({"landID": land_id}).sort("end_time", pymongo.DESCENDING).limit(1)
-        print(survey[0]["end_time"])
-        survey_id = survey[0]["_id"]
-        print(survey_id)
-    except Exception as e:
-        return ("Error connecting to Survey: {}".format(e)), 404
-
-    try:
-        # Query database to find most recent set of readings
-        readings = db.Readings.find({"SurveyID": survey_id})
-        # .sort({'end_time': -1}).limit(0)
-    except Exception as e:
-        return "Error: {}".format(e), 404
-
-    
-    try:
-        # print(dumps(readings))
-        output = getAverageValues(readings, "moisture")
-
-        print("returning...")
-        return dumps(output), 200
-        # return "complete", 200
-    except Exception as e:
-        return "ERROR: Failed to run getAverage: {}".format(e), 404
-
-@app.route("/getAverageCO/<landID>", methods=['GET'])
-def getAverageCO(landID):
-
-        # output = getAverageValues(result, "Moisture(%)")
-
-    try:
-        land_id = ObjectId(landID)
-        print(land_id)
-        survey = db.Survey.find({"landID": land_id}).sort("end_time", pymongo.DESCENDING).limit(1)
-        print(survey[0]["end_time"])
-        survey_id = survey[0]["_id"]
-        print(survey_id)
-    except Exception as e:
-        return ("Error connecting to Survey: {}".format(e)), 404
-
-    try:
-        # Query database to find most recent set of readings
-        readings = db.Readings.find({"SurveyID": survey_id})
-        # .sort({'end_time': -1}).limit(0)
-    except Exception as e:
-        return "Error: {}".format(e), 404
-
-    
-    try:
-        # print(dumps(readings))
-        output = getAverageValues(readings, "CO")
-
-        print("returning...")
-        return dumps(output), 200
-        # return "complete", 200
-    except Exception as e:
-        return "ERROR: Failed to run getAverage: {}".format(e), 404
-
-@app.route("/getAveragePH/<landID>", methods=['GET'])
-def getAveragePH(landID):
-
-        # output = getAverageValues(result, "Moisture(%)")
-
-    try:
-        land_id = ObjectId(landID)
-        print(land_id)
-        survey = db.Survey.find({"landID": land_id}).sort("end_time", pymongo.DESCENDING).limit(1)
-        print(survey[0]["end_time"])
-        survey_id = survey[0]["_id"]
-        print(survey_id)
-    except Exception as e:
-        return ("Error connecting to Survey: {}".format(e)), 404
-
-    try:
-        # Query database to find most recent set of readings
-        readings = db.Readings.find({"SurveyID": survey_id})
-        # .sort({'end_time': -1}).limit(0)
-    except Exception as e:
-        return "Error: {}".format(e), 404
-
-    
-    try:
-        # print(dumps(readings))
-        output = getAverageValues(readings, "pH")
-
-        print("returning...")
-        return dumps(output), 200
-        # return "complete", 200
-    except Exception as e:
-        return "ERROR: Failed to run getAverage: {}".format(e), 404
 
 
 # @app.route("/addLand", methods=['POST'])
@@ -275,3 +168,4 @@ def getAveragePH(landID):
 
 if __name__ == "__main__":
     app.run()
+
