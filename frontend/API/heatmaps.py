@@ -32,14 +32,17 @@ def getHeatmapValues(results, reading_type):
 
     return box_readings
 
-def getAverageValues(results, type):
+def getAverageValues(results, reading_type):
     values = []
     for reading in results:
-        values.append(reading[type])
+        print(reading[reading_type])
+        values.append(reading[reading_type])
 
     if len(values) != 0:
-        average = sum(values)/len(values)
-        return average
+        total = sum(values)
+        print("out of for")
+        average = total/len(values)
+        return round(average, 2)
     else:
         return 0
 

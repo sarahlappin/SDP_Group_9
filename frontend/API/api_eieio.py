@@ -29,7 +29,6 @@ surv = db["Survey"]
 def getSoilMoisture(landID):
     print(landID)
 
-    # return landID, 200
     try:
         land_id = ObjectId(landID)
         print(land_id)
@@ -122,21 +121,38 @@ def getPH(landID):
         return "ERROR: Failed to run heatmaps.py: {}".format(e), 404
         
 
-# @app.route("/averageMoisture", methods=['GET'])
-# def getAverageMoisture(LandID):
+@app.route("/getAverageMoisture/<landID>", methods=['GET'])
+def getAverageMoisture(landID):
+
+        # output = getAverageValues(result, "Moisture(%)")
+
+    try:
+        land_id = ObjectId(landID)
+        print(land_id)
+        survey = db.Survey.find({"landID": land_id}).sort("end_time", pymongo.DESCENDING).limit(1)
+        print(survey[0]["end_time"])
+        survey_id = survey[0]["_id"]
+        print(survey_id)
+    except Exception as e:
+        return ("Error connecting to Survey: {}".format(e)), 404
+
+    try:
+        # Query database to find most recent set of readings
+        readings = db.Readings.find({"SurveyID": survey_id})
+        # .sort({'end_time': -1}).limit(0)
+    except Exception as e:
+        return "Error: {}".format(e), 404
+
     
-#     try:
-#         # Query database to find most recent set of readings
-#         result = db.Readings.find()
+    try:
+        # print(dumps(readings))
+        output = getAverageValues(readings, "moisture")
 
-#         if result is None:
-#             return "Error: No readings available for this land", 404
-
-#         output = getAverageValues(result, "Moisture(%)")
-
-#         return output, 200
-#     except:
-#         return "ERROR: Failed to run heatmaps.py", 500
+        print("returning...")
+        return dumps(output), 200
+        # return "complete", 200
+    except Exception as e:
+        return "ERROR: Failed to run getAverage: {}".format(e), 404
 
 
 # @app.route("/addLand", methods=['POST'])
