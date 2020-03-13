@@ -1,0 +1,46 @@
+<!-- TEST HTML FILE THAT RUNS MAIN.JS -->
+
+<!doctype html>
+
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+
+  <title>test</title>
+  <meta name="description" content="test">
+  <meta name="author" content="tia">
+
+
+</head>
+
+<body>
+
+  <script src="main.js"></script>
+  
+  <form id="form">
+    <p>LandID: e.g. 5e68ef5199b1a6270ccd772a</p>
+    <input
+      class="form-control"
+      type="text"
+      name="LandID"
+    />
+    <p>Reading Type: all, CO, moisture, pH</p>
+    <input
+      class="form-control"
+      type="text"
+      name="reading_type"
+    />
+  </form>
+  <br />
+  <button
+    onclick="get()"
+  >
+    GET
+  </button>
+
+  <div id="root">
+    
+  </div>
+  
+</body>
+</html>
