@@ -5,6 +5,7 @@ from pymongo import MongoClient
 from bson.objectid import ObjectId       # install bson before pymongo or it breaks
 from bson.json_util import dumps
 from heatmaps import *
+import logging
 import datetime
 import subprocess
 import ssl
@@ -20,48 +21,46 @@ mongo = PyMongo(app)
 client = MongoClient("mongodb+srv://sarahlappin:SDP9@sdp-2ctih.gcp.mongodb.net/test?retryWrites=true&w=majority")
 db = client["Land"]
 collection = db["Land"]
+surv = db["Survey"]
 
 
 
-@app.route("/getSoilMoisture", methods=['GET'])
-def getSoilMoisture():
+@app.route("/getSoilMoisture/<landID>", methods=['GET'])
+def getSoilMoisture(landID):
+    print(landID)
 
-    # Get current time
-    # now = datetime.now()
+    # return landID, 200
+    try:
+        land_id = ObjectId(landID)
+        print(land_id)
+        survey = db.Survey.find({"landID": land_id}).sort("end_time", pymongo.DESCENDING).limit(1)
+        print(survey[0]["end_time"])
+        survey_id = survey[0]["_id"]
+        print(survey_id)
+    except Exception as e:
+        return ("Error connecting to Survey: {}".format(e)), 404
 
     try:
         # Query database to find most recent set of readings
-        # survey = list(db.Survey.find()).sort()
+        readings = db.Readings.find({"SurveyID": survey_id})
+        # .sort({'end_time': -1}).limit(0)
+    except Exception as e:
+        return "Error: {}".format(e), 404
 
-        # if survey is None:
-        #     return "Error: no data available", 404
-        # latest_survey = survey[0]["_id"]
-        try: 
-            latest_survey = "5e68f59d99b1a6270ccd772d"
-            try:
-                result = db.Readings.find({ _id: (ObjectID(latest_survey))})
-            except Exception as e:
-                return e, 404
-        except:
-            return "oops", 404
+    
+    try:
+        # print(dumps(readings))
+        output = getHeatmapValues(readings, "moisture")
 
-        if result is None:
-            return "Error: No readings available for this land", 404
-
-        output = getHeatmapValues(result, "Moisture")
-
-        # output = {1:30, 2:32, 3:54, 4:27, 5:42, 6:25}
-        return output, 200
-    except:
-        return "ERROR: Failed to run heatmaps.py", 404
+        print("returning...")
+        return dumps(output), 200
+    except Exception as e:
+        return "ERROR: Failed to run heatmaps.py: {}".format(e), 404
         
 
-
 # @app.route("/getCO", methods=['GET'])
-# def getSoilMoisture(LandID):
+# def getCO(LandID):
 
-#     # Get current time
-#     now = datetime.now()
 
 #     try:
 #         # Query database to find most recent set of readings
@@ -82,9 +81,6 @@ def getSoilMoisture():
 # @app.route("/averageMoisture", methods=['GET'])
 # def getAverageMoisture(LandID):
     
-#     # Get current time
-#     now = datetime.now()
-
 #     try:
 #         # Query database to find most recent set of readings
 #         result = db.Readings.find()
@@ -148,6 +144,6 @@ def getSoilMoisture():
 #         return "ERROR: unable to connect to MongoDB", 500
 
     
-    
+
 if __name__ == "__main__":
     app.run()

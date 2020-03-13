@@ -7,7 +7,17 @@ import datetime
 
 BAUD = 9600
 
-serial = serial.Serial("/dev/ttyACM1", BAUD, timeout = .1)
+try:
+    serial = serial.Serial("/dev/ttyACM0", BAUD, timeout = .1)
+except:
+    print("Changing port.......................")
+    try:
+        serial = serial.Serial("/dev/ttyACM1", BAUD, timeout = .1)
+    except:
+        try:
+            serial = serial.Serial("/dev/ttyACM2", BAUD, timeout = .1)
+        except:
+            serial = serial.Serial("/dev/ttyACM3", BAUD, timeout = .1)
 
 getLocationTag = "<getLocation/>"
 getSurveyTag = "<getSurvey/>"
@@ -61,19 +71,12 @@ def saveSample(sample):
 def sendLocation():
     latitude, longitude = getLocation()
     location = "<location>" + str(latitude) + "," + str(longitude) + "|" + str(latitude) + "," + str(longitude) + "</location>"
-    print("** ==>" + location)
-    serial.write(location.encode())
+    sendToRobot(location)
 
 def sendAngle():
     angle = getAngle()
     anglePrint = "<angle>" + str(angle) + "|" + str(angle) + "</angle>"
-    print("** ==>" + anglePrint)
-    serial.write(anglePrint.encode())
-
-def sendSurveyDetails():
-    startLat, startLong, endLat, endLong, samplingFrequency = getSurvey()
-    messageText = str(startLat) + b"," + str(startLong) + b"," + str(endLat) + b"," + str(endLong) + b"," + str(samplingFrequency)
-    serial.write(("<survey>" + messageText + "|" + messageText + "</survey>").encode())
+    sendToRobot(anglePrint)
 
 def receiveSample(line):
     #sample has been sent back
@@ -90,10 +93,9 @@ def receiveSample(line):
 def sendNextSurvey():
     surveyID, startLatitude, startLongitude, endLatitude, endLongitude, samplingFrequency = fileTransfer.getNextSurvey()
     if surveyID != False: #survey was found else do nothing
-        surveyString = str(surveyID) + str(startLatitude) + str(startLongitude) + str(endLatitude) + str(endLongitude) + str(samplingFrequency)
+        surveyString = str(surveyID) + "," + str(startLatitude) + "," +  str(startLongitude) + "," +  str(endLatitude) + "," +  str(endLongitude) + "," +  str(samplingFrequency)
         outputSurveyString = surveyOpeningTag + surveyString + "|" + surveyString + surveyClosingTag
-        print("** Sending survey details ==> " + outputSurveyString)
-        serial.write(outputSurveyString)
+        sendToRobot(outputSurveyString)
     else:
         print("Survey request was recieved but no surveys were ready to be completed")
 
@@ -101,13 +103,15 @@ def markSurveyAsComplete(line):
     id = line[(line.index(completeSurveyOpening) + len(completeSurveyOpening)) : line.index(completeSurveyClosing)]
     fileTransfer.markSurveyComplete(id, datetime.datetime.now().timestamp())
 
+def sendToRobot(data):
+    print("Workstation > eIEIO: " + data)
+    serial.write(data.encode())
+
 def interpretLine(line):
     if getLocationTag in line:
         sendLocation()
     if getAngleTag in line:
         sendAngle()
-    if getSurveyTag in line:
-        sendSurveyDetails()
     if openingSampleTag in line and closingSampleTag in line and verificationDeliminator in line:
         receiveSample(line)
     if getSurveyTag in line:
@@ -118,6 +122,7 @@ def interpretLine(line):
 manualMode = False
 surveyMode = False
 
+print("Starting workstation")
 while True:
     try:
         line = str(serial.readline().decode().strip('\n').strip('\r')) #get each line and decode it

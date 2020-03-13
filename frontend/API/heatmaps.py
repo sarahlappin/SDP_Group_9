@@ -5,30 +5,30 @@ import pymongo
 import json
 
 
-def getHeatmapValues(results, type):
-    box_readings = {}
+def getHeatmapValues(results, reading_type):
+    box_readings = {1:[],2:[],3:[],4:[],5:[],6:[]}
     for reading in results:
-        lon = reading["Longitude"]
-        lat = reading["Latitude"]
-
-        box = None
-        if lon in range(0,1):
-            if lat in range(0,1):
-                box = 1
-            elif lat in range(1,2):
-                box = 2
-            elif lat in range(2,3):
-                box = 3
-        elif lon in range(1,2):
-            if lat in range(0,1):
-                box = 4
-            elif lat in range(1,2):
-                box = 5
-            elif lat in range(2,3):
-                box = 6
+        box = reading["Quadrant"]
+        moisture = reading[reading_type]
+        print("Box: {}, Reading: {}".format(box, moisture))
+        # box = None
+        # if lon in range(0,1):
+        #     if lat in range(0,1):
+        #         box = 1
+        #     elif lat in range(1,2):
+        #         box = 2
+        #     elif lat in range(2,3):
+        #         box = 3
+        # elif lon in range(1,2):
+        #     if lat in range(0,1):
+        #         box = 4
+        #     elif lat in range(1,2):
+        #         box = 5
+        #     elif lat in range(2,3):
+        #         box = 6
 
         if box is not None:
-            box_readings[box].append(reading[type])
+            box_readings[box].append(moisture)
 
     return box_readings
 
