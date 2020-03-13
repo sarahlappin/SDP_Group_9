@@ -154,6 +154,72 @@ def getAverageMoisture(landID):
     except Exception as e:
         return "ERROR: Failed to run getAverage: {}".format(e), 404
 
+@app.route("/getAverageCO/<landID>", methods=['GET'])
+def getAverageCO(landID):
+
+        # output = getAverageValues(result, "Moisture(%)")
+
+    try:
+        land_id = ObjectId(landID)
+        print(land_id)
+        survey = db.Survey.find({"landID": land_id}).sort("end_time", pymongo.DESCENDING).limit(1)
+        print(survey[0]["end_time"])
+        survey_id = survey[0]["_id"]
+        print(survey_id)
+    except Exception as e:
+        return ("Error connecting to Survey: {}".format(e)), 404
+
+    try:
+        # Query database to find most recent set of readings
+        readings = db.Readings.find({"SurveyID": survey_id})
+        # .sort({'end_time': -1}).limit(0)
+    except Exception as e:
+        return "Error: {}".format(e), 404
+
+    
+    try:
+        # print(dumps(readings))
+        output = getAverageValues(readings, "CO")
+
+        print("returning...")
+        return dumps(output), 200
+        # return "complete", 200
+    except Exception as e:
+        return "ERROR: Failed to run getAverage: {}".format(e), 404
+
+@app.route("/getAveragePH/<landID>", methods=['GET'])
+def getAveragePH(landID):
+
+        # output = getAverageValues(result, "Moisture(%)")
+
+    try:
+        land_id = ObjectId(landID)
+        print(land_id)
+        survey = db.Survey.find({"landID": land_id}).sort("end_time", pymongo.DESCENDING).limit(1)
+        print(survey[0]["end_time"])
+        survey_id = survey[0]["_id"]
+        print(survey_id)
+    except Exception as e:
+        return ("Error connecting to Survey: {}".format(e)), 404
+
+    try:
+        # Query database to find most recent set of readings
+        readings = db.Readings.find({"SurveyID": survey_id})
+        # .sort({'end_time': -1}).limit(0)
+    except Exception as e:
+        return "Error: {}".format(e), 404
+
+    
+    try:
+        # print(dumps(readings))
+        output = getAverageValues(readings, "pH")
+
+        print("returning...")
+        return dumps(output), 200
+        # return "complete", 200
+    except Exception as e:
+        return "ERROR: Failed to run getAverage: {}".format(e), 404
+
 
 # @app.route("/addLand", methods=['POST'])
 # def getAverageMoisture(ne_latitude, ne_longitude, sw_latatitude, sw_longitude, land_name, user):
