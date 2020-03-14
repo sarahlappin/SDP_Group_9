@@ -1,0 +1,167 @@
+/* CSS files add styling rules to your content */
+body {
+  font-family: helvetica, arial, sans-serif;
+  margin: 2em;
+}
+
+td {
+  font-size: 13px;
+  font-family: helvetica, arial, sans-serif;
+}
+
+table {
+  align-items: center;
+  justify-content: center;
+}
+
+.title-with-margins {
+  padding: 30px 30px 0px 30px;
+}
+
+.title-area {
+  padding: 30px 30px 30px 30px;
+}
+
+.heatmap-format {
+  padding: 30px 30px 30px 30px;
+}
+
+.green {
+  color: #16A000;
+}
+
+.red {
+  color: #E80000;
+}
+
+.big {
+  font-size: 175px;
+}
+
+.card-contents {
+  align-items: center;
+  justify-content: center;
+}
+.card {
+  background: #fff;
+  border-radius: 2px;
+  display: inline-block;
+  height: 300px;
+  margin: 1rem;
+  position: relative;
+  width: 425px;
+}
+
+.card-1 {
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+.card-1:hover {
+  box-shadow: 0 14px 28px rgba(0, 0, 0, 0.25), 0 10px 10px rgba(0, 0, 0, 0.22);
+}
+
+/* For header */
+
+.header {
+  background-color: #0984e3;
+  font-family: helvetica, arial, sans-serif;
+  margin-bottom: 50px;
+}
+.header .header_wrapper {
+  padding: 2px 0px;
+  width: 100%;
+  margin: 0 auto;
+  max-width: 1200px;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+}
+.header .header_wrapper .header_column h3 {
+  color: white;
+  font-size: 30px;
+  font-weight: 600;
+}
+
+.header .header_wrapper .header_column ul {
+  margin-left: 150px;
+  font-size: 15px;
+  display: flex;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+.header .header_wrapper .header_column ul li {
+  margin-top: 3px;
+  margin-left: 45px;
+  list-style-type: none;
+}
+.header .header_wrapper .header_column ul a {
+  color: white;
+  text-decoration: none;
+}
+
+/* For footer */
+
+.footer {
+  font-family: helvetica, arial, sans-serif;
+  margin-top: 50px;
+  padding-top: 50px;
+  border-top: 2px solid rgba(0, 0, 0, 0.1);
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.footer .footer_icon {
+  color: rgba(0, 0, 0, 0.3);
+  font-size: 30px;
+  margin-bottom: 20px;
+}
+.footer .footer_text {
+  color: rgba(0, 0, 0, 0.3);
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+/* For forms on login, join */
+
+.form-container {
+  width: 100%;
+  font-family: helvetica, arial, sans-serif;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -moz-box;
+  display: -ms-flexbox;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.form-container form {
+  width: 100%;
+  max-width: 320px;
+}
+.form-container form label {
+  font-weight: 500;
+}
+.form-container form input {
+  width: 100%;
+  display: block;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+  margin-bottom: 20px;
+}
+.form-container form textarea {
+  margin-bottom: 25px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+}
+.form-container form input[type="submit"] {
+  background-color: #0984e3;
+  color: white;
+}
+.form-container form input[type="file"] {
+  margin-top: 13px;
+}
+.form-container a {
+  max-width: 320px;
+  width: 100%;
+}
