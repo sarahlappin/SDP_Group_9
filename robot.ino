@@ -214,19 +214,17 @@ class Robot {
             return (double) sensorValueTotal / (double) SAMPLING_NUMBER;
         }
 
-        String getSurveyDetailsString(int attemptNumber) {
+        String getDataString(int attemptNumber, String openingTag, String closingTag, String requestTag) {
             if (attemptNumber > MAX_NUMBER_OF_REQUESTS) {
-                Serial.println("Max number of survey requests recieved with no matching responses");
+                Serial.println("Max number of requests recieved with no matching responses");
                 return NOT_KNOWN;
             }
-
+            
             int timeoutCounter = 0;
             
-            Serial.println("<getSurvey/>"); //sends to the user
+            Serial.println(requestTag); //sends to the user
             delay(MESSAGE_TIME_DELAY); //give some time before retransmitting
 
-            String openingTag = "<survey>";
-            String closingTag = "</survey>";
             int positionCounter = 0;
 
             //finds the first tag
@@ -235,12 +233,11 @@ class Robot {
             String coordinate1 = "";
             String coordinate2 = "";
             String fullMessage = "";
-
+            
             while (positionInMessage <= 2 && timeoutCounter <= MAX_MESSAGE_TIMEOUT) {
                 if (Serial.available()) { //characters are being sent
                     character = Serial.read(); //read one char
                     fullMessage += character;
-                    Serial.println(coordinate1);
 
                     // First tag
                     if (positionInMessage == 0) {
@@ -268,167 +265,36 @@ class Robot {
                         positionInMessage = 3;
                     } 
                 }
+                
+                delay(MESSAGE_TIME_DELAY);
+                timeoutCounter++;
             }
+            
             if (timeoutCounter > MAX_MESSAGE_TIMEOUT){
-              Serial.println("Getting survey timed out");
+              Serial.println("Getting message timed out");
             }
             else {
-              Serial.println(coordinate1);
-              Serial.println(coordinate2);
               if (coordinate1.equals(coordinate2)) { //if they're the same
+                  Serial.println(coordinate1);
                   return coordinate1;
               }
               else {
                   //try again
-                  return getSurveyDetailsString(attemptNumber++);
+                  return getDataString(attemptNumber, openingTag, closingTag, requestTag);
               }
             }
+        }
+
+        String getSurveyDetailsString(int attemptNumber) {
+            return getDataString(0, "<survey>", "</survey>", "<getSurvey/>");
         }
 
         String askForLocation(int attemptNumber) {
-            if (attemptNumber > MAX_NUMBER_OF_REQUESTS) {
-                Serial.println("Max number of GPS requests recieved with no matching responses");
-                return NOT_KNOWN;
-            }
-            
-            int timeoutCounter = 0;
-            
-            Serial.println("<getLocation/>"); //sends to the user
-            delay(MESSAGE_TIME_DELAY); //give some time before retransmitting
-
-            String openingTag = "<location>";
-            String closingTag = "</location>";
-            int positionCounter = 0;
-
-            //finds the first tag
-            int positionInMessage = 0;
-            char character;
-            String coordinate1 = "";
-            String coordinate2 = "";
-            String fullMessage = "";
-            
-            while (positionInMessage <= 2 && timeoutCounter <= MAX_MESSAGE_TIMEOUT) {
-                if (Serial.available()) { //characters are being sent
-                    character = Serial.read(); //read one char
-                    fullMessage += character;
-
-                    // First tag
-                    if (positionInMessage == 0) {
-                        if(character == openingTag[positionCounter]) {
-                            positionCounter++;
-                            timeoutCounter = 0;
-                        }
-                        if (positionCounter >= openingTag.length()) {
-                            positionInMessage = 1;
-                        }
-
-                        // coordinates
-                    } else if (positionInMessage < 3 && ((character >= '0' && character <= '9') || character == '.' || character == ',' || character == '-')) { //next set of coordinates begin
-                        
-                        if (positionInMessage == 1) {
-                            coordinate1 = coordinate1 + character;
-                        }
-                        else if (positionInMessage == 2) {
-                            coordinate2 = coordinate2 + character;
-                        }
-                        
-                    } else if (character == '|') {                      
-                        positionInMessage = 2;
-                    } else if (character == '<') {
-                        positionInMessage = 3;
-                    } 
-                }
-                
-                delay(MESSAGE_TIME_DELAY);
-                timeoutCounter++;
-            }
-            
-            if (timeoutCounter > MAX_MESSAGE_TIMEOUT){
-              Serial.println("Getting location timed out");
-            }
-            else {
-              if (coordinate1.equals(coordinate2)) { //if they're the same
-                  Serial.println(coordinate1);
-                  return coordinate1;
-              }
-              else {
-                  //try again
-                  return askForLocation(attemptNumber++);
-              }
-            }
+            return getDataString(0, "<location>", "</location>", "<getLocation/>");
         }
 
         double askForAngle(int attemptNumber) {
-            if (attemptNumber > MAX_NUMBER_OF_REQUESTS) {
-                Serial.println("Max number of angle requests recieved with no matching responses");
-                return 0;
-            }
-            
-            int timeoutCounter = 0;
-            
-            Serial.println("<getAngle/>"); //sends to the user
-            delay(MESSAGE_TIME_DELAY); //give some time before retransmitting
-
-            String openingTag = "<angle>";
-            String closingTag = "</angle>";
-            int positionCounter = 0;
-
-            //finds the first tag
-            int positionInMessage = 0;
-            char character;
-            String coordinate1 = "";
-            String coordinate2 = "";
-            String fullMessage = "";
-            
-            while (positionInMessage <= 2 && timeoutCounter <= MAX_MESSAGE_TIMEOUT) {
-                if (Serial.available()) { //characters are being sent
-                    character = Serial.read(); //read one char
-                    fullMessage += character;
-
-                    // First tag
-                    if (positionInMessage == 0) {
-                        if(character == openingTag[positionCounter]) {
-                            positionCounter++;
-                            timeoutCounter = 0;
-                        }
-                        if (positionCounter >= openingTag.length()) {
-                            positionInMessage = 1;
-                        }
-
-                        // coordinates
-                    } else if (positionInMessage < 3 && ((character >= '0' && character <= '9') || character == '.'|| character == '-')) { //next set of coordinates begin
-                        
-                        if (positionInMessage == 1) {
-                            coordinate1 = coordinate1 + character;
-                        }
-                        else if (positionInMessage == 2) {
-                            coordinate2 = coordinate2 + character;
-                        }
-                        
-                    } else if (character == '|') {                      
-                        positionInMessage = 2;
-                    } else if (character == '<') {
-                        positionInMessage = 3;
-                    } 
-                }
-                
-                delay(MESSAGE_TIME_DELAY);
-                timeoutCounter++;
-            }
-            
-            if (timeoutCounter > MAX_MESSAGE_TIMEOUT){
-              Serial.println("Getting angle timed out");
-            }
-            else {
-              if (coordinate1.equals(coordinate2)) { //if they're the same
-                  Serial.println(coordinate1);
-                  return coordinate1.toDouble();
-              }
-              else {
-                  //try again
-                  return askForAngle(attemptNumber++);
-              }
-            }
+            return getDataString(0, "<angle>", "</angle>", "<getAngle/>").toDouble();
         }
 
         void sendSample(unsigned long time, GPSGridCoordinate sampleLocation, double moistureValue, double c0Reading, double pHReading) { //should this be void? Maybe return an error?
@@ -772,7 +638,7 @@ class Robot {
         }
 
         void initiateSurvey() {
-            String surveyRequest = getSurveyDetailsString(0); //get survey details (starting at attempt 0)
+            String surveyRequest = getSurveyDetailsString(); //get survey details (starting at attempt 0)
             Serial.print("Survey string is as follows: ");
             Serial.println(surveyRequest);
             if (!surveyRequest.equals(NOT_KNOWN)) {
