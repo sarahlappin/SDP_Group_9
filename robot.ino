@@ -44,7 +44,7 @@
 #define SENSOR_RETRACT_TIME 1500
 
 //number of attempts to send a sample before throwing error
-#define MAX_MESSAGE_TIMEOUT 100
+#define MAX_MESSAGE_TIMEOUT 500
 #define MESSAGE_TIME_DELAY 50
 
 #define MAX_NUMBER_OF_REQUESTS 5
@@ -250,7 +250,7 @@ class Robot {
                         }
 
                         // coordinates
-                    } else if (positionInMessage < 3 && ((character >= '0' && character <= '9') || character == '.' || character == ',' || character == '-')) { //next set of coordinates begin
+                    } else if (positionInMessage < 3 && ((character >= 'A' && character <= 'Z') || (character >= 'a' && character <= 'z') || (character >= '0' && character <= '9') || character == '.' || character == ',' || character == '-')) { //next set of coordinates begin
                         
                         if (positionInMessage == 1) {
                             coordinate1 = coordinate1 + character;
@@ -269,31 +269,35 @@ class Robot {
                 delay(MESSAGE_TIME_DELAY);
                 timeoutCounter++;
             }
+
+            Serial.println("Recieved a message");
             
             if (timeoutCounter > MAX_MESSAGE_TIMEOUT){
               Serial.println("Getting message timed out");
+              return NOT_KNOWN;
             }
             else {
               if (coordinate1.equals(coordinate2)) { //if they're the same
-                  Serial.println(coordinate1);
+                    Serial.println("Message matches");
                   return coordinate1;
               }
               else {
                   //try again
+                  Serial.println("trying again");
                   return getDataString(attemptNumber, openingTag, closingTag, requestTag);
               }
             }
         }
 
-        String getSurveyDetailsString(int attemptNumber) {
+        String getSurveyDetailsString() {
             return getDataString(0, "<survey>", "</survey>", "<getSurvey/>");
         }
 
-        String askForLocation(int attemptNumber) {
-            return getDataString(0, "<location>", "</location>", "<getLocation/>");
+        GPSGridCoordinate *askForLocation() {
+            return new GPSGridCoordinate(getDataString(0, "<location>", "</location>", "<getLocation/>"));
         }
 
-        double askForAngle(int attemptNumber) {
+        double askForAngle() {
             return getDataString(0, "<angle>", "</angle>", "<getAngle/>").toDouble();
         }
 
@@ -356,19 +360,6 @@ class Robot {
         Robot() {
             current_angle = START_ANGLE;
         }
-  
-          GPSGridCoordinate* getLocation() { //method would be replaced with a GPS module in final product
-              String coordinateString = askForLocation(0);
-              if (coordinateString.equals(NOT_KNOWN)) {
-                  return new GPSGridCoordinate(0, 0); //no idea where you are
-              }
-              else {
-                  return new GPSGridCoordinate(coordinateString);
-              }
-          }
-          double getAngle() { //method would be replaced with a GPS module in final product
-              return askForAngle(0);
-          }
 
           void printPositionDetails(double startX, double startY, double destX, double destY)
           {
@@ -398,7 +389,7 @@ class Robot {
         void move(double destX, double destY)
         {    
             // Use vision system to get robot coordinates
-            GPSGridCoordinate* robot_pos = getLocation();
+            GPSGridCoordinate* robot_pos = askForLocation();
 
             double startX = robot_pos->getLatitudeX();
             double startY = robot_pos->getLongitudeY();
@@ -412,7 +403,7 @@ class Robot {
             while (distance > MAX_DISTANCE_ERROR) 
 			      {
                 double angleTarget = get_angle_clockwise_from_north(startX, startY, destX, destY);                
-                double robotAngle = getAngle();
+                double robotAngle = askForAngle();
                 double angleDifference = angleTarget - robotAngle;
                 printAngleDetails(robotAngle, angleTarget, angleDifference);
 
@@ -420,7 +411,7 @@ class Robot {
                 {
                     if (angleDifference > 180 || ( angleDifference > -180 && angleDifference < 0)) turnLeft(500);
                     else turnRight(500);
-                    robotAngle = getAngle();
+                    robotAngle = askForAngle();
                
                     angleTarget = get_angle_clockwise_from_north(startX, startY, destX, destY);                
                     angleDifference = angleTarget - robotAngle;
@@ -429,7 +420,7 @@ class Robot {
                     moveForward(10000 / abs(angleDifference) + 1);
                 }
                 //update location and distance via vision system
-                robot_pos = getLocation();
+                robot_pos = askForLocation();
                 startX = robot_pos->getLatitudeX();
                 startY = robot_pos->getLongitudeY();
                 
@@ -604,7 +595,7 @@ class Robot {
             Serial.println("Starting sampling");
             lowerArm();
             unsigned long time = millis(); //timestamp
-            GPSGridCoordinate *sampleLocation = getLocation();
+            GPSGridCoordinate *sampleLocation = askForLocation();
             double moistureValue = getMoistureReading();
             double c0Reading = getC0Reading();
             double pHReading = random(0, 14); //generate a random pH value
@@ -630,6 +621,10 @@ class Robot {
             //Need to implement this function
             //
             //
+
+            askForLocation();
+            askForAngle();
+
             move(startPosition->getLatitudeX(), startPosition->getLongitudeY());
             takeSamples();
 
