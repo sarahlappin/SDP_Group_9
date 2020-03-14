@@ -9,13 +9,6 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@babel/core": "^7.8.7",
-    "@babel/node": "^7.8.7",
-    "@babel/polyfill": "^7.8.7",
-    "@babel/preset-env": "^7.8.7",
-    "babel-cli": "^6.26.0",
-    "babel-install": "^2.1.0",
-    "babel-loader": "^8.0.6",
     "consolidate": "^0.15.1",
     "ejs": "^3.0.1",
     "mustache": "^4.0.0"
