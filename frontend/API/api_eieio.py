@@ -139,10 +139,10 @@ def getAverageMoisture(ne_lat, ne_lon, sw_lat, sw_lon, name, user):
         return "Error: {}".format(e), 500
 
     # check land specification doesn't already exist?
-    
+
     try:
         # need to get user id
-        land_json = {"ne_lat": ne_lat, "ne_lon": ne_lon, "sw_lat": sw_lon, "sw_lon": sw_lon, "name": name, "UserID": userID}
+        land_json = {"ne_lat": float(ne_lat), "ne_lon": float(ne_lon), "sw_lat": float(sw_lon), "sw_lon": float(sw_lon), "name": name, "UserID": userID}
         result = db.Land.insert_one(land_json)
 
         output = result.inserted_id
@@ -152,11 +152,27 @@ def getAverageMoisture(ne_lat, ne_lon, sw_lat, sw_lon, name, user):
         return "ERROR: failed to insert. {}".format(e), 500
 
 
-# # @app.route("/getLand", methods=["GET"])
-# # def getLand(userID):
-# #     try:
-#         # check userID
-#         # Get all land ID with corresponding userID
+@app.route("/getLand/<UserID>", methods=["GET"])
+def getLand(UserID):
+    
+    id = ObjectId(UserID)
+
+    try:
+        # check userID
+        num_users = db.Users.count({"_id": id})
+        if num_users == 0:
+            return "Error: nvalid user", 404
+        
+    except Exception as e:
+        return "Error getting user. {}".format(e), 50
+
+    try:
+        # Get all land ID with corresponding userID
+        land = db.Land.find({"UserID": id})
+        
+        return dumps(land), 200
+    except Exception as e:
+        return "Error retrieving land: {}".format(e), 500
 
 
 # @app.route("/surveyQuadrants", methods=["POST"])
