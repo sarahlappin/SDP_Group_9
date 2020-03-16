@@ -176,10 +176,11 @@ def getLand(UserID):
 
 @app.route("/deleteLand/<LandID>/<UserID>", methods=["DELETE"])
 def deleteLand(LandID, UserID):
-    id = ObjectId(LandID)
-
+    land_id = ObjectId(LandID)
+    user_id = ObjectId(UserID)
+    
     try:
-        count = db.Land.count({"_id": id})
+        count = db.Land.count({"_id": land_id, "UserID": user_id})
 
         # Check land exists
         if count == 0:
@@ -192,8 +193,23 @@ def deleteLand(LandID, UserID):
     except Exception as e:
         return "Error deleting land. {}".format(e), 500
 
-# @app.route("/changeLandName/<LandID>/<UserID>", methods=["PUT"])
-# def changeLandName(LandID, UserID):
+@app.route("/updateLandName/<LandID>/<UserID>/<newName>", methods=["PUT"])
+def changeLandName(LandID, UserID, newName):
+    land_id = ObjectId(LandID)
+    user_id = ObjectId(UserID)
+
+    try:
+        count = db.Land.count({"_id": land_id})
+        print(count)
+         # Check land exists
+        if count == 0:
+            return "Error: Land does not exist", 404
+
+        updated = db.Land.find_one_and_update({"_id": land_id, "UserID": user_id}, {"$set": {"name": newName}}, return_document=ReturnDocument.AFTER)
+
+        return dumps(updated), 200
+    except Exception as e:
+        return "Error updating Land: {}".format(e), 500
 
 
 # @app.route("/surveyQuadrants", methods=["POST"])
