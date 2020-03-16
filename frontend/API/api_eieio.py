@@ -174,6 +174,27 @@ def getLand(UserID):
     except Exception as e:
         return "Error retrieving land: {}".format(e), 500
 
+@app.route("/deleteLand/<LandID>/<UserID>", methods=["DELETE"])
+def deleteLand(LandID, UserID):
+    id = ObjectId(LandID)
+
+    try:
+        count = db.Land.count({"_id": id})
+
+        # Check land exists
+        if count == 0:
+            return "Error: Land does not exist", 404
+        
+        # Delete
+        db.Land.delete_one({"_id": id})
+        return "success", 200
+
+    except Exception as e:
+        return "Error deleting land. {}".format(e), 500
+
+# @app.route("/changeLandName/<LandID>/<UserID>", methods=["PUT"])
+# def changeLandName(LandID, UserID):
+
 
 # @app.route("/surveyQuadrants", methods=["POST"])
 # def surveyQuadrants(qudrants, landID):
