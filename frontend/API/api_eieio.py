@@ -23,7 +23,7 @@ mongo = PyMongo(app)
 client = MongoClient("mongodb+srv://sarahlappin:SDP9@sdp-2ctih.gcp.mongodb.net/test?retryWrites=true&w=majority")
 db = client["Land"]
 collection = db["Land"]
-surv = db["Survey"]
+# surv = db["Survey"]
 
 
 
@@ -116,26 +116,40 @@ def getLandAverage(landID, reading_type):
 
 
 
-# @app.route("/addLand", methods=['POST'])
-# def getAverageMoisture(ne_latitude, ne_longitude, sw_latatitude, sw_longitude, land_name, user):
+@app.route("/addLand/<ne_lat>/<ne_lon>/<sw_lat>/<sw_lon>/<name>/<user>", methods=['POST'])
+def getAverageMoisture(ne_lat, ne_lon, sw_lat, sw_lon, name, user):
 
-#     # Input validation
-#     if ne_lat < sw_lat or ne_lon < sw_lon:
-#         return "Invalid input: coordinates", 404
+    # Input validation
+    if ne_lat < sw_lat or ne_lon < sw_lon:
+        return "Invalid input: coordinates", 404
 
-#     if name is None:
-#         return "Invalid input: no name", 404
+    if name is None:
+        return "Invalid input: no name", 404
 
-#     try:
-#         # need to get user id
-#         land_json = {ne_lat: ne_latitude, ne_lon: ne_longitude, sw_lat: sw_longitude, sw_lon: sw_longitude, name: land_name}
-#         result = db.Land.insert_one(land_json)
+    if user is None:
+        return "Invalid request: no user", 404
+    
+    # check user exists
+    try:
+        userID = ObjectId(user)
+        valid_user = db.Users.count({"_id": userID})
+        if valid_user == 0:
+            return "Invalid input: user does not exist", 404
+    except Exception as e:
+        return "Error: {}".format(e), 500
 
-#         output = result.inserted_id
+    # check land specification doesn't already exist?
+    
+    try:
+        # need to get user id
+        land_json = {"ne_lat": ne_lat, "ne_lon": ne_lon, "sw_lat": sw_lon, "sw_lon": sw_lon, "name": name, "UserID": userID}
+        result = db.Land.insert_one(land_json)
 
-#         return output, 200
-#     except:
-#         return "ERROR: Failed to run heatmaps.py", 500
+        output = result.inserted_id
+
+        return str(result), 200
+    except Exception as e:
+        return "ERROR: failed to insert. {}".format(e), 500
 
 
 # # @app.route("/getLand", methods=["GET"])
