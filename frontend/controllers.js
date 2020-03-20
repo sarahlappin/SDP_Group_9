@@ -36,13 +36,50 @@ export const postAddLand = async (req, res) => {
   res.redirect(routes.landDetail(newLand.id));
 };
 
+export const startSurvey = async (req, res) => {
+  const {
+    params: { id }
+  } = req;
+  try {
+    const land = await Land.findById(id);
+    res.render("landDetail", {
+      pageTitle: land.name,
+      name: land.name,
+      pointALong: land.pointALong,
+      pointALat: land.pointALat,
+      pointBLong: land.pointBLong,
+      pointBLat: land.pointBLat,
+      CO_VALUE: "8",
+      MOISTURE_VALUE: "700",
+      PH_VALUE: "6",
+      date: new Date().toLocaleString(),
+      land
+    });
+  } catch (error) {
+    console.log(error);
+    res.redirect(routes.home);
+  }
+};
+
 export const landDetail = async (req, res) => {
   const {
     params: { id }
   } = req;
   try {
     const land = await Land.findById(id);
-    res.render("landDetail", { pageTitle: land.title, land });
+    res.render("landDetail", {
+      pageTitle: land.name,
+      name: land.name,
+      pointALong: land.pointALong,
+      pointALat: land.pointALat,
+      pointBLong: land.pointBLong,
+      pointBLat: land.pointBLat,
+      CO_VALUE: "0",
+      MOISTURE_VALUE: "0",
+      PH_VALUE: "0",
+      date: "Surveying hasn't been done yet",
+      land
+    });
   } catch (error) {
     console.log(error);
     res.redirect(routes.home);
