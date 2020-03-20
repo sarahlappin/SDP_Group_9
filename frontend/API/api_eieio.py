@@ -26,7 +26,6 @@ collection = db["Land"]
 # surv = db["Survey"]
 
 
-
 class JSONEncoder(json.JSONEncoder):
     def default(self, o):
         if isinstance(o, ObjectId):
@@ -44,11 +43,8 @@ def getLandInfo(landID, reading_type):
 
     try:
         land_id = ObjectId(landID)
-        print(land_id)
         survey = db.Survey.find({"landID": land_id}).sort("end_time", pymongo.DESCENDING).limit(1)
-        print(survey[0]["end_time"])
         survey_id = survey[0]["_id"]
-        print(survey_id)
     except Exception as e:
         return ("Error connecting to Survey: {}".format(e)), 404
 
@@ -145,9 +141,9 @@ def getAverageMoisture(ne_lat, ne_lon, sw_lat, sw_lon, name, user):
         land_json = {"ne_lat": float(ne_lat), "ne_lon": float(ne_lon), "sw_lat": float(sw_lon), "sw_lon": float(sw_lon), "name": name, "UserID": userID}
         result = db.Land.insert_one(land_json)
 
-        output = result.inserted_id
+        output = str(result.inserted_id)
 
-        return str(result), 200
+        return output, 200
     except Exception as e:
         return "ERROR: failed to insert. {}".format(e), 500
 
@@ -174,6 +170,7 @@ def getLand(UserID):
     except Exception as e:
         return "Error retrieving land: {}".format(e), 500
 
+
 @app.route("/deleteLand/<LandID>/<UserID>", methods=["DELETE"])
 def deleteLand(LandID, UserID):
     land_id = ObjectId(LandID)
@@ -192,6 +189,7 @@ def deleteLand(LandID, UserID):
 
     except Exception as e:
         return "Error deleting land. {}".format(e), 500
+
 
 @app.route("/updateLandName/<LandID>/<UserID>/<newName>", methods=["PUT"])
 def changeLandName(LandID, UserID, newName):
@@ -212,24 +210,29 @@ def changeLandName(LandID, UserID, newName):
         return "Error updating Land: {}".format(e), 500
 
 
-# @app.route("/surveyQuadrants", methods=["POST"])
-# def surveyQuadrants(qudrants, landID):
-#     if len(qudrants) == 0:
-#         return "Invalid input: no qudrants selected", 404
+@app.route("/requestSurvey/<landID>/<userID>/<quadrants>", methods={"POST"})
+def requestSurvey(landID, userID, quadrants):
+    land_id = ObjectId(landID)
+    user_id = ObjectId(userID)
+    quadrant_list = list(quadrants)
+    print(quadrant_list)
+
+    if len(quadrant_list) == 0:
+        return "Invalid input: no qudrants selected", 404
     
-#     if landID is None:
-#         return "Invalid input: landID required", 404
+    if landID is None:
+        return "Invalid input: landID required", 404
 
-#     surveyJSON = {LandID: landID, areas: qudrants}
+    surveyJSON = {"LandID": land_id, "Quadrants": quadrant_list}
 
-#     try:
-#         result = db.Survey.insert_one(surveyJSON)
+    try:
+        result = db.Survey.insert_one(surveyJSON)
 
-#         output = result.inserted_id
+        output = str(result.inserted_id)
 
-#         return output, 200
-#     except:
-#         return "ERROR: unable to connect to MongoDB", 500
+        return output, 200
+    except:
+        return "ERROR: unable to connect to MongoDB", 500
 
     
 
