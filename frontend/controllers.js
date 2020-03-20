@@ -24,14 +24,30 @@ export const getAddLand = (req, res) =>
 
 export const postAddLand = async (req, res) => {
   const {
-    body: { name, pointALong, pointALat, pointBLong, pointBLat }
+    body: {
+      name,
+      pointALong,
+      pointALat,
+      pointBLong,
+      pointBLat,
+      userCO,
+      userMoist,
+      userPH
+    }
   } = req;
   const newLand = await Land.create({
     name,
     pointALong,
     pointALat,
     pointBLong,
-    pointBLat
+    pointBLat,
+    userCO,
+    userMoist,
+    userPH,
+    surveyCO: "0",
+    surveyMoist: "0",
+    surveyPH: "0",
+    surveyDate: "Surveying hasn't been done yet"
   });
   res.redirect(routes.landDetail(newLand.id));
 };
@@ -41,10 +57,19 @@ export const startSurvey = async (req, res) => {
     params: { id }
   } = req;
   try {
-    const land = await Land.findById(id);
-    const coValues = ["3", "4", "5", "6", "7", "8", "9"];
-    const moistValues = ["65", "70", "75", "80", "85", "90", "95"]
+    const coValues = ["3.5", "4.5", "5.5", "6.0", "7.0", "8.5", "9.0"];
+    const moistValues = ["65", "70", "75", "80", "85", "90", "95"];
     const phValues = ["5.5", "6.0", "6.5", "7.0", "7.5", "8.0", "8.5", "9.0"];
+    const land = await Land.findOneAndUpdate(
+      { _id: id },
+      {
+        surveyCO: coValues[(coValues.length * Math.random()) | 0],
+        surveyMoist: moistValues[(moistValues.length * Math.random()) | 0],
+        surveyPH: phValues[(phValues.length * Math.random()) | 0],
+        surveyDate: new Date().toLocaleString()
+      },
+      { new: true }
+    );
     res.render("landDetail", {
       pageTitle: land.name,
       name: land.name,
@@ -52,10 +77,13 @@ export const startSurvey = async (req, res) => {
       pointALat: land.pointALat,
       pointBLong: land.pointBLong,
       pointBLat: land.pointBLat,
-      CO_VALUE: coValues[coValues.length * Math.random() | 0],
-      MOISTURE_VALUE: moistValues[moistValues.length * Math.random() | 0],
-      PH_VALUE: phValues[phValues.length * Math.random() | 0],
-      date: new Date().toLocaleString(),
+      userCO: land.userCO,
+      userMoist: land.userMoist,
+      userPH: land.userPH,
+      surveyCO: land.surveyCO,
+      surveyMoist: land.surveyMoist,
+      surveyPH: land.surveyPH,
+      surveyDate: land.surveyDate,
       land
     });
   } catch (error) {
@@ -77,10 +105,13 @@ export const landDetail = async (req, res) => {
       pointALat: land.pointALat,
       pointBLong: land.pointBLong,
       pointBLat: land.pointBLat,
-      CO_VALUE: "0",
-      MOISTURE_VALUE: "0",
-      PH_VALUE: "0",
-      date: "Surveying hasn't been done yet",
+      userCO: land.userCO,
+      userMoist: land.userMoist,
+      userPH: land.userPH,
+      surveyCO: land.surveyCO,
+      surveyMoist: land.surveyMoist,
+      surveyPH: land.surveyPH,
+      surveyDate: land.surveyDate,
       land
     });
   } catch (error) {

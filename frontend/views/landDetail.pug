@@ -13,7 +13,13 @@ block content
             br
             | SW: #{pointBLong}, #{pointBLat}
             br
-            | Last reading: #{date}
+            | Last reading: #{surveyDate}
+            br
+            | Desired CO: #{userCO}
+            br
+            | Desired Moisture: #{userMoist}
+            br
+            | Desired pH: #{userPH}
     .form-container
         form(method="get", action=routes.startSurvey(land.id))
             input(type="submit", value="Start Survey")
@@ -29,7 +35,7 @@ block content
             .col-xs-4.col-centered
             .card.card-1.card-contents
                 h1.big.green.font-weight-light
-                | #{CO_VALUE}
+                | #{surveyCO}
                 p.green
                 | ppm
                 p
@@ -37,7 +43,7 @@ block content
             .col-xs-4.col-centered
             .card.card-1.card-contents
                 h1.big.green.font-weight-light
-                | #{MOISTURE_VALUE} %
+                | #{surveyMoist} %
                 p.green
                 | very moist
                 p
@@ -45,7 +51,7 @@ block content
             .col-xs-4.col-centered
             .card.card-1.card-contents
                 h1.big.red.font-weight-light
-                | #{PH_VALUE}
+                | #{surveyPH}
                 p.red
                 | slightly acidic
                 p
