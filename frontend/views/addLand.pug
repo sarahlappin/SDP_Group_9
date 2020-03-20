@@ -1,0 +1,39 @@
+extends layouts/main
+
+block content
+    .frame1
+    .txtIntruc.row
+        | Please input the land specifications below:
+    #landBox.landAreas.row(style='display: flex; align-items: center; justify-content: center')
+        form
+        .f2pointa.row
+            .col-lg-3.col-md-3.col-sm-3.col-xs-4.col-centered.descrip
+            label(for='PointA') Name:
+            .col-lg-4.col-md-4.col-sm-4.col-xs-4.col-centered.inputbox
+            input#Name(type='text' name='Name' placeholder='Name')
+            br
+        .f2pointa.row
+            .col-lg-3.col-md-3.col-sm-3.col-xs-4.col-centered.descrip
+            label(for='PointA') North East:
+            .col-lg-4.col-md-4.col-sm-4.col-xs-4.col-centered.inputbox
+            input#PointA(type='text' name='pointALong' placeholder='Longitude')
+            br
+            .col-lg-4.col-md-4.col-sm-4.col-xs-4.col-centered.inputbox
+            input(type='text' name='pointALat' placeholder='Latitude')
+            br
+        .f2pointb.row
+            .col-lg-3.col-md-3.col-sm-3.col-xs-4.col-centered.descrip
+            label(for='PointB') South West:
+            .col-lg-4.col-md-4.col-sm-4.col-xs-4.col-centered.inputbox
+            input#PointB(type='text' name='pointBLong' placeholder='Longitude')
+            br
+            .col-lg-4.col-md-4.col-sm-4.col-xs-4.col-centered.inputbox
+            input(type='text' name='pointBLat' placeholder='Latitude')
+            br
+        .row.buttons
+            .col-lg-6.col-md-6.col-sm-6.col-xs-6.col-centered.text-center
+            .cancel
+                input(type='submit' value='CANCEL')
+            .col-lg-6.col-md-6.col-sm-6.col-xs-6.col-centered.text-center
+            .start
+                input(type='submit' value='ADD')
