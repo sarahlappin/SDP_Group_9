@@ -42,6 +42,9 @@ export const startSurvey = async (req, res) => {
   } = req;
   try {
     const land = await Land.findById(id);
+    const coValues = ["3", "4", "5", "6", "7", "8", "9"];
+    const moistValues = ["65", "70", "75", "80", "85", "90", "95"]
+    const phValues = ["5.5", "6.0", "6.5", "7.0", "7.5", "8.0", "8.5", "9.0"];
     res.render("landDetail", {
       pageTitle: land.name,
       name: land.name,
@@ -49,9 +52,9 @@ export const startSurvey = async (req, res) => {
       pointALat: land.pointALat,
       pointBLong: land.pointBLong,
       pointBLat: land.pointBLat,
-      CO_VALUE: "8",
-      MOISTURE_VALUE: "700",
-      PH_VALUE: "6",
+      CO_VALUE: coValues[coValues.length * Math.random() | 0],
+      MOISTURE_VALUE: moistValues[moistValues.length * Math.random() | 0],
+      PH_VALUE: phValues[phValues.length * Math.random() | 0],
       date: new Date().toLocaleString(),
       land
     });

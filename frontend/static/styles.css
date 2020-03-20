@@ -10510,8 +10510,9 @@ a.text-dark:hover, a.text-dark:focus {
   .form-container a {
     max-width: 320px;
     width: 100%; }
-  .form-container button.delete {
-    background-color: #bb2f2a; }
+
+button.delete {
+  background-color: #bb2f2a; }
 
 .title-with-margins {
   padding: 30px 30px 0px 30px; }

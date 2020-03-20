@@ -37,7 +37,7 @@ block content
             .col-xs-4.col-centered
             .card.card-1.card-contents
                 h1.big.green.font-weight-light
-                | #{MOISTURE_VALUE}
+                | #{MOISTURE_VALUE} %
                 p.green
                 | very moist
                 p
@@ -64,3 +64,5 @@ block content
             #pH-heatmap.plotly-graph-div.col-xs-12.col-centered.heatmap-format(style='width: 1200px; margin: 25px 25px 25px 0px')
         // DIV PLOTS END HERE
         // LAND ANALYSIS AREA ENDS HERE
+        a(href=routes.deleteLand(land.id)) 
+            button.delete Delete Land
