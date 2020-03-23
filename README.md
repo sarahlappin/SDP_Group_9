@@ -6,8 +6,8 @@
 4.  Run `npm install`
 5.  Run `mongod`
 6.  If you are a windows user: 
-    1.  Add "set" to the commands on lines 32 and 33 so they are in the form: `"set WEBPACK_ENV=development webpack -w"`
-    2.  Change line 31 to: ` "dev:server": "nodemon --exec ./node_modules/.bin/babel-node.cmd init.js --ignore 'scss'",`
+    1.  Add "set" to the commands on lines 32 and 33 in package.json so they are in the form: `"set WEBPACK_ENV=development webpack -w"`
+    2.  Also change line 31 to: ` "dev:server": "nodemon --exec ./node_modules/.bin/babel-node.cmd init.js --ignore 'scss'",`
 7. If you are a linux/Mac user:
    1. Ensure "set" is not before the commands as in 6.1. The should look like: `"WEBPACK_ENV=development webpack -w"`
    2. Ensure line 31 of package.json is: ` "dev:server": "nodemon --exec ./node_modules/.bin/babel-node init.js --ignore 'scss'",`
