@@ -1,0 +1,11 @@
+extends layouts/main
+
+block content
+  .form-container
+    form(method="get", action='/')
+      input(type="text", name="firstName", placeholder="First Name", required=true)
+      input(type="text", name="lastName", placeholder="Last Name", required=true)
+      input(type="email", name="email", placeholder="Email", required=true)
+      input(type="password", name="password", placeholder="Password", required=true)
+      input(type="password", name="password2", placeholder="Confirm Password", required=true)
+      input(type="submit", value="Join")

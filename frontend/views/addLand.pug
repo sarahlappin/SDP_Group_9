@@ -1,0 +1,15 @@
+extends layouts/main
+
+block content
+    .form-container
+        form(action=`/lands${routes.addLand}`, method="post")
+            label(for='Name') Name of land:
+            input(type='text', name='name', placeholder='Name', required=true)
+            label(for='PointA') North East (NE) Point of land:
+            input(type='text', name='pointALong', placeholder='Longitude', required=true)
+            input(type='text', name='pointALat', placeholder='Latitude', required=true)
+            label(for='PointB') South West (SW) Point of land:
+            input(type='text', name='pointBLong', placeholder='Longitude', required=true)
+            input(type='text', name='pointBLat', placeholder='Latitude', required=true)
+            input(type="submit", value="ADD")
+    
