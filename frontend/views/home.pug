@@ -1,7 +1,10 @@
 extends layouts/main
+include mixins/landBlock
 
 block content
-    h1 eIEIO
-    h2 Your autonomous land surveying service
-    h3 What is eIEIO?
-    
+  .home-lands
+    each land in lands
+      +landBlock({
+        id: land.id,
+        name: land.name
+      })

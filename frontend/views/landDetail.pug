@@ -1,19 +1,29 @@
 extends layouts/main
 block content
-    link(rel='stylesheet' href='https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css' integrity='sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh' crossorigin='anonymous')
-    script(type='text/javascript' src='/plotlyjs-bundle.js')
-    script(type='text/javascript' src='/figure.js')
     div
     // THE ENTIRE THING
     .row.title-area(style='align-items: baseline')
         .col-sm-2
         .col-sm-10
         h1
-            | The Meadows
-        p
-            | Longitude, Latitude
+            | #{name}
             br
-            | Last reading: Friday, 6 March 2020 11:11
+        p
+            | NE: #{pointALong}, #{pointALat} 
+            br
+            | SW: #{pointBLong}, #{pointBLat}
+            br
+            | Last reading: #{surveyDate}
+            br
+            | Desired CO: #{userCO}
+            br
+            | Desired Moisture: #{userMoist}
+            br
+            | Desired pH: #{userPH}
+    .form-container
+        form(method="get", action=routes.startSurvey(land.id))
+            input(type="submit", value="Start Survey")
+    br
     // Div after the title
     div(style='background-color: #f8f8f8')
         // RECENT READINGS
@@ -25,7 +35,7 @@ block content
             .col-xs-4.col-centered
             .card.card-1.card-contents
                 h1.big.green.font-weight-light
-                | 8
+                | #{surveyCO}
                 p.green
                 | ppm
                 p
@@ -33,7 +43,7 @@ block content
             .col-xs-4.col-centered
             .card.card-1.card-contents
                 h1.big.green.font-weight-light
-                | 700
+                | #{surveyMoist} %
                 p.green
                 | very moist
                 p
@@ -41,7 +51,7 @@ block content
             .col-xs-4.col-centered
             .card.card-1.card-contents
                 h1.big.red.font-weight-light
-                | 6
+                | #{surveyPH}
                 p.red
                 | slightly acidic
                 p
@@ -60,3 +70,5 @@ block content
             #pH-heatmap.plotly-graph-div.col-xs-12.col-centered.heatmap-format(style='width: 1200px; margin: 25px 25px 25px 0px')
         // DIV PLOTS END HERE
         // LAND ANALYSIS AREA ENDS HERE
+        a(href=routes.deleteLand(land.id)) 
+            button.delete Delete Land
