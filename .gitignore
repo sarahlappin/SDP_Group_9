@@ -1,0 +1,5 @@
+# Default ignored files
+
+/workspace.xml
+frontend/node_modules/
+_pycache_
