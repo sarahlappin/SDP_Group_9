@@ -2,9 +2,22 @@ extends layouts/main
 include mixins/landBlock
 
 block content
-  .home-lands
-    each land in lands
-      +landBlock({
-        id: land.id,
-        name: land.name
-      })
+    .logo-block
+      img(src='images/sdp-logo.png' alt='eIEIO Logo' height="250")
+      br
+      br
+      h3 Welcome Back!
+
+        //- h4 Helping You Make the Most of Your Land
+        //- br
+
+    .home-lands
+      each land in lands
+        .grid-item
+          +landBlock({
+            id: land.id,
+            name: land.name
+          })
+
+      #add-land.grid-item
+        p Add Land Area

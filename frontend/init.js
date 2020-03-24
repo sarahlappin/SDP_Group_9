@@ -20,6 +20,7 @@ app.use(middleware);
 app.use(routes.home, globalRouter);
 app.use(routes.users, userRouter);
 app.use(routes.lands, landRouter);
+app.use(express.static(__dirname+'/public'));
 
 const handleListening = () => {
   console.log(`✅ Listening on http://localhost:${PORT}`);

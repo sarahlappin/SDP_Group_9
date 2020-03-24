@@ -547,6 +547,56 @@ hr {
   border: 0;
   border-top: 1px solid rgba(0, 0, 0, 0.1); }
 
+.intro {
+  width: 100%;
+  text-align: center;
+  margin: 0;
+  right: 0;
+  left: 0;
+  margin-top: 0;
+  padding: 0;
+  background-color: white;
+  float: left;
+  position: absolute;
+  height: auto;
+}
+
+.about {
+  width: 100%;
+  text-align: center;
+  margin: 0;
+  right: 0;
+  left: 0;
+  padding: 0;
+  background-color: white;
+  float: left;
+  position: absolute;
+  height: auto;
+}
+
+.home-lands {
+  display: grid;
+  grid-template-columns: auto auto auto;
+  background-color: #e6e6e6;
+  padding: 10px;
+  grid-gap: 50px;
+  /* justify-content: space-between; */
+}
+.grid-item {
+  background-color: rgba(255, 255, 255, 0.8);
+  border: 1px solid rgba(0, 0, 0, 0.8);
+  padding: 20px;
+  font-size: 30px;
+  text-align: center;
+  font-size: medium;
+  color: darkblue;
+}
+
+.logo-block {
+  text-align: center;
+  margin-bottom: 3%;
+}
+
 small,
 .small {
   font-size: 80%;
