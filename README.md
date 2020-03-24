@@ -1,5 +1,6 @@
-#DP GROUP 9 - eEIEIO
+#SDP GROUP 9 - eEIEIO
 
+###Front-end Server Set-up:
 1.  Ensure you have MongoDB installed: [https://www.mongodb.com/download-center/community]
 2.  Install Node.js: [https://nodejs.org/en/download/]
 3.  Run `cd <SDP directory>/frontend`
@@ -14,5 +15,6 @@
 8. In a new terminal run: `npm run dev:assets`
 9.  On the same terminal as 4 run: `npm run dev:server`
 10. If instruction 9 gives you an error, try running: `npm i @babel/core @babel/node @babel/polyfill @babel/preset-env babel-loader` and try 8 again.
+11. Go to `localhost:4000`
 
 
