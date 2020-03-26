@@ -6,18 +6,22 @@ block content
       img(src='images/sdp-logo.png' alt='eIEIO Logo' height="250")
       br
       br
-      h3 Welcome Back!
+      h3 Welcome Back! View your monitored lands:
 
         //- h4 Helping You Make the Most of Your Land
         //- br
 
-    .home-lands
-      each land in lands
-        .grid-item
-          +landBlock({
-            id: land.id,
-            name: land.name
-          })
+    .land-box
+      //- h3 My Land  
+      br
+      .home-lands
+        each land in lands
+          .grid-item
+            +landBlock({
+              id: land.id,
+              name: land.name
+            })
 
-      #add-land.grid-item
-        p Add Land Area
+        #add-land.grid-item
+          h4 +
+          p Add Land

@@ -547,6 +547,13 @@ hr {
   border: 0;
   border-top: 1px solid rgba(0, 0, 0, 0.1); }
 
+#add-land {
+  /* font-weight: bold; */
+  background-color: #d1e8fa;
+  color: #3a88c3;
+  font-size: medium;
+}
+
 .intro {
   width: 100%;
   text-align: center;
@@ -573,23 +580,27 @@ hr {
   position: absolute;
   height: auto;
 }
+.land-box {
+  padding: 10px;
+  background-color: #e6e6e6;
+  text-align: center;
+  color: #3a88c8;
+}
 
 .home-lands {
   display: grid;
   grid-template-columns: auto auto auto;
-  background-color: #e6e6e6;
   padding: 10px;
   grid-gap: 50px;
   /* justify-content: space-between; */
 }
 .grid-item {
   background-color: rgba(255, 255, 255, 0.8);
-  border: 1px solid rgba(0, 0, 0, 0.8);
+  border: 1px solid #3a88c3;
   padding: 20px;
   font-size: 30px;
   text-align: center;
   font-size: medium;
-  color: darkblue;
 }
 
 .logo-block {
