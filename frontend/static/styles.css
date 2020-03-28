@@ -547,67 +547,6 @@ hr {
   border: 0;
   border-top: 1px solid rgba(0, 0, 0, 0.1); }
 
-#add-land {
-  /* font-weight: bold; */
-  background-color: #d1e8fa;
-  color: #3a88c3;
-  font-size: medium;
-}
-
-.intro {
-  width: 100%;
-  text-align: center;
-  margin: 0;
-  right: 0;
-  left: 0;
-  margin-top: 0;
-  padding: 0;
-  background-color: white;
-  float: left;
-  position: absolute;
-  height: auto;
-}
-
-.about {
-  width: 100%;
-  text-align: center;
-  margin: 0;
-  right: 0;
-  left: 0;
-  padding: 0;
-  background-color: white;
-  float: left;
-  position: absolute;
-  height: auto;
-}
-.land-box {
-  padding: 10px;
-  background-color: #e6e6e6;
-  text-align: center;
-  color: #3a88c8;
-}
-
-.home-lands {
-  display: grid;
-  grid-template-columns: auto auto auto;
-  padding: 10px;
-  grid-gap: 50px;
-  /* justify-content: space-between; */
-}
-.grid-item {
-  background-color: rgba(255, 255, 255, 0.8);
-  border: 1px solid #3a88c3;
-  padding: 20px;
-  font-size: 30px;
-  text-align: center;
-  font-size: medium;
-}
-
-.logo-block {
-  text-align: center;
-  margin-bottom: 3%;
-}
-
 small,
 .small {
   font-size: 80%;
@@ -10629,3 +10568,15 @@ button.delete {
   -webkit-box-shadow: 0 14px 28px rgba(0, 0, 0, 0.25), 0 10px 10px rgba(0, 0, 0, 0.22);
      -moz-box-shadow: 0 14px 28px rgba(0, 0, 0, 0.25), 0 10px 10px rgba(0, 0, 0, 0.22);
           box-shadow: 0 14px 28px rgba(0, 0, 0, 0.25), 0 10px 10px rgba(0, 0, 0, 0.22); }
+
+.logo-block,
+.land-box {
+  width: 25%;
+  margin: 0 auto;
+  padding: 20px; }
+
+.land-box .home-lands {
+  margin-top: -20px; }
+
+.land-box #add-land.grid-item {
+  margin-top: 50px; }
