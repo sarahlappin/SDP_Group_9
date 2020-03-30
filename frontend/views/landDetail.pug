@@ -2,27 +2,36 @@ extends layouts/main
 block content
     div
     // THE ENTIRE THING
-    .row.title-area(style='align-items: baseline')
+    .row.title-area()
         .col-sm-2
         .col-sm-10
         h1
             | #{name}
             br
+        .col-sm-2
+        .col-sm-10
         p
-            | NE: #{pointALong}, #{pointALat} 
+            b NE: 
+            |  #{pointALong}, #{pointALat} 
             br
-            | SW: #{pointBLong}, #{pointBLat}
+            b SW:
+            |  #{pointBLong}, #{pointBLat}
             br
-            | Last reading: #{surveyDate}
+            b Desired CO:
+            |  #{userCO}
             br
-            | Desired CO: #{userCO}
+            b Desired Moisture:
+            |  #{userMoist}
             br
-            | Desired Moisture: #{userMoist}
+            b Desired pH:
+            |  #{userPH}
             br
-            | Desired pH: #{userPH}
-    .form-container
-        form(method="get", action=routes.startSurvey(land.id))
-            input(type="submit", value="Start Survey")
+            b Last reading:
+            |  #{surveyDate}
+
+        .form-container
+            form(method="get", action=routes.startSurvey(land.id))
+                input(type="submit", value="Request Survey")
     br
     // Div after the title
     div(style='background-color: #f8f8f8')
