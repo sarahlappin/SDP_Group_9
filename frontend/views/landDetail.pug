@@ -1,4 +1,5 @@
 extends layouts/main
+
 block content
     div
     // THE ENTIRE THING
@@ -37,41 +38,82 @@ block content
     div(style='background-color: #f8f8f8')
         // RECENT READINGS
         div
-        .title-with-margins
-            h1
-            | Most recent readings
-        .row(style='display: flex; align-items: center; justify-content: center')
+        .title-with-margins.analysis-section-title
+            h3 Most recent readings
+
+        .row.reading
             .col-xs-4.col-centered
-            .card.card-1.card-contents
+            .card.card-1.card-contents.reading
                 h1.big.green.font-weight-light
-                | #{surveyCO}
-                p.green
-                | ppm
+                .reading-title
+                    p Carbon Monoxide:
                 p
-                | Carbon Monoxide
+                | #{surveyCO} ppm
             .col-xs-4.col-centered
-            .card.card-1.card-contents
+            .card.card-1.card-contents.reading
                 h1.big.green.font-weight-light
+                .reading-title 
+                    p Soil Moisture:
+                P
                 | #{surveyMoist} %
                 p.green
                 | very moist
-                p
-                | Soil Moisture
             .col-xs-4.col-centered
-            .card.card-1.card-contents
+            .card.card-1.card-contents.reading
                 h1.big.red.font-weight-light
+                .reading-title
+                    p pH:
                 | #{surveyPH}
                 p.red
                 | slightly acidic
-                p
-                | pH
-        // RECENT READINGS END HERE
         // <div id="pHtable"></div>
-        div
-        // LAND ANALYSIS AREA STARTS HERE
-        .title-with-margins
-            h1
-            | Overall land analysis
+
+        .title-with-margins.analysis-section-title
+            h3 Trends
+
+        .row.trends
+            .col-xs-4.col-centered
+            .card.card-1.card-contents.reading
+                h1.big.green.font-weight-light
+                .reading-title
+                    p Carbon Monoxide
+
+                script(src='scripts/readingTrends.js')
+            .col-xs-4.col-centered
+            .card.card-1.card-contents.reading
+                h1.big.green.font-weight-light
+                .reading-title 
+                    p Soil Moisture
+        
+            .col-xs-4.col-centered
+            .card.card-1.card-contents.reading
+                h1.big.red.font-weight-light
+                .reading-title
+                    p pH
+
+        .title-with-margins.analysis-section-title
+            h3 Visualisation of Recent Readings
+            p These heatmaps visualise the values of the recent set of readings accross the land area
+
+        .row.trends
+            .col-xs-4.col-centered
+            .card.card-1.card-contents.reading
+                h1.big.green.font-weight-light
+                .reading-title
+                    p Carbon Monoxide
+
+            .col-xs-4.col-centered
+            .card.card-1.card-contents.reading
+                h1.big.green.font-weight-light
+                .reading-title 
+                    p Soil Moisture
+        
+            .col-xs-4.col-centered
+            .card.card-1.card-contents.reading
+                h1.big.red.font-weight-light
+                .reading-title
+                    p pH
+
         // DIV PLOTS START HERE
         .row(style='display: flex; align-items: center; justify-content: center')
             #co-heatmap.plotly-graph-div.col-xs-12.col-centered.heatmap-format(style='width: 1200px; margin: 25px 25px 25px 0px')

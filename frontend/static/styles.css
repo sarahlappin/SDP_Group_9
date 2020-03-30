@@ -623,6 +623,29 @@ hr {
   width: 100%;
 }
 
+.analysis-section-title {
+  text-align: center;
+  /* font-weight: bold; */
+  font-size: large;
+}
+
+.reading-title {
+  font-weight: bold;
+  font-size: medium;
+}
+
+.reading, .trends {
+  display: flex;
+  text-align: center;
+  justify-content: center;
+  size: auto;
+  padding: 8px;
+  /* max-height: 150px;
+  max-width: 300px */
+
+}
+
+
 small,
 .small {
   font-size: 80%;
