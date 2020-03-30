@@ -552,6 +552,8 @@ hr {
   /* background-color: #d1e8fa; */
   color: #3a88c3;
   font-size: medium;
+  border: none;
+  background-color: none;
 }
 
 .intro {
@@ -585,6 +587,8 @@ hr {
   background-color: #e6e6e6;
   text-align: center;
   color: #3a88c8;
+  left: 10px;
+  right: 10px;
 }
 
 .home-lands {
@@ -593,19 +597,30 @@ hr {
   padding: 10px;
   grid-gap: 50px;
   /* justify-content: space-between; */
+} 
+
+.landBlock .land_name {
+  color: #0984e3;
 }
+
 .grid-item {
   background-color: rgba(255, 255, 255, 0.8);
   border: 1px solid #3a88c3;
-  padding: 20px;
+  padding: 10px;
   font-size: 30px;
-  text-align: center;
   font-size: medium;
+  max-height: 50px;
+  text-align: center;
+  border-radius: 5px;
 }
 
 .logo-block {
   text-align: center;
   margin-bottom: 3%;
+}
+
+#add-land {
+  width: 100%;
 }
 
 small,
@@ -10572,6 +10587,11 @@ a.text-dark:hover, a.text-dark:focus {
     max-width: 320px;
     width: 100%; }
 
+.addland {
+  width: 1000px;
+  height: 50px;
+}
+
 button.delete {
   background-color: #bb2f2a; }
 
@@ -10630,14 +10650,11 @@ button.delete {
      -moz-box-shadow: 0 14px 28px rgba(0, 0, 0, 0.25), 0 10px 10px rgba(0, 0, 0, 0.22);
           box-shadow: 0 14px 28px rgba(0, 0, 0, 0.25), 0 10px 10px rgba(0, 0, 0, 0.22); }
 
-.logo-block,
+/* .logo-block,
 .land-box {
   width: 25%;
   margin: 0 auto;
-  padding: 20px; }
+  padding: 20px; } */
 
-.land-box .home-lands {
-  margin-top: -20px; }
-
-.land-box #add-land.grid-item {
-  margin-top: 50px; }
+/* .land-box .home-lands {
+  margin-top: -20px; }*/
