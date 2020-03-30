@@ -10519,6 +10519,9 @@ a.text-dark:hover, a.text-dark:focus {
       .header .header_wrapper .header_column ul a {
         color: white;
         text-decoration: none; }
+        .header-hover .header_wrapper .header_column ul a::hover{
+          color: #ff4500;
+        }
     .header .header_wrapper .header_column form {
       width: auto; }
       .header .header_wrapper .header_column form input {
@@ -10641,6 +10644,7 @@ button.delete.top-small {
   background-color: #bb2f2a;
   border-radius: 5px;
   height: 45px;
+  position: static;
  }
 
 button.delete {
@@ -10651,6 +10655,7 @@ button.BackToLand {
   background-color: var(--green);
   height: auto;
   border-radius: 5px;
+  position: static;
 }
 
 .title-with-margins {
