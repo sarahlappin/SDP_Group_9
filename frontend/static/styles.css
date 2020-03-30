@@ -10629,3 +10629,15 @@ button.delete {
   -webkit-box-shadow: 0 14px 28px rgba(0, 0, 0, 0.25), 0 10px 10px rgba(0, 0, 0, 0.22);
      -moz-box-shadow: 0 14px 28px rgba(0, 0, 0, 0.25), 0 10px 10px rgba(0, 0, 0, 0.22);
           box-shadow: 0 14px 28px rgba(0, 0, 0, 0.25), 0 10px 10px rgba(0, 0, 0, 0.22); }
+
+.logo-block,
+.land-box {
+  width: 25%;
+  margin: 0 auto;
+  padding: 20px; }
+
+.land-box .home-lands {
+  margin-top: -20px; }
+
+.land-box #add-land.grid-item {
+  margin-top: 50px; }

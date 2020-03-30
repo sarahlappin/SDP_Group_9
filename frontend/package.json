@@ -28,9 +28,9 @@
     "webpack-cli": "^3.3.11"
   },
   "scripts": {
-    "dev:server": "nodemon --exec ./node_modules/.bin/babel-node.cmd init.js --ignore 'scss'",
-    "dev:assets": "set WEBPACK_ENV=development webpack -w",
-    "build:assets": "set WEBPACK_ENV=production webpack"
+    "dev:server": "nodemon --exec ./node_modules/.bin/babel-node init.js --ignore 'scss'",
+    "dev:assets": "WEBPACK_ENV=development webpack -w",
+    "build:assets": "WEBPACK_ENV=production webpack"
   },
   "devDependencies": {
     "nodemon": "^2.0.2"

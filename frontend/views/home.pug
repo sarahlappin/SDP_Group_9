@@ -6,7 +6,8 @@ block content
       img(src='images/sdp-logo.png' alt='eIEIO Logo' height="250")
       br
       br
-      h3 Welcome Back! View your monitored lands:
+      h3 Welcome Back! 
+      h3 View your monitored lands:
 
         //- h4 Helping You Make the Most of Your Land
         //- br
@@ -23,5 +24,6 @@ block content
             })
 
         #add-land.grid-item
-          h4 +
-          p Add Land
+          .form-container
+            form(action=`/lands${routes.addLand}`, method="get")
+              input(type="submit", value="+")
