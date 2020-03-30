@@ -30,10 +30,14 @@ block content
             b Last reading:
             |  #{surveyDate}
 
-        .form-container
-            form(method="get", action=routes.startSurvey(land.id))
-                input(type="submit", value="Request Survey")
-    br
+        .col-xl-9
+            .form-container
+                form(method="get", action=routes.startSurvey(land.id))
+                    input(type="submit", value="Request Survey")
+                
+                a(href=routes.deleteLand(land.id)) 
+                    button.delete.top-small Delete Land
+    
     // Div after the title
     div(style='background-color: #f8f8f8')
         // RECENT READINGS
