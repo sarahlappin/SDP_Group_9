@@ -4,6 +4,10 @@ block content
     div
     // THE ENTIRE THING
     .row.title-area()
+        //- .col-sm-1
+            //- a(href=routes.deleteLand(land.id)) 
+            //-         button.delete.top-small Back to My Land
+
         .col-sm-2
         .col-sm-10
         h1
@@ -29,6 +33,11 @@ block content
             br
             b Last reading:
             |  #{surveyDate}
+
+            br
+            br
+            a(href='/')
+                button.BackToLand Back to My Land
 
         .col-xl-9
             .form-container

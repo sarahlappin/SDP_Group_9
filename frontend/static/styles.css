@@ -10620,10 +10620,13 @@ button.delete.top-small {
   border-radius: 5px;
  }
 
- button.delete {
+button.delete {
   background-color: #bb2f2a;
- }
+}
 
+button.BackToLand {
+  background-color: var(--green);
+}
 
 .title-with-margins {
   padding: 30px 30px 0px 30px; }
