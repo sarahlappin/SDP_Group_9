@@ -10618,6 +10618,7 @@ a.text-dark:hover, a.text-dark:focus {
 button.delete.top-small {
   background-color: #bb2f2a;
   border-radius: 5px;
+  height: auto;
  }
 
 button.delete {
@@ -10626,6 +10627,8 @@ button.delete {
 
 button.BackToLand {
   background-color: var(--green);
+  height: auto;
+  border-radius: 5px;
 }
 
 .title-with-margins {

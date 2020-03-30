@@ -17,7 +17,7 @@ block content
       //- h3 My Land  
       br
       .home-lands
-        each land in lands
+        each land in lands.sort()
           .grid-item
             +landBlock({
               id: land.id,
