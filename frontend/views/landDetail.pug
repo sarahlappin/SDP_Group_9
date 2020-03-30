@@ -45,7 +45,7 @@ block content
                     input(type="submit", value="Request Survey")
                 
                 a(href=routes.deleteLand(land.id)) 
-                    button.delete.top-small Delete Land
+                    button.delete.top-small Remove Land
     
     // Div after the title
     div(style='background-color: #f8f8f8')
@@ -82,6 +82,29 @@ block content
         // <div id="pHtable"></div>
 
         .title-with-margins.analysis-section-title
+            h3 Visualisation of Recent Readings
+            p These heatmaps visualise the values of the recent set of readings accross the land area
+
+        .row.trends
+            .col-xs-4.col-centered
+            .card.card-1.card-contents.reading
+                h1.big.green.font-weight-light
+                .reading-title
+                    p Carbon Monoxide
+
+            .col-xs-4.col-centered
+            .card.card-1.card-contents.reading
+                h1.big.green.font-weight-light
+                .reading-title 
+                    p Soil Moisture
+        
+            .col-xs-4.col-centered
+            .card.card-1.card-contents.reading
+                h1.big.red.font-weight-light
+                .reading-title
+                    p pH
+
+        .title-with-margins.analysis-section-title
             h3 Trends
 
         .row.trends
@@ -104,28 +127,6 @@ block content
                 .reading-title
                     p pH
 
-        .title-with-margins.analysis-section-title
-            h3 Visualisation of Recent Readings
-            p These heatmaps visualise the values of the recent set of readings accross the land area
-
-        .row.trends
-            .col-xs-4.col-centered
-            .card.card-1.card-contents.reading
-                h1.big.green.font-weight-light
-                .reading-title
-                    p Carbon Monoxide
-
-            .col-xs-4.col-centered
-            .card.card-1.card-contents.reading
-                h1.big.green.font-weight-light
-                .reading-title 
-                    p Soil Moisture
-        
-            .col-xs-4.col-centered
-            .card.card-1.card-contents.reading
-                h1.big.red.font-weight-light
-                .reading-title
-                    p pH
 
         // DIV PLOTS START HERE
         .row(style='display: flex; align-items: center; justify-content: center')

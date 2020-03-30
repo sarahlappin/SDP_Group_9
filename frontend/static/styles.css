@@ -10452,6 +10452,7 @@ a.text-dark:hover, a.text-dark:focus {
   .table .thead-dark th {
     color: inherit;
     border-color: #dee2e6; } }
+    
 .header {
   background-color: #0984e3;
   margin-bottom: 50px; }
@@ -10464,7 +10465,7 @@ a.text-dark:hover, a.text-dark:focus {
     grid-template-columns: repeat(3, 1fr);
     -webkit-box-align: center;
     -webkit-align-items: center;
-       -moz-box-align: center;
+        -moz-box-align: center;
         -ms-flex-align: center;
             align-items: center; }
     .header .header_wrapper .header_column h3 {
@@ -10478,7 +10479,7 @@ a.text-dark:hover, a.text-dark:focus {
       display: flex;
       -webkit-box-align: center;
       -webkit-align-items: center;
-         -moz-box-align: center;
+          -moz-box-align: center;
           -ms-flex-align: center;
               align-items: center; }
     .header .header_wrapper .header_column ul {
@@ -10489,7 +10490,7 @@ a.text-dark:hover, a.text-dark:focus {
       display: flex;
       -webkit-box-pack: space-evenly;
       -webkit-justify-content: space-evenly;
-         -moz-box-pack: space-evenly;
+          -moz-box-pack: space-evenly;
           -ms-flex-pack: space-evenly;
               justify-content: space-evenly;
       margin-right: -500px;
@@ -10508,7 +10509,7 @@ a.text-dark:hover, a.text-dark:focus {
         padding: 7px 10px;
         width: 100%;
         -webkit-border-radius: 5px;
-           -moz-border-radius: 5px;
+            -moz-border-radius: 5px;
                 border-radius: 5px;
         font-size: 14px;
         color: #444444;
@@ -10609,16 +10610,16 @@ a.text-dark:hover, a.text-dark:focus {
   .form-container a {
     max-width: 320px;
     width: 100%; }
-
-.addland {
-  width: 1000px;
+/* 
+#add-land {
+  width: auto;
   height: 50px;
-}
+} */
 
 button.delete.top-small {
   background-color: #bb2f2a;
   border-radius: 5px;
-  height: auto;
+  height: 45px;
  }
 
 button.delete {
