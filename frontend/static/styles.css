@@ -10645,6 +10645,7 @@ button.delete.top-small {
   border-radius: 5px;
   height: 45px;
   position: static;
+  margin-top: 30px;
  }
 
 button.delete {
