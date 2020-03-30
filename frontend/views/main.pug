@@ -3,10 +3,10 @@ html
   head
     title #{pageTitle} | eIEIO
     link(rel="stylesheet", href="/static/styles.css")
-    <link rel="icon" href="images/sdp-logo.png" type="image/gif">
+    //- link(rel="icon", href="images/sdp-logo.png", type="image/x-icon")
   body
-    include ../partials/header
+    include partials/header
     main
       block content
-    include ../partials/footer
+    include partials/footer
     script(src="/static/main.js")

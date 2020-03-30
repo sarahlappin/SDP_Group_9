@@ -1,6 +1,7 @@
-extends layouts/main
+extends main
 
 block content
+    link(rel="icon", href="images/sdp-logo.png", type="image/x-icon")
     div
     // THE ENTIRE THING
     .row.title-area()
@@ -39,13 +40,13 @@ block content
             a(href='/')
                 button.BackToLand Back to My Land
 
-        .col-xl-9
+        .col-xl-8
             .form-container.survey
                 form(method="get", action=routes.startSurvey(land.id))
                     input(type="submit", value="Request Survey")
                 
                 a(href=routes.deleteLand(land.id)) 
-                    button.delete.top-small Remove Land
+                    button.delete.top-small Remove Land Entry
     
     // Div after the title
     div(style='background-color: #f8f8f8')

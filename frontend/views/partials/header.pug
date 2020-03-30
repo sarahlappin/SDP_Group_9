@@ -1,12 +1,18 @@
 header.header
-    <link rel="icon" href="images/sdp-logo.png" type="image/gif">
+    link(rel="icon", href="/images/sdp-logo.png", type="image/icon")
     .header_wrapper
+        .header_column.header-logo
+            img(src='images/sdp-logo.png' alt='eIEIO Logo' height="40")
         .header_column
             a(href='/')
                 h3 eIEIO
-        .header_column
+        .header_column.header-columns-right
             ul
                 if !user.isAuthenticated
+                    li 
+                        a(href='/') About
+                    li
+                        a(href='/') Contact Us
                     li
                         a(href='/join') Join
                     li
@@ -14,11 +20,11 @@ header.header
                 else
                     li
                         a(href=`/lands${routes.addLand}`) Add Land
+                    li 
+                        a(href='/') Help
+                    li
+                        a(href='/') Contact Us
                     li
                         a(href='/') Log Out
-                    //- li 
-                    //-     a(href='/') Contact Us
-                    //- li  
-                    //-     a(href='/') Help
 
                         
