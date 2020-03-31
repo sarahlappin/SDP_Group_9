@@ -110,22 +110,15 @@ block content
         .row.trends
             .col-xs-4.col-centered
             .card.card-1.card-contents.reading
-                h1.big.green.font-weight-light
-                .reading-title
-                    p Carbon Monoxide
+                #chartContainer1(style='height: 300px; width: 100%;')
 
-                script(src='scripts/readingTrends.js')
             .col-xs-4.col-centered
             .card.card-1.card-contents.reading
-                h1.big.green.font-weight-light
-                .reading-title 
-                    p Soil Moisture
+                #chartContainer2(style='height: 300px; width: 100%;')
         
             .col-xs-4.col-centered
             .card.card-1.card-contents.reading
-                h1.big.red.font-weight-light
-                .reading-title
-                    p pH
+                #chartContainer3(style='height: 300px; width: 100%;')
 
 
         // DIV PLOTS START HERE
@@ -136,4 +129,5 @@ block content
         // DIV PLOTS END HERE
         // LAND ANALYSIS AREA ENDS HERE
         a(href=routes.deleteLand(land.id)) 
-            button.delete Delete Land
+            button.delete Remove Land Entry
+    

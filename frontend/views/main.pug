@@ -3,7 +3,113 @@ html
   head
     title #{pageTitle} | eIEIO
     link(rel="stylesheet", href="/static/styles.css")
+    script(src="https://canvasjs.com/assets/script/canvasjs.min.js")      
+
     //- link(rel="icon", href="images/sdp-logo.png", type="image/x-icon")
+
+    //- Script for Carbon Monoxide Graph
+    script(type='text/javascript').
+      window.onload = function () {
+      var chart = new CanvasJS.Chart("chartContainer1",
+      {
+      title:{
+        text: "Carbon Monoxide Level",
+        fontFamily: "sans-serif",
+        fontSize: 20
+      },
+      axisX: {
+        interval: 1,
+        title: "Month",
+        gridThickness: 1,
+        lineThickness: 2,
+        tickLength: 7,
+        tickThickness: 2
+      },
+      axisY:{
+        interval: 1,
+        title: "CO Level (ppm)",
+        gridThickness: 1,
+        lineThickness: 2,
+        tickLength: 7,
+        tickThickness: 2,
+        //- viewportMaximum: 15
+      },
+      data: [
+      {
+      type: "line",
+      color: "orange",
+      dataPoints: [
+      { x: new Date(2019, 00, 1), y: 9.0 },
+      { x: new Date(2019, 01, 1), y: 9.3 },
+      { x: new Date(2019, 02, 1), y: 9.2 },
+      { x: new Date(2019, 03, 1), y: 8.6 },
+      { x: new Date(2019, 04, 1), y: 8.7 },
+      { x: new Date(2019, 05, 1), y: 8.9 },
+      { x: new Date(2019, 06, 1), y: 9.1 },
+      { x: new Date(2019, 07, 1), y: 8.8 },
+      //- { x: new Date(2012, 08, 1), y: 9.3 },
+      //- { x: new Date(2012, 09, 1), y: 9.2 },
+      //- { x: new Date(2012, 10, 1), y: 9.3 },
+      //- { x: new Date(2012, 11, 1), y: 9.0 }
+      ]
+      }
+      ]
+      });
+      chart.render();
+      }
+
+    //- Script for Soil Moisture Graph
+    script(type='text/javascript').
+      window.onload = function () {
+      var chart = new CanvasJS.Chart("chartContainer2",
+      {
+      title:{
+        text: "Carbon Monoxide Level",
+        fontFamily: "sans-serif",
+        fontSize: 20
+      },
+      axisX: {
+        interval: 1,
+        title: "Month",
+        gridThickness: 1,
+        lineThickness: 2,
+        tickLength: 7,
+        tickThickness: 2
+      },
+      axisY:{
+        interval: 1,
+        title: "CO Level (ppm)",
+        gridThickness: 1,
+        lineThickness: 2,
+        tickLength: 7,
+        tickThickness: 2,
+        //- viewportMaximum: 15
+      },
+      data: [
+      {
+      type: "line",
+      color: "orange",
+      dataPoints: [
+      { x: new Date(2019, 00, 1), y: 9.0 },
+      { x: new Date(2019, 01, 1), y: 9.3 },
+      { x: new Date(2019, 02, 1), y: 9.2 },
+      { x: new Date(2019, 03, 1), y: 8.6 },
+      { x: new Date(2019, 04, 1), y: 8.7 },
+      { x: new Date(2019, 05, 1), y: 8.9 },
+      { x: new Date(2019, 06, 1), y: 9.1 },
+      { x: new Date(2019, 07, 1), y: 8.8 },
+      //- { x: new Date(2012, 08, 1), y: 9.3 },
+      //- { x: new Date(2012, 09, 1), y: 9.2 },
+      //- { x: new Date(2012, 10, 1), y: 9.3 },
+      //- { x: new Date(2012, 11, 1), y: 9.0 }
+      ]
+      }
+      ]
+      });
+      chart.render();
+      }
+
+    script(type='text/javascript' src='https://canvasjs.com/assets/script/canvasjs.min.js')
   body
     include partials/header
     main
