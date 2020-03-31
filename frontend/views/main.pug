@@ -2,14 +2,137 @@ doctype html
 html
   head
     title #{pageTitle} | eIEIO
-    link(rel="stylesheet", href="/static/styles.css")
+    link(rel="stylesheet" href="/static/styles.css")
     script(src="https://canvasjs.com/assets/script/canvasjs.min.js")      
+    script(src="https://cdn.plot.ly/plotly-latest.min.js")
 
-    //- link(rel="icon", href="images/sdp-logo.png", type="image/x-icon")
+    //- link(rel="icon" href="images/sdp-logo.png" type="image/x-icon")
 
     //- Script for Carbon Monoxide Graph
     script(type='text/javascript').
       window.onload = function () {
+        
+        // C0 Heatmap
+        window.PLOTLYENV = { BASE_URL: "https://plot.ly" };
+
+        var COheatmap = document.getElementById("co-heatmap");
+
+        var x = [-3.1964814, -3.1930868, -3.1896922, -3.1862976];
+        var y = [55.94071, 55.94153];
+        var z = [[0.5,1,1,2],[1.5,2,2.5,0.5]];
+
+        var text = z.map (function(z, i) { return z.map (function (value, j) {
+          return ` Longitude: ${y[i]}<br> Latitude: ${x[j]} <br> Value: ${value.toFixed(2)} `
+            });
+          });
+
+          Plotly.plot(COheatmap, [{
+            type: 'heatmap',
+            x: x,
+            y: y,
+            z: z,
+            text: text,
+            hoverinfo: 'text',
+            zsmooth: 'best',
+            colorscale: [
+                [0, "#ffffff"],
+                [1, "#2c3e50"]
+              ]
+          }], {
+            title: "Carbon Monoxide Levels",
+            xaxis: { title: 'Latitude' },
+            yaxis: { title: 'Longitude' },
+            autosize: true,
+            showLegend: true,
+            font: {
+              size: 12,
+              family: "Arial, sans serif"
+            },
+            height: 500,
+          });
+        
+        
+        // Soil Moisture Heatmap
+        window.PLOTLYENV = { BASE_URL: "https://plot.ly" };
+
+        var moistureheatmap = document.getElementById("moisture-heatmap");
+
+        var x = [-3.1964814, -3.1930868, -3.1896922, -3.1862976];
+        var y = [55.94071, 55.94153];
+        var z = [[750,600,580,620],[650,570,550,600]];
+
+        var text = z.map (function(z, i) { return z.map (function (value, j) {
+          return ` Longitude: ${y[i]}<br> Latitude: ${x[j]} <br> Value: ${value.toFixed(2)} `
+            });
+          });
+
+          Plotly.plot(moistureheatmap, [{
+            type: 'heatmap',
+            x: x,
+            y: y,
+            z: z,
+            text: text,
+            hoverinfo: 'text',
+            zsmooth: 'best',
+            colorscale: [
+          [0, "#ffffff"],
+          [1, "#076585"]
+        ]
+          }], {
+            title: "Soil Moisture",
+            xaxis: { title: 'Latitude' },
+            yaxis: { title: 'Longitude' },
+            autosize: true,
+            showLegend: true,
+            font: {
+              size: 12,
+              family: "Arial, sans serif"
+            },
+            height: 500,
+          });
+
+        // pH Heatmap
+        window.PLOTLYENV = { BASE_URL: "https://plot.ly" };
+
+        var pHheatmap = document.getElementById("pH-heatmap");
+
+        var x = [-3.1964814, -3.1930868, -3.1896922, -3.1862976];
+        var y = [55.94071, 55.94153];
+        var z = [[7,6,5,6],[6,7,8,7]];
+
+        var text = z.map (function(z, i) { return z.map (function (value, j) {
+          return ` Longitude: ${y[i]}<br> Latitude: ${x[j]} <br> Value: ${value.toFixed(2)} `
+            });
+          });
+
+          Plotly.plot(pHheatmap, [{
+            type: 'heatmap',
+            x: x,
+            y: y,
+            z: z,
+            text: text,
+            hoverinfo: 'text',
+            zsmooth: 'best',
+            colorscale: [
+          [0, "#ff9e8f"],
+          [1, "#968fff"]
+        ]
+          }], {
+            title: "Soil pH",
+            xaxis: { title: 'Latitude' },
+            yaxis: { title: 'Longitude' },
+            autosize: true,
+            showLegend: true,
+            font: {
+              size: 12,
+              family: "Arial, sans serif"
+            },
+            height: 500,
+          });
+
+
+
+
       var chart = new CanvasJS.Chart("chartContainer1",
       {
       title:{
@@ -56,7 +179,7 @@ html
       ]
       });
       chart.render();
-  
+
       var chart = new CanvasJS.Chart("chartContainer2",
       {
       title:{

@@ -57,52 +57,39 @@ block content
         .row.reading
             .col-xs-4.col-centered
             .card.card-1.card-contents.reading
-                h1.big.green.font-weight-light
+                h1(class='big green font-weight-light')
                 .reading-title
                     p Carbon Monoxide:
                 p
                 | #{surveyCO} ppm
             .col-xs-4.col-centered
             .card.card-1.card-contents.reading
-                h1.big.green.font-weight-light
+                h1(class='big green font-weight-light')
                 .reading-title 
                     p Soil Moisture:
                 P
                 | #{surveyMoist} %
-                p.green
+                p(class='green')
                 | very moist
             .col-xs-4.col-centered
             .card.card-1.card-contents.reading
-                h1.big.red.font-weight-light
+                h1(class= 'big red font-weight-light')
                 .reading-title
                     p pH:
                 | #{surveyPH}
-                p.red
+                p(class='red')
                 | slightly acidic
         // <div id="pHtable"></div>
 
         .title-with-margins.analysis-section-title
             h3 Visualisation of Recent Readings
             p These heatmaps visualise the values of the recent set of readings accross the land area
-
-        .row.trends
-            .col-xs-4.col-centered
-            .card.card-1.card-contents.reading
-                h1.big.green.font-weight-light
-                .reading-title
-                    p Carbon Monoxide
-
-            .col-xs-4.col-centered
-            .card.card-1.card-contents.reading
-                h1.big.green.font-weight-light
-                .reading-title 
-                    p Soil Moisture
-        
-            .col-xs-4.col-centered
-            .card.card-1.card-contents.reading
-                h1.big.red.font-weight-light
-                .reading-title
-                    p pH
+            #co-heatmap
+            br
+            #moisture-heatmap
+            br
+            #pH-heatmap
+            br
 
         .title-with-margins.analysis-section-title
             h3 Trends
@@ -121,12 +108,6 @@ block content
                 #chartContainer3(style='height: 300px; width: 100%;')
 
 
-        // DIV PLOTS START HERE
-        .row(style='display: flex; align-items: center; justify-content: center')
-            #co-heatmap.plotly-graph-div.col-xs-12.col-centered.heatmap-format(style='width: 1200px; margin: 25px 25px 25px 0px')
-            #moisture-heatmap.plotly-graph-div.col-xs-12.col-centered.heatmap-format(style='width: 1200px; margin: 25px 25px 25px 0px')
-            #pH-heatmap.plotly-graph-div.col-xs-12.col-centered.heatmap-format(style='width: 1200px; margin: 25px 25px 25px 0px')
-        // DIV PLOTS END HERE
         // LAND ANALYSIS AREA ENDS HERE
         a(href=routes.deleteLand(land.id)) 
             button.delete Remove Land Entry
