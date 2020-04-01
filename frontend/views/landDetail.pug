@@ -62,6 +62,8 @@ block content
                     p Carbon Monoxide:
                 p
                 | #{surveyCO} ppm
+                #COStatus
+                
             .col-xs-4.col-centered
             .card.card-1.card-contents.reading
                 h1(class='big green font-weight-light')
@@ -69,8 +71,7 @@ block content
                     p Soil Moisture:
                 P
                 | #{surveyMoist} %
-                p(class='green')
-                | very moist
+                #moistStatus
             .col-xs-4.col-centered
             .card.card-1.card-contents.reading
                 h1(class= 'big red font-weight-light')
@@ -78,7 +79,7 @@ block content
                     p pH:
                 | #{surveyPH}
                 p(class='red')
-                | slightly acidic
+                #PHStatus
         // <div id="pHtable"></div>
 
         .title-with-margins.analysis-section-title
@@ -101,10 +102,10 @@ block content
             .card.card-1.card-contents.reading
                 .col-md-5
                 #chartContainer1(style='height: 300px; width: 100%;')
-                p Date Range: 
-                p
-                    input#myDate(type='date')
-                    input#myDate(type='date')
+                //- p Start Date: 
+                //-     input#myDate(type='date')
+                //- p End Date:
+                //-     input#myDate(type='date')
 
             .col-xs-4.col-centered
             .card.card-1.card-contents.reading

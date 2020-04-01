@@ -11,7 +11,62 @@ html
     //- Script for Carbon Monoxide Graph
     script(type='text/javascript').
       window.onload = function () {
+
         
+        //- Text for most recent readings - CO
+        var currCO = parseFloat(#{surveyCo});
+        var userCO = parseFloat(#{userCO});
+        if (currCO > (userCO + 5)) {
+          var str = "High Levels of CO";
+          var result = str.fontcolor("red");
+          document.getElementById("COStatus").innerHTML=result;
+        } else if (currCO < (userCO - 5)) {
+          var str = "Low Levels of CO";
+          var result = str.fontcolor("red");
+          document.getElementById("COStatus").innerHTML=result;
+        } else {
+          var str = "In desired range";
+          var result = str.fontcolor("green");
+          document.getElementById("COStatus").innerHTML=result;
+        }       
+
+
+        //- Text for most recent readings - moisture
+        var currMoist = parseFloat(#{surveyMoist});
+        var userMoist = parseFloat(#{userMoist});
+        if (currMoist > (userMoist + 5)) {
+          var str = "Very Moist";
+          var result = str.fontcolor("red");
+          document.getElementById("moistStatus").innerHTML=result;
+        } else if (currMoist < (userMoist - 5)) {
+          var str = "Very Dry";
+          var result = str.fontcolor("red");
+          document.getElementById("moistStatus").innerHTML=result;
+        } else {
+          var str = "In desired range";
+          var result = str.fontcolor("green");
+          document.getElementById("moistStatus").innerHTML=result;
+        }
+
+        
+        //- Text for most recent readings - pH
+        var currPH = parseFloat(#{surveyPH});
+        var userPH = parseFloat(#{userPH});
+        if (currPH > (userPH + 0.5)) {
+          var str = "Too Acidic";
+          var result = str.fontcolor("red");
+          document.getElementById("PHStatus").innerHTML=result;
+        } else if (currPH < (userPH - 0.5)) {
+          var str = "Too Alkaline";
+          var result = str.fontcolor("red");
+          document.getElementById("PHStatus").innerHTML=result;
+        } else {
+          var str = "In desired range";
+          var result = str.fontcolor("green");
+          document.getElementById("PHStatus").innerHTML=result;
+        }       
+
+
         // C0 Heatmap
         window.PLOTLYENV = { BASE_URL: "https://plot.ly" };
 
