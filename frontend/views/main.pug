@@ -59,7 +59,7 @@ html
 
         var x = [-3.1964814, -3.1930868, -3.1896922, -3.1862976];
         var y = [55.94071, 55.94153];
-        var z = [[750,600,580,620],[650,570,550,600]];
+        var z = [[750,600,580,620],[650,570,600,600]];
 
         var text = z.map (function(z, i) { return z.map (function (value, j) {
           return ` Longitude: ${y[i]}<br> Latitude: ${x[j]} <br> Value: ${value.toFixed(2)} `
@@ -158,16 +158,13 @@ html
         viewportMinimum: 5,
         stripLines: [
           {                
-            value:9,
+            value:9,  // ---------- get desired value -------
             thickness: 1,
             color: "blue",
-            label: "Desired CO",
-            labelFontColor: "blue",
-            labelPlacement: "inside"
           },
           {                
-            startValue: 8.5,
-            endValue: 9.5,
+            startValue: 8.5,  // ---------- get desired value -------
+            endValue: 9.5,  // ---------- get desired value -------
             thickness: 1,
             color: "#99ccff"
         }
@@ -177,8 +174,6 @@ html
       {
       type: "line",
       color: "orange",
-      showInLengend: true,
-      legendText: "CO",
       dataPoints: [
       { x: new Date(2019, 00, 1), y: 9.0 },
       { x: new Date(2019, 01, 1), y: 9.3 },
@@ -216,11 +211,22 @@ html
         lineThickness: 2,
         tickLength: 7,
         tickThickness: 2,
-        viewportMaximum: 100
-        //- stripLines: [
-        //-   {
-        //-     value: 80
-        //-   }
+        viewportMaximum: 100,
+        minimum: 40,
+        maximum: 100,
+        stripLines: [
+          {                
+            value: 80,  // ---------- get desired value -------
+            thickness: 1,
+            color: "blue"
+          },
+          {                
+            startValue: 70,  // ---------- get desired value -------
+            endValue: 90,  // ---------- get desired value -------
+            thickness: 1,
+            color: "#99ccff"
+        }
+          ]                 
       },
       data: [
       {
@@ -263,18 +269,35 @@ html
         lineThickness: 2,
         tickLength: 7,
         tickThickness: 2,
-        viewportMaximum: 7,
-        maximum: 7,
-        minimum: 0
-        //- stripLines: [
-        //-   {
-        //-     value: 6
-        //-   }
+        viewportMaximum: 10,
+        maximum: 10,
+        minimum: 2,
+        stripLines: [
+          {                
+            value: 6,   // ---------- get desired value -------
+            thickness: 1,
+            color: "blue"
+          },
+          {                
+            startValue: 5.5, // ---------- get desired value -------
+            endValue: 6.5,  // ---------- get desired value -------
+            thickness: 1,
+            color: "#99ccff"
+        },
+        {
+          value: 7,
+          thickness: 1,
+          color: "green"
+        }
+          ]                 
+
       },
       data: [
       {
       type: "line",
       color: "red",
+      showInLegend: true,
+      legendText: "Average pH",
       dataPoints: [
       { x: new Date(2019, 00, 1), y: 6.3 },
       { x: new Date(2019, 01, 1), y: 6.3 },
