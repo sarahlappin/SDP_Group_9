@@ -116,7 +116,7 @@ html
 
         var x = [-3.1964814, -3.1930868, -3.1896922, -3.1862976];
         var y = [55.94071, 55.94153];
-        var z = [[750,470,580,620],[650,570,550,825]];
+        var z = [[150,250,580,700],[200,400,550,650]];
 
         var text = z.map (function(z, i) { return z.map (function (value, j) {
           return ` Longitude: ${y[i]}<br> Latitude: ${x[j]} <br> Value: ${value.toFixed(2)} `
@@ -134,8 +134,11 @@ html
             hoverinfo: 'text',
             zsmooth: 'best',
             colorscale: [
-          [0, "#ffffff"],
-          [1, "#076585"]
+          [0, "#ff9f80"],
+          [0.25, "#ffcc99"],
+          [0.5, "#c6ebd8"],
+          [0.75, "#ddccff"],
+          [1, "#adadeb"]
         ]
           }], {
             title: "Soil Moisture",
