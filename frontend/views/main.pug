@@ -158,16 +158,16 @@ html
         lineThickness: 2,
         tickLength: 7,
         tickThickness: 2,
-        viewportMinimum: 5,
+        viewportMinimum: 0,
         stripLines: [
           {                
-            value:9,  // ---------- get desired value -------
+            value: #{userCO},  // ---------- get desired value -------
             thickness: 1,
             color: "blue",
           },
           {                
-            startValue: 8.5,  // ---------- get desired value -------
-            endValue: 9.5,  // ---------- get desired value -------
+            startValue: #{userCO} - 0.5,  // ---------- get desired value -------
+            endValue: #{userCO} + 0.5,  // ---------- get desired value -------
             thickness: 1,
             color: "#99ccff"
         }
@@ -178,14 +178,14 @@ html
       type: "line",
       color: "orange",
       dataPoints: [
-      { x: new Date(2019, 00, 1), y: 9.0 },
-      { x: new Date(2019, 01, 1), y: 9.3 },
-      { x: new Date(2019, 02, 1), y: 9.2 },
-      { x: new Date(2019, 03, 1), y: 8.6 },
-      { x: new Date(2019, 04, 1), y: 8.7 },
-      { x: new Date(2019, 05, 1), y: 8.9 },
-      { x: new Date(2019, 06, 1), y: 9.1 },
-      { x: new Date(2019, 07, 1), y: 8.8 },
+      { x: new Date(2019, 00, 1), y: 4.0 },
+      { x: new Date(2019, 01, 1), y: 4.3 },
+      { x: new Date(2019, 02, 1), y: 4.2 },
+      { x: new Date(2019, 03, 1), y: 3.6 },
+      { x: new Date(2019, 04, 1), y: 3.7 },
+      { x: new Date(2019, 05, 1), y: 3.9 },
+      { x: new Date(2019, 06, 1), y: 4.1 },
+      { x: new Date(2019, 07, 1), y: 3.8 },
       ]
       }
       ]
@@ -219,13 +219,13 @@ html
         maximum: 100,
         stripLines: [
           {                
-            value: 80,  // ---------- get desired value -------
+            value: #{userMoist},  // ---------- get desired value -------
             thickness: 1,
             color: "blue"
           },
           {                
-            startValue: 70,  // ---------- get desired value -------
-            endValue: 90,  // ---------- get desired value -------
+            startValue: #{userMoist} -5,  // ---------- get desired value -------
+            endValue: #{userMoist} + 5,  // ---------- get desired value -------
             thickness: 1,
             color: "#99ccff"
         }
@@ -236,14 +236,14 @@ html
       type: "line",
       color: "green",
       dataPoints: [
-      { x: new Date(2019, 00, 1), y: 75 },
-      { x: new Date(2019, 01, 1), y: 85 },
-      { x: new Date(2019, 02, 1), y: 83 },
-      { x: new Date(2019, 03, 1), y: 86 },
-      { x: new Date(2019, 04, 1), y: 87 },
-      { x: new Date(2019, 05, 1), y: 89 },
-      { x: new Date(2019, 06, 1), y: 91 },
-      { x: new Date(2019, 07, 1), y: 88 },
+      { x: new Date(2019, 00, 1), y: 65 },
+      { x: new Date(2019, 01, 1), y: 75 },
+      { x: new Date(2019, 02, 1), y: 73 },
+      { x: new Date(2019, 03, 1), y: 76 },
+      { x: new Date(2019, 04, 1), y: 77 },
+      { x: new Date(2019, 05, 1), y: 79 },
+      { x: new Date(2019, 06, 1), y: 71 },
+      { x: new Date(2019, 07, 1), y: 68 },
       ]
       }
       ]
@@ -277,13 +277,13 @@ html
         minimum: 2,
         stripLines: [
           {                
-            value: 6,   // ---------- get desired value -------
+            value: #{userPH},   
             thickness: 1,
             color: "blue"
           },
           {                
-            startValue: 5.5, // ---------- get desired value -------
-            endValue: 6.5,  // ---------- get desired value -------
+            startValue: #{userPH} - 0.5,
+            endValue: #{userPH} + 0.5,  
             thickness: 1,
             color: "#99ccff"
         }
@@ -314,21 +314,16 @@ html
       ]
       });
       chart.render();
-
-      $(function () {
-        $('#datetimepicker6').datetimepicker();
-        $('#datetimepicker7').datetimepicker({
-          useCurrent: false //Important! See issue #1075
-        });
-        $("#datetimepicker6").on("dp.change", function (e) {
-         $('#datetimepicker7').data("DateTimePicker").minDate(e.date);
-        });
-        $("#datetimepicker7").on("dp.change", function (e) {
-          $('#datetimepicker6').data("DateTimePicker").maxDate(e.date);
-        });
-      });
-
       }
+
+      function myFunction() {
+        var x = document.createElement("INPUT");
+        x.setAttribute("type", "date");
+        x.setAttribute("value", "2014-02-09");
+        document.body.appendChild(x);
+      
+
+      };
 
     script(type='text/javascript' src='https://canvasjs.com/assets/script/canvasjs.min.js')
   body

@@ -643,6 +643,10 @@ hr {
   font-size: medium;
 }
 
+#myDate {
+  width: auto;
+}
+
 .reading, .trends {
   display: flex;
   text-align: center;
