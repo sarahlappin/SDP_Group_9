@@ -25,7 +25,7 @@ html
           var result = str.fontcolor("red");
           document.getElementById("COStatus").innerHTML=result;
         } else {
-          var str = "In desired range";
+          var str = "OK";
           var result = str.fontcolor("green");
           document.getElementById("COStatus").innerHTML=result;
         }       
@@ -43,7 +43,7 @@ html
           var result = str.fontcolor("red");
           document.getElementById("moistStatus").innerHTML=result;
         } else {
-          var str = "In desired range";
+          var str = "OK";
           var result = str.fontcolor("green");
           document.getElementById("moistStatus").innerHTML=result;
         }
@@ -53,15 +53,15 @@ html
         var currPH = parseFloat(#{surveyPH});
         var userPH = parseFloat(#{userPH});
         if (currPH > (userPH + 0.5)) {
-          var str = "Too Acidic";
-          var result = str.fontcolor("red");
-          document.getElementById("PHStatus").innerHTML=result;
-        } else if (currPH < (userPH - 0.5)) {
           var str = "Too Alkaline";
           var result = str.fontcolor("red");
           document.getElementById("PHStatus").innerHTML=result;
+        } else if (currPH < (userPH - 0.5)) {
+          var str = "Too Acidic";
+          var result = str.fontcolor("red");
+          document.getElementById("PHStatus").innerHTML=result;
         } else {
-          var str = "In desired range";
+          var str = "OK";
           var result = str.fontcolor("green");
           document.getElementById("PHStatus").innerHTML=result;
         }       
