@@ -112,10 +112,13 @@ html
             z: z,
             text: text,
             hoverinfo: 'text',
-            zsmooth: 'best',
+            zsmooth: 'fast',
             colorscale: [
-          [0, "#ff9e8f"],
-          [1, "#968fff"]
+          [0, "#ff9f80"],
+          [0.25, "#ffcc99"],
+          [0.5, "#c6ebd8"],
+          [0.75, "#adadeb"],
+          [1, "#ddccff"]
         ]
           }], {
             title: "Soil pH",
@@ -283,11 +286,6 @@ html
             endValue: 6.5,  // ---------- get desired value -------
             thickness: 1,
             color: "#99ccff"
-        },
-        {
-          value: 7,
-          thickness: 1,
-          color: "green"
         }
           ]                 
 
@@ -316,6 +314,20 @@ html
       ]
       });
       chart.render();
+
+      $(function () {
+        $('#datetimepicker6').datetimepicker();
+        $('#datetimepicker7').datetimepicker({
+          useCurrent: false //Important! See issue #1075
+        });
+        $("#datetimepicker6").on("dp.change", function (e) {
+         $('#datetimepicker7').data("DateTimePicker").minDate(e.date);
+        });
+        $("#datetimepicker7").on("dp.change", function (e) {
+          $('#datetimepicker6').data("DateTimePicker").maxDate(e.date);
+        });
+      });
+
       }
 
     script(type='text/javascript' src='https://canvasjs.com/assets/script/canvasjs.min.js')
