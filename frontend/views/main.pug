@@ -13,7 +13,7 @@ html
       var chart = new CanvasJS.Chart("chartContainer1",
       {
       title:{
-        text: "Carbon Monoxide Level",
+        text: "Carbon Monoxide",
         fontFamily: "sans-serif",
         fontSize: 20
       },
@@ -32,12 +32,30 @@ html
         lineThickness: 2,
         tickLength: 7,
         tickThickness: 2,
-        viewportMinimum: 5
+        viewportMinimum: 5,
+        stripLines: [
+          {                
+            value:9,
+            thickness: 1,
+            color: "blue",
+            label: "Desired CO",
+            labelFontColor: "blue",
+            labelPlacement: "inside"
+          },
+          {                
+            startValue: 8.5,
+            endValue: 9.5,
+            thickness: 1,
+            color: "#99ccff"
+        }
+          ]                 
       },
       data: [
       {
       type: "line",
       color: "orange",
+      showInLengend: true,
+      legendText: "CO",
       dataPoints: [
       { x: new Date(2019, 00, 1), y: 9.0 },
       { x: new Date(2019, 01, 1), y: 9.3 },
@@ -47,10 +65,6 @@ html
       { x: new Date(2019, 05, 1), y: 8.9 },
       { x: new Date(2019, 06, 1), y: 9.1 },
       { x: new Date(2019, 07, 1), y: 8.8 },
-      //- { x: new Date(2012, 08, 1), y: 9.3 },
-      //- { x: new Date(2012, 09, 1), y: 9.2 },
-      //- { x: new Date(2012, 10, 1), y: 9.3 },
-      //- { x: new Date(2012, 11, 1), y: 9.0 }
       ]
       }
       ]
@@ -80,6 +94,10 @@ html
         tickLength: 7,
         tickThickness: 2,
         viewportMaximum: 100
+        //- stripLines: [
+        //-   {
+        //-     value: 80
+        //-   }
       },
       data: [
       {
@@ -94,10 +112,6 @@ html
       { x: new Date(2019, 05, 1), y: 89 },
       { x: new Date(2019, 06, 1), y: 91 },
       { x: new Date(2019, 07, 1), y: 88 },
-      //- { x: new Date(2012, 08, 1), y: 9.3 },
-      //- { x: new Date(2012, 09, 1), y: 9.2 },
-      //- { x: new Date(2012, 10, 1), y: 9.3 },
-      //- { x: new Date(2012, 11, 1), y: 9.0 }
       ]
       }
       ]
@@ -129,6 +143,10 @@ html
         viewportMaximum: 7,
         maximum: 7,
         minimum: 0
+        //- stripLines: [
+        //-   {
+        //-     value: 6
+        //-   }
       },
       data: [
       {
