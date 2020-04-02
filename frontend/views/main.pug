@@ -103,8 +103,8 @@ html
           document.getElementById("PHStatus").innerHTML=result;
         }       
 
-        //- var warningStr = numSevere + " severe warnings, " + numWarning + " warnings.";
-        //- document.getElementById("numWarnings").innerHTML = warningStr;
+        var warningStr = numSevere + " severe warnings, " + numWarning + " warnings.";
+        document.getElementById("numWarnings").innerHTML = warningStr;
         //- document.getElementById("CORecent").onmouseover = function() {mouseOverCO()};
         //- document.getElementById("CORecent").onmouseover = function() {mouseOverCO()};
 
@@ -134,7 +134,7 @@ html
             zsmooth: 'best',
             colorscale: [
                 [0, "#ffffff"],
-                [1, "#2c3e50"]
+                [1, "#862d2d"]
               ]
           }], {
             title: "Carbon Monoxide Levels",
@@ -175,11 +175,8 @@ html
             hoverinfo: 'text',
             zsmooth: 'best',
             colorscale: [
-          [0, "#ff9f80"],
-          [0.25, "#ffcc99"],
-          [0.5, "#c6ebd8"],
-          [0.75, "#ddccff"],
-          [1, "#adadeb"]
+          [0, "#ffffff"],
+          [1, "#1f3d7a"]
         ]
           }], {
             title: "Soil Moisture",
@@ -219,8 +216,11 @@ html
             hoverinfo: 'text',
             zsmooth: 'best',
             colorscale: [
-          [0, "#ff9e8f"],
-          [1, "#968fff"]
+          [0, "#ff9f80"],
+          [0.25, "#ffcc99"],
+          [0.5, "#c6ebd8"],
+          [0.75, "#ddccff"],
+          [1, "#adadeb"]
         ]
           }], {
             title: "Soil pH",
@@ -281,6 +281,8 @@ html
       {
       type: "line",
       color: "orange",
+      showInLegend: true,
+      legendText: "Average CO",
       dataPoints: [
       { x: new Date(2020, 00, 1), y: 4.0 },
       { x: new Date(2020, 01, 1), y: 4.3 },
@@ -304,12 +306,15 @@ html
         fontSize: 20
       },
       axisX: {
-        interval: 1,
+        interval: 2,
         title: "Month",
         gridThickness: 0,
         lineThickness: 2,
         tickLength: 7,
-        tickThickness: 2
+        tickThickness: 2,
+        crosshair: {
+          enabled: true
+        }
       },
       axisY:{
         interval: 10,
@@ -339,11 +344,13 @@ html
       {
       type: "line",
       color: "green",
+      showInLegend: true,
+      legendText: "Average Soil Moisture",
       dataPoints: [
       { x: new Date(2020, 00, 1), y: 75 },
       { x: new Date(2020, 01, 1), y: 75 },
       { x: new Date(2020, 02, 1), y: 73 },
-      { x: new Date(2020, 03, 1), y: Math.round((parseFloat(#{accumulatedMoist})/parseFloat(#{numberOfSurveys})) * 100 + Number.EPSILON ) / 100}
+      { x: new Date(2020, 03, 1), y: Math.round(((#{accumulatedMoist})/(#{numberOfSurveys})) * 100 + Number.EPSILON ) / 100}
       //- { x: new Date(2020, 04, 1), y: 0.0 },
       //- { x: new Date(2020, 05, 1), y: 0.0 },
       //- { x: new Date(2020, 06, 1), y: 0.0 },
@@ -413,7 +420,7 @@ html
       { x: new Date(2020, 00, 1), y: 6.3 },
       { x: new Date(2020, 01, 1), y: 6.3 },
       { x: new Date(2020, 02, 1), y: 6.2 },
-      { x: new Date(2020, 03, 1), y: (Math.round((parseFloat(#{accumulatedPH})/parseFloat(#{numberOfSurveys})) * 100 + Number.EPSILON) / 100)},
+      { x: new Date(2020, 03, 1), y: (Math.round(((#{accumulatedPH})/(#{numberOfSurveys})) * 100 + Number.EPSILON) / 100)},
       //- { x: new Date(2020, 04, 1), y: 0.0 },
       //- { x: new Date(2020, 05, 1), y: 0.0 },
       //- { x: new Date(2020, 06, 1), y: 0.0 },

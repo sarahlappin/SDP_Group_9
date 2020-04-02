@@ -21,13 +21,13 @@ block content
       .home-lands
         each land in lands.sort()
           .grid-item
-            #row-auto
-              +landBlock({
-                id: land.id,
-                name: land.name
-              })
-            #row-auto
-              p 1 Severe Warning, 3 Warnings
+            //- #row-auto
+            +landBlock({
+              id: land.id,
+              name: land.name
+            })
+            //- #row-auto
+              //- p 1 Severe Warning, 3 Warnings
 
 
         #add-land.grid-tem
