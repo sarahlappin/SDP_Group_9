@@ -47,6 +47,10 @@ export const postAddLand = async (req, res) => {
     surveyCO: "0",
     surveyMoist: "0",
     surveyPH: "0",
+    accumulatedCO: 0,
+    accumulatedMoist: 0,
+    accumulatedPH: 0,
+    numberOfSurveys: 0,
     surveyDate: "Surveying hasn't been done yet"
   });
   res.redirect(routes.landDetail(newLand.id));
@@ -60,12 +64,20 @@ export const startSurvey = async (req, res) => {
     const coValues = ["3.5", "4.5", "5.5", "6.0", "7.0", "8.5", "9.0"];
     const moistValues = ["65", "70", "75", "80", "85", "90", "95"];
     const phValues = ["5.5", "6.0", "6.5", "7.0", "7.5", "8.0", "8.5", "9.0"];
+    const coValue = coValues[(coValues.length * Math.random()) | 0];
+    const moistValue = moistValues[(moistValues.length * Math.random()) | 0];
+    const phValue = phValues[(phValues.length * Math.random()) | 0];
+    const prevLand = await Land.findById(id);
     const land = await Land.findOneAndUpdate(
       { _id: id },
       {
-        surveyCO: coValues[(coValues.length * Math.random()) | 0],
-        surveyMoist: moistValues[(moistValues.length * Math.random()) | 0],
-        surveyPH: phValues[(phValues.length * Math.random()) | 0],
+        surveyCO: coValue,
+        surveyMoist: moistValue,
+        surveyPH: phValue,
+        accumulatedCO: prevLand.accumulatedCO + Number(coValue),
+        accumulatedMoist: prevLand.accumulatedMoist + Number(moistValue),
+        accumulatedPH: prevLand.accumulatedPH + Number(phValue),
+        numberOfSurveys: prevLand.numberOfSurveys + 1,
         surveyDate: new Date().toLocaleString()
       },
       { new: true }
@@ -83,7 +95,11 @@ export const startSurvey = async (req, res) => {
       surveyCO: land.surveyCO,
       surveyMoist: land.surveyMoist,
       surveyPH: land.surveyPH,
+      accumulatedCO: land.accumulatedCO,
+      accumulatedMoist: land.accumulatedMoist,
+      accumulatedPH: land.accumulatedPH,
       surveyDate: land.surveyDate,
+      numberOfSurveys: land.numberOfSurveys,
       land
     });
   } catch (error) {
@@ -111,7 +127,11 @@ export const landDetail = async (req, res) => {
       surveyCO: land.surveyCO,
       surveyMoist: land.surveyMoist,
       surveyPH: land.surveyPH,
+      accumulatedCO: land.accumulatedCO,
+      accumulatedMoist: land.accumulatedMoist,
+      accumulatedPH: land.accumulatedPH,
       surveyDate: land.surveyDate,
+      numberOfSurveys: land.numberOfSurveys,
       land
     });
   } catch (error) {

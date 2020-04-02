@@ -33,6 +33,18 @@ const LandSchema = new mongoose.Schema({
     type: String,
     required: "Last survey pH value is required"
   },
+  accumulatedCO: {
+    type: Number,
+    required: "Accumulated survey CO value is required"
+  },
+  accumulatedMoist: {
+    type: Number,
+    required: "Accumulated survey soil moisture value is required"
+  },
+  accumulatedPH: {
+    type: Number,
+    required: "Accumulated survey pH value is required"
+  },
   userCO: {
     type: String,
     required: "Desired CO value is required"
@@ -44,6 +56,10 @@ const LandSchema = new mongoose.Schema({
   userPH: {
     type: String,
     required: "Desired pH value is required"
+  },
+  numberOfSurveys: {
+    type: Number,
+    required: "Number of surveys done is required"
   },
   surveyDate: {
     type: String
