@@ -89,12 +89,20 @@ block content
             h3 Visualisation of Recent Readings
             p These heatmaps visualise the values of the recent set of readings accross the land area. The bars on the side show the colour scale, on the heatmaps the colour of an area correspond to the value in the colour scale. The x and y co-ordinates of the heatmaps show the latitude and longitide of the position of each reading, respectively.
             #co-heatmap
+            p Smoothing the heatmap will estimate values acrross the land where there is no data. This may give a more realistic view of the land. 
+            button#toggleCOButton.smooth-button(onclick="toggleCOSmoothing()") Toggle Smoothing
+            br
             br
             #moisture-heatmap
+            p Smoothing the heatmap will estimate values acrross the land where there is no data. This may give a more realistic view of the land. 
+            button#toggleMoistButton.smooth-button(onclick="toggleMoistSmoothing()") Toggle Smoothing
+            br
             br
             #pH-heatmap
+            p Smoothing the heatmap will estimate values acrross the land where there is no data. This may give a more realistic view of the land. 
+            button#togglePHButton.smooth-button(onclick="togglePHSmoothing()") Toggle Smoothing
             br
-            button#togglePHButton.smooth-button(onclick="toggle()") Un-toggle Smoothing
+            br
 
         .title-with-margins.analysis-section-title
             h3 Trends

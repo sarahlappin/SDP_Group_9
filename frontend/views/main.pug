@@ -12,7 +12,10 @@ html
 
     //- Script for Carbon Monoxide Graph
     script(type='text/javascript').
-      var smooth = "best";
+      var PHSmooth = "false";
+      var COSmooth = "false";
+      var moistSmooth = "false";
+
       window.onload = function () {
 
         var numSevere = 0;
@@ -112,131 +115,12 @@ html
         //- document.getElementById("CORecent").onmouseover = function() {mouseOverCO()};
 
         // C0 Heatmap
-        window.PLOTLYENV = { BASE_URL: "https://plot.ly" };
-
-        var COheatmap = document.getElementById("co-heatmap");
-
-        var x = [-3.1964814, -3.1930868, -3.1896922, -3.1862976];
-        var y = [55.94071, 55.94153];
-        var z = [[1,3,2,2],[3,2,3,1]];
-
-        var text = z.map (function(z, i) { return z.map (function (value, j) {
-          return ` Longitude: ${y[i]}<br> Latitude: ${x[j]} <br> Value: ${value.toFixed(2)} `
-            });
-          });
-
-          Plotly.plot(COheatmap, [{
-            type: 'heatmap',
-            x: x,
-            y: y,
-            z: z,
-            zmin: 0,
-            zmax: 9,
-            text: text,
-            hoverinfo: 'text',
-            zsmooth: 'best',
-            colorscale: [
-                [0, "#ffffff"],
-                [1, "#862d2d"]
-              ]
-          }], {
-            title: "Carbon Monoxide Levels",
-            xaxis: { title: 'Latitude' },
-            yaxis: { title: 'Longitude' },
-            autosize: true,
-            showLegend: true,
-            font: {
-              size: 12,
-              family: "Arial, sans serif"
-            },
-            height: 500,
-          });
-        
-        
+        displayCOHeatmap(window.COSmooth);
+                
         // Soil Moisture Heatmap
-        window.PLOTLYENV = { BASE_URL: "https://plot.ly" };
+        displayMoistHeatmap(window.moistSmooth);
 
-        var moistureheatmap = document.getElementById("moisture-heatmap");
-
-        var x = [-3.1964814, -3.1930868, -3.1896922, -3.1862976];
-        var y = [55.94071, 55.94153];
-        var z = [[150,250,580,700],[200,400,550,650]];
-
-        var text = z.map (function(z, i) { return z.map (function (value, j) {
-          return ` Longitude: ${y[i]}<br> Latitude: ${x[j]} <br> Value: ${value.toFixed(2)} `
-            });
-          });
-
-          Plotly.plot(moistureheatmap, [{
-            type: 'heatmap',
-            x: x,
-            y: y,
-            z: z,
-            zmax: 950,
-            zmin: 0,
-            text: text,
-            hoverinfo: 'text',
-            zsmooth: 'best',
-            colorscale: [
-          [0, "#ffffff"],
-          [1, "#1f3d7a"]
-        ]
-          }], {
-            title: "Soil Moisture",
-            xaxis: { title: 'Latitude' },
-            yaxis: { title: 'Longitude' },
-            autosize: true,
-            showLegend: true,
-            font: {
-              size: 12,
-              family: "Arial, sans serif"
-            },
-            height: 500,
-          });
-
-        // pH Heatmap
-        window.PLOTLYENV = { BASE_URL: "https://plot.ly" };
-
-        var pHheatmap = document.getElementById("pH-heatmap");
-
-        var x = [-3.1964814, -3.1930868, -3.1896922, -3.1862976];
-        var y = [55.94071, 55.94153];
-        var z = [[7,6,5,6],[6,7,8,7]];
-
-        var text = z.map (function(z, i) { return z.map (function (value, j) {
-          return ` Longitude: ${y[i]}<br> Latitude: ${x[j]} <br> Value: ${value.toFixed(2)} `
-            });
-          });
-
-          Plotly.plot(pHheatmap, [{
-            type: 'heatmap',
-            x: x,
-            y: y,
-            z: z,
-            zmax: 14,
-            zmin: 0,
-            text: text,
-            hoverinfo: 'text',
-            zsmooth: 'best',
-            colorscale: [
-          [0, "#ff9f80"],
-          [0.25, "#ffcc99"],
-          [0.5, "#c6ebd8"],
-          [0.75, "#ddccff"],
-          [1, "#adadeb"]
-        ]
-          }], {
-            title: "Soil pH",
-            xaxis: { title: 'Latitude' },
-            yaxis: { title: 'Longitude' },
-            autosize: true,
-            showLegend: true,
-            font: {
-              size: 12,
-              family: "Arial, sans serif"
-            },
-            height: 500,
-          });
+        displayPHHeatmap(window.PHSmooth);
 
 
 
@@ -276,7 +160,7 @@ html
             startValue: parseFloat(#{userCO}) - 0.5,  // ---------- get desired value -------
             endValue: parseFloat(#{userCO}) + 0.5,  // ---------- get desired value -------
             thickness: 1,
-            color: "#99ccff"
+            color: "#99e6ff"
         }
           ]                 
       },
@@ -339,7 +223,7 @@ html
             startValue: parseFloat(#{userMoist}) -5,  // ---------- get desired value -------
             endValue: parseFloat(#{userMoist}) + 5,  // ---------- get desired value -------
             thickness: 1,
-            color: "#99ccff"
+            color: "#99e6ff"
         }
           ]                 
       },
@@ -408,7 +292,7 @@ html
             startValue: (parseFloat(#{userPH}) - 0.5),
             endValue: (parseFloat(#{userPH}) + 0.5),  
             thickness: 1,
-            color: "#99ccff"
+            color: "#99e6ff"
         }
           ]                 
 
@@ -439,20 +323,129 @@ html
         document.getElementById("numWarnings").innerHTML= "test";
       };
     
-      function toggle() {
-        if (window.smooth == "best") {
-          window.smooth = "false";
+      function togglePHSmoothing() {
+        if (window.PHSmooth == "best") {
+          window.PHSmooth = "false";
           document.getElementById("togglePHButton").innerHTML= "Toggle Smoothing";
         } else {
-          window.smooth = "best";
+          window.PHSmooth = "best";
           document.getElementById("togglePHButton").innerHTML= "Un-toggle Smoothing";
         }
 
-        displayHeatmap(window.smooth);
+        displayPHHeatmap(window.PHSmooth);
       };
 
+      function toggleCOSmoothing() {
+        if (window.COSmooth == "best") {
+          window.COSmooth = "false";
+          document.getElementById("toggleCOButton").innerHTML= "Toggle Smoothing";
+        } else {
+          window.COSmooth = "best";
+          document.getElementById("toggleCOButton").innerHTML= "Un-toggle Smoothing";
+        }
 
-      function displayHeatmap(smooth) {
+        displayCOHeatmap(window.COSmooth);
+      };
+
+      function toggleMoistSmoothing() {
+        if (window.moistSmooth == "best") {
+          window.moistSmooth = "false";
+          document.getElementById("toggleMoistButton").innerHTML= "Toggle Smoothing";
+        } else {
+          window.moistSmooth = "best";
+          document.getElementById("toggleMoistButton").innerHTML= "Un-toggle Smoothing";
+        }
+
+        displayMoistHeatmap(window.moistSmooth);
+      };
+
+      function displayCOHeatmap(COSmooth) {
+        window.PLOTLYENV = { BASE_URL: "https://plot.ly" };
+
+        var COheatmap = document.getElementById("co-heatmap");
+
+        var x = [-3.1964814, -3.1930868, -3.1896922, -3.1862976];
+        var y = [55.94071, 55.94153];
+        var z = [[1,3,2,2],[3,2,3,1]];
+
+        var text = z.map (function(z, i) { return z.map (function (value, j) {
+          return ` Longitude: ${y[i]}<br> Latitude: ${x[j]} <br> Value: ${value.toFixed(2)} `
+            });
+          });
+
+          Plotly.plot(COheatmap, [{
+            type: 'heatmap',
+            x: x,
+            y: y,
+            z: z,
+            zmin: 0,
+            zmax: 9,
+            text: text,
+            hoverinfo: 'text',
+            zsmooth: COSmooth,
+            colorscale: [
+                [0, "#ffffff"],
+                [1, "#862d2d"]
+              ]
+          }], {
+            title: "Carbon Monoxide Levels",
+            xaxis: { title: 'Latitude' },
+            yaxis: { title: 'Longitude' },
+            autosize: true,
+            showLegend: true,
+            font: {
+              size: 12,
+              family: "Arial, sans serif"
+            },
+            height: 500,
+          });
+      }
+
+
+      function displayMoistHeatmap(moistSmooth) {
+        window.PLOTLYENV = { BASE_URL: "https://plot.ly" };
+
+        var moistureheatmap = document.getElementById("moisture-heatmap");
+
+        var x = [-3.1964814, -3.1930868, -3.1896922, -3.1862976];
+        var y = [55.94071, 55.94153];
+        var z = [[150,250,580,700],[200,400,550,650]];
+
+        var text = z.map (function(z, i) { return z.map (function (value, j) {
+          return ` Longitude: ${y[i]}<br> Latitude: ${x[j]} <br> Value: ${value.toFixed(2)} `
+            });
+          });
+
+          Plotly.plot(moistureheatmap, [{
+            type: 'heatmap',
+            x: x,
+            y: y,
+            z: z,
+            zmax: 950,
+            zmin: 0,
+            text: text,
+            hoverinfo: 'text',
+            zsmooth: moistSmooth,
+            colorscale: [
+          [0, "#ffffff"],
+          [1, "#1f3d7a"]
+        ]
+          }], {
+            title: "Soil Moisture",
+            xaxis: { title: 'Latitude' },
+            yaxis: { title: 'Longitude' },
+            autosize: true,
+            showLegend: true,
+            font: {
+              size: 12,
+              family: "Arial, sans serif"
+            },
+            height: 500,
+          });
+      }
+
+
+      function displayPHHeatmap(PHsmooth) {
 
         // pH Heatmap
         window.PLOTLYENV = { BASE_URL: "https://plot.ly" };
@@ -477,7 +470,7 @@ html
             zmin: 0,
             text: text,
             hoverinfo: 'text',
-            zsmooth: smooth,
+            zsmooth: PHSmooth,
             colorscale: [
           [0, "#ff9f80"],
           [0.25, "#ffcc99"],
