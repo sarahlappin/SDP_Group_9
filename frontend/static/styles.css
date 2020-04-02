@@ -558,7 +558,9 @@ hr {
   border: none;
   background-color: none;
 }
-
+.smooth-button {
+  width: 20%;
+}
 .intro {
   width: 100%;
   text-align: center;
