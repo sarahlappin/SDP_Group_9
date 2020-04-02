@@ -12,25 +12,30 @@ html
     script(type='text/javascript').
       window.onload = function () {
 
-        
+        var numSevere = 0;
+        var numWarning = 0;
         //- Text for most recent readings - CO
         var currCO = parseFloat(#{surveyCO});
         var userCO = parseFloat(#{userCO});
         if (currCO > (userCO + 2.5)) {
           var str = "DANGER: Very High Levels of CO";
           var result = str.fontcolor("red");
+          numSevere++;
           document.getElementById("COStatus").innerHTML=result;
         } else if (currCO > (userCO + 1)) {
           var str = "WARNING: High Levels of CO";
           var result = str.fontcolor("red");
+          numWarning++;
           document.getElementById("COStatus").innerHTML=result;
         } else if (currCO < (userCO - 2.5)) {
           var str = "DANGER: Very Low Levels of CO";
           var result = str.fontcolor("red");
+          numSevere++;
           document.getElementById("COStatus").innerHTML=result;
         }  else if (currCO < (userCO - 1)) {
           var str = "WARNING: Low Levels of CO";
           var result = str.fontcolor("red");
+          numWarning++;
           document.getElementById("COStatus").innerHTML=result;
         } else {
           var str = "OK";
@@ -45,18 +50,22 @@ html
         if (currMoist > (userMoist + 15)) {
           var str = "DANGER: Soil is Very Moist";
           var result = str.fontcolor("red");
+          numSevere++;
           document.getElementById("moistStatus").innerHTML=result;
         } else if (currMoist > (userMoist + 5)) {
           var str = "WARNING: Soil is Too Moist";
           var result = str.fontcolor("red");
+          numWarning++;
           document.getElementById("moistStatus").innerHTML=result;
         } else if (currMoist < (userMoist - 15)) {
-          var str = "WARNING: Soil is Too Dry";
+          var str = "DANGER: Soil is Too Dry";
           var result = str.fontcolor("red");
+          numSevere++;
           document.getElementById("moistStatus").innerHTML=result;
         }  else if (currMoist < (userMoist - 5)) {
-          var str = "DANGER: Soil is Very Dry";
+          var str = "WARNING: Soil is Very Dry";
           var result = str.fontcolor("red");
+          numWarning++;
           document.getElementById("moistStatus").innerHTML=result;
         } else {
           var str = "OK";
@@ -71,18 +80,22 @@ html
         if (currPH > (userPH + 1.2)) {
           var str = "DANGER: Soil is very alkaline";
           var result = str.fontcolor("red");
+          numSevere++;
           document.getElementById("PHStatus").innerHTML=result;
         } else if (currPH > (userPH + 0.5)) {
           var str = "WARNING: Soil is too alkaline";
           var result = str.fontcolor("red");
+          numWarning++;
           document.getElementById("PHStatus").innerHTML=result;
         } else if (currPH < (userPH - 1.2)) {
           var str = "DANGER: Soil is very acidic";
           var result = str.fontcolor("red");
+          numSevere++;
           document.getElementById("PHStatus").innerHTML=result;
         } else if (currPH < (userPH - 0.5)) {
-          var str = "WARNING: Soil is very acidic";
+          var str = "WARNING: Soil Too Acidic";
           var result = str.fontcolor("red");
+          numWarning++;
           document.getElementById("PHStatus").innerHTML=result;
         } else {
           var str = "OK";
@@ -90,7 +103,8 @@ html
           document.getElementById("PHStatus").innerHTML=result;
         }       
 
-        //- document.getElementById("CORecent").onmouseover = function() {mouseOverCO()};
+        //- var warningStr = numSevere + " severe warnings, " + numWarning + " warnings.";
+        //- document.getElementById("numWarnings").innerHTML = warningStr;
         //- document.getElementById("CORecent").onmouseover = function() {mouseOverCO()};
         //- document.getElementById("CORecent").onmouseover = function() {mouseOverCO()};
 
@@ -251,13 +265,13 @@ html
         viewportMaximum: 10,
         stripLines: [
           {                
-            value: #{userCO},  // ---------- get desired value -------
+            value: parseFloat(#{userCO}),  // ---------- get desired value -------
             thickness: 1,
             color: "blue",
           },
           {                
-            startValue: #{userCO} - 0.5,  // ---------- get desired value -------
-            endValue: #{userCO} + 0.5,  // ---------- get desired value -------
+            startValue: parseFloat(#{userCO}) - 0.5,  // ---------- get desired value -------
+            endValue: parseFloat(#{userCO}) + 0.5,  // ---------- get desired value -------
             thickness: 1,
             color: "#99ccff"
         }
@@ -272,10 +286,10 @@ html
       { x: new Date(2020, 01, 1), y: 4.3 },
       { x: new Date(2020, 02, 1), y: 4.2 },
       { x: new Date(2020, 03, 1), y: Math.round((#{accumulatedCO}/#{numberOfSurveys}) * 100 + Number.EPSILON ) / 100},
-      { x: new Date(2020, 04, 1), y: 0.0 },
-      { x: new Date(2020, 05, 1), y: 0.0 },
-      { x: new Date(2020, 06, 1), y: 0.0 },
-      { x: new Date(2020, 07, 1), y: 0.0 },
+      //- { x: new Date(2020, 04, 1), y: 0.0 },
+      //- { x: new Date(2020, 05, 1), y: 0.0 },
+      //- { x: new Date(2020, 06, 1), y: 0.0 },
+      //- { x: new Date(2020, 07, 1), y: 0.0 },
       ]
       }
       ]
@@ -309,13 +323,13 @@ html
         maximum: 100,
         stripLines: [
           {                
-            value: #{userMoist},  // ---------- get desired value -------
+            value: parseFloat(#{userMoist}),  // ---------- get desired value -------
             thickness: 1,
             color: "blue"
           },
           {                
-            startValue: #{userMoist} -5,  // ---------- get desired value -------
-            endValue: #{userMoist} + 5,  // ---------- get desired value -------
+            startValue: parseFloat(#{userMoist}) -5,  // ---------- get desired value -------
+            endValue: parseFloat(#{userMoist}) + 5,  // ---------- get desired value -------
             thickness: 1,
             color: "#99ccff"
         }
@@ -329,17 +343,20 @@ html
       { x: new Date(2020, 00, 1), y: 75 },
       { x: new Date(2020, 01, 1), y: 75 },
       { x: new Date(2020, 02, 1), y: 73 },
-      { x: new Date(2020, 03, 1), y: Math.round((#{accumulatedMoist}/#{numberOfSurveys}) * 100 + Number.EPSILON ) / 100},
-      { x: new Date(2020, 04, 1), y: 0.0 },
-      { x: new Date(2020, 05, 1), y: 0.0 },
-      { x: new Date(2020, 06, 1), y: 0.0 },
-      { x: new Date(2020, 07, 1), y: 0.0 }
+      { x: new Date(2020, 03, 1), y: Math.round((parseFloat(#{accumulatedMoist})/parseFloat(#{numberOfSurveys})) * 100 + Number.EPSILON ) / 100}
+      //- { x: new Date(2020, 04, 1), y: 0.0 },
+      //- { x: new Date(2020, 05, 1), y: 0.0 },
+      //- { x: new Date(2020, 06, 1), y: 0.0 },
+      //- { x: new Date(2020, 07, 1), y: 0.0 }
       ]
       }
       ]
       });
       chart.render();
 
+      //- var accumPH = parseFloat(#{accumulatedPH});
+      //- var numSurveys = parseFloat(#{numberOfSurveys});
+      //- var average = Math.round((accumPH/numSurveys) * 100) / 100;
       var chart = new CanvasJS.Chart("chartContainer3",
       {
       title:{
@@ -353,7 +370,13 @@ html
         gridThickness: 0,
         lineThickness: 2,
         tickLength: 7,
-        tickThickness: 2
+        tickThickness: 2,
+        crosshair: [
+          {
+            enanled: true
+          }
+        ]
+
       },
       axisY:{
         interval: 1,
@@ -367,13 +390,13 @@ html
         minimum: 2,
         stripLines: [
           {                
-            value: #{userPH},   
+            value: parseFloat(#{userPH}),  
             thickness: 1,
             color: "blue"
           },
           {                
-            startValue: #{userPH} - 0.5,
-            endValue: #{userPH} + 0.5,  
+            startValue: (parseFloat(#{userPH}) - 0.5),
+            endValue: (parseFloat(#{userPH}) + 0.5),  
             thickness: 1,
             color: "#99ccff"
         }
@@ -390,11 +413,11 @@ html
       { x: new Date(2020, 00, 1), y: 6.3 },
       { x: new Date(2020, 01, 1), y: 6.3 },
       { x: new Date(2020, 02, 1), y: 6.2 },
-      { x: new Date(2020, 03, 1), y: Math.round((#{accumulatedPH}/#{numberOfSurveys}) * 100 + Number.EPSILON ) / 100},
-      { x: new Date(2020, 04, 1), y: 0.0 },
-      { x: new Date(2020, 05, 1), y: 0.0 },
-      { x: new Date(2020, 06, 1), y: 0.0 },
-      { x: new Date(2020, 07, 1), y: 0.0 }
+      { x: new Date(2020, 03, 1), y: (Math.round((parseFloat(#{accumulatedPH})/parseFloat(#{numberOfSurveys})) * 100 + Number.EPSILON) / 100)},
+      //- { x: new Date(2020, 04, 1), y: 0.0 },
+      //- { x: new Date(2020, 05, 1), y: 0.0 },
+      //- { x: new Date(2020, 06, 1), y: 0.0 },
+      //- { x: new Date(2020, 07, 1), y: 0.0 }
       ]
       }
       ]

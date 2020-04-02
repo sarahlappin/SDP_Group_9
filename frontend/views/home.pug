@@ -14,19 +14,19 @@ block content
 
     .land-box
       //- h3 My Land 
-      .warnings-total
-        //- Don't hardcode this ---- make dynamic
-        h5  1 severe warning and 3 warnings: 
+      //- .warnings-total
+      //-   //- Don't hardcode this ---- make dynamic
+      //-   h5  1 severe warning and 3 warnings: 
       br
       .home-lands
         each land in lands.sort()
           .grid-item
-            .land-name 
+            #row-auto
               +landBlock({
                 id: land.id,
                 name: land.name
               })
-            .land-warning
+            #row-auto
               p 1 Severe Warning, 3 Warnings
 
 
