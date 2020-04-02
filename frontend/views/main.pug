@@ -442,8 +442,10 @@ html
       function toggle() {
         if (window.smooth == "best") {
           window.smooth = "false";
+          document.getElementById("togglePHButton").innerHTML= "Un-toggle Smoothing";
         } else {
           window.smooth = "best";
+          document.getElementById("togglePHButton").innerHTML= "Toggle Smoothing";
         }
 
         displayHeatmap(window.smooth);
