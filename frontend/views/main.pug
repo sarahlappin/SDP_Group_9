@@ -12,6 +12,7 @@ html
 
     //- Script for Carbon Monoxide Graph
     script(type='text/javascript').
+      var smooth = "best";
       window.onload = function () {
 
         var numSevere = 0;
@@ -434,14 +435,67 @@ html
       chart.render();
       }
 
-      function myFunction() {
-        var x = document.createElement("INPUT");
-        x.setAttribute("type", "date");
-        x.setAttribute("value", "2014-02-09");
-        document.body.appendChild(x);
-      
-
+      function test() {
+        document.getElementById("numWarnings").innerHTML= "test";
       };
+    
+      function toggle() {
+        if (window.smooth == "best") {
+          window.smooth = "false";
+        } else {
+          window.smooth = "best";
+        }
+
+        displayHeatmap(window.smooth);
+      };
+
+      function displayHeatmap(smooth) {
+
+        // pH Heatmap
+        window.PLOTLYENV = { BASE_URL: "https://plot.ly" };
+
+        var pHheatmap = document.getElementById("pH-heatmap");
+
+        var x = [-3.1964814, -3.1930868, -3.1896922, -3.1862976];
+        var y = [55.94071, 55.94153];
+        var z = [[7,6,5,6],[6,7,8,7]];
+
+        var text = z.map (function(z, i) { return z.map (function (value, j) {
+          return ` Longitude: ${y[i]}<br> Latitude: ${x[j]} <br> Value: ${value.toFixed(2)} `
+            });
+          });
+
+          Plotly.plot(pHheatmap, [{
+            type: 'heatmap',
+            x: x,
+            y: y,
+            z: z,
+            zmax: 14,
+            zmin: 0,
+            text: text,
+            hoverinfo: 'text',
+            zsmooth: smooth,
+            colorscale: [
+          [0, "#ff9f80"],
+          [0.25, "#ffcc99"],
+          [0.5, "#c6ebd8"],
+          [0.75, "#ddccff"],
+          [1, "#adadeb"]
+        ]
+          }], {
+            title: "Soil pH",
+            xaxis: { title: 'Latitude' },
+            yaxis: { title: 'Longitude' },
+            autosize: true,
+            showLegend: true,
+            font: {
+              size: 12,
+              family: "Arial, sans serif"
+            },
+            height: 500,
+          });
+      };
+    
 
     script(type='text/javascript' src='https://canvasjs.com/assets/script/canvasjs.min.js')
   body
