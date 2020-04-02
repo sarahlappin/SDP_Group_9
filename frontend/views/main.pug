@@ -18,6 +18,21 @@ html
 
       window.onload = function () {
 
+        getWarningMessages();
+
+        //- Display Co, Moisture and pH Heatmaps
+        displayCOHeatmap(window.COSmooth);
+        displayMoistHeatmap(window.moistSmooth);
+        displayPHHeatmap(window.PHSmooth);
+
+        //- Display Co, Moisture and pH Trend Graphs
+        displayCOTrends();
+        displayMoistTrends();
+        displayPHTrends();
+
+      }
+
+      function getWarningMessages() {
         var numSevere = 0;
         var numWarning = 0;
         //- Text for most recent readings - CO
@@ -111,218 +126,9 @@ html
 
         var warningStr = numSevere + " severe warnings, " + numWarning + " warnings.";
         document.getElementById("numWarnings").innerHTML = warningStr;
-        //- document.getElementById("CORecent").onmouseover = function() {mouseOverCO()};
-        //- document.getElementById("CORecent").onmouseover = function() {mouseOverCO()};
-
-        // C0 Heatmap
-        displayCOHeatmap(window.COSmooth);
-                
-        // Soil Moisture Heatmap
-        displayMoistHeatmap(window.moistSmooth);
-
-        displayPHHeatmap(window.PHSmooth);
-
-
-
-
-      var chart = new CanvasJS.Chart("chartContainer1",
-      {
-      title:{
-        text: "Carbon Monoxide",
-        fontFamily: "sans-serif",
-        fontSize: 20
-      },
-      axisX: {
-        interval: 1,
-        title: "Month",
-        gridThickness: 0,
-        lineThickness: 2,
-        tickLength: 7,
-        tickThickness: 2,
-
-      },
-      axisY:{
-        interval: 1,
-        title: "Average CO (ppm)",
-        gridThickness: 0,
-        lineThickness: 2,
-        tickLength: 7,
-        tickThickness: 2,
-        viewportMinimum: 0,
-        viewportMaximum: 10,
-        stripLines: [
-          {                
-            value: parseFloat(#{userCO}),  // ---------- get desired value -------
-            thickness: 1,
-            color: "blue",
-          },
-          {                
-            startValue: parseFloat(#{userCO}) - 0.5,  // ---------- get desired value -------
-            endValue: parseFloat(#{userCO}) + 0.5,  // ---------- get desired value -------
-            thickness: 1,
-            color: "#99e6ff"
-        }
-          ]                 
-      },
-      data: [
-      {
-      type: "line",
-      color: "orange",
-      showInLegend: true,
-      legendText: "Average CO",
-      dataPoints: [
-      { x: new Date(2020, 00, 1), y: 4.0 },
-      { x: new Date(2020, 01, 1), y: 4.3 },
-      { x: new Date(2020, 02, 1), y: 4.2 },
-      { x: new Date(2020, 03, 1), y: Math.round((#{accumulatedCO}/#{numberOfSurveys}) * 100 + Number.EPSILON ) / 100},
-      //- { x: new Date(2020, 04, 1), y: 0.0 },
-      //- { x: new Date(2020, 05, 1), y: 0.0 },
-      //- { x: new Date(2020, 06, 1), y: 0.0 },
-      //- { x: new Date(2020, 07, 1), y: 0.0 },
-      ]
       }
-      ]
-      });
-      chart.render();
+   
 
-      var chart = new CanvasJS.Chart("chartContainer2",
-      {
-      title:{
-        text: "Soil Moisture",
-        fontFamily: "sans-serif",
-        fontSize: 20
-      },
-      axisX: {
-        interval: 2,
-        title: "Month",
-        gridThickness: 0,
-        lineThickness: 2,
-        tickLength: 7,
-        tickThickness: 2,
-        crosshair: {
-          enabled: true
-        }
-      },
-      axisY:{
-        interval: 10,
-        title: "Average Soil Moisture (%)",
-        gridThickness: 0,
-        lineThickness: 2,
-        tickLength: 7,
-        tickThickness: 2,
-        viewportMaximum: 100,
-        minimum: 40,
-        maximum: 100,
-        stripLines: [
-          {                
-            value: parseFloat(#{userMoist}),  // ---------- get desired value -------
-            thickness: 1,
-            color: "blue"
-          },
-          {                
-            startValue: parseFloat(#{userMoist}) -5,  // ---------- get desired value -------
-            endValue: parseFloat(#{userMoist}) + 5,  // ---------- get desired value -------
-            thickness: 1,
-            color: "#99e6ff"
-        }
-          ]                 
-      },
-      data: [
-      {
-      type: "line",
-      color: "green",
-      showInLegend: true,
-      legendText: "Average Soil Moisture",
-      dataPoints: [
-      { x: new Date(2020, 00, 1), y: 75 },
-      { x: new Date(2020, 01, 1), y: 75 },
-      { x: new Date(2020, 02, 1), y: 73 },
-      { x: new Date(2020, 03, 1), y: Math.round(((#{accumulatedMoist})/(#{numberOfSurveys})) * 100 + Number.EPSILON ) / 100}
-      //- { x: new Date(2020, 04, 1), y: 0.0 },
-      //- { x: new Date(2020, 05, 1), y: 0.0 },
-      //- { x: new Date(2020, 06, 1), y: 0.0 },
-      //- { x: new Date(2020, 07, 1), y: 0.0 }
-      ]
-      }
-      ]
-      });
-      chart.render();
-
-      //- var accumPH = parseFloat(#{accumulatedPH});
-      //- var numSurveys = parseFloat(#{numberOfSurveys});
-      //- var average = Math.round((accumPH/numSurveys) * 100) / 100;
-      var chart = new CanvasJS.Chart("chartContainer3",
-      {
-      title:{
-        text: "pH",
-        fontFamily: "sans-serif",
-        fontSize: 20
-      },
-      axisX: {
-        interval: 1,
-        title: "Month",
-        gridThickness: 0,
-        lineThickness: 2,
-        tickLength: 7,
-        tickThickness: 2,
-        crosshair: [
-          {
-            enanled: true
-          }
-        ]
-
-      },
-      axisY:{
-        interval: 1,
-        title: "Average pH",
-        gridThickness: 0,
-        lineThickness: 2,
-        tickLength: 7,
-        tickThickness: 2,
-        viewportMaximum: 10,
-        maximum: 10,
-        minimum: 2,
-        stripLines: [
-          {                
-            value: parseFloat(#{userPH}),  
-            thickness: 1,
-            color: "blue"
-          },
-          {                
-            startValue: (parseFloat(#{userPH}) - 0.5),
-            endValue: (parseFloat(#{userPH}) + 0.5),  
-            thickness: 1,
-            color: "#99e6ff"
-        }
-          ]                 
-
-      },
-      data: [
-      {
-      type: "line",
-      color: "red",
-      showInLegend: true,
-      legendText: "Average pH",
-      dataPoints: [
-      { x: new Date(2020, 00, 1), y: 6.3 },
-      { x: new Date(2020, 01, 1), y: 6.3 },
-      { x: new Date(2020, 02, 1), y: 6.2 },
-      { x: new Date(2020, 03, 1), y: (Math.round(((#{accumulatedPH})/(#{numberOfSurveys})) * 100 + Number.EPSILON) / 100)},
-      //- { x: new Date(2020, 04, 1), y: 0.0 },
-      //- { x: new Date(2020, 05, 1), y: 0.0 },
-      //- { x: new Date(2020, 06, 1), y: 0.0 },
-      //- { x: new Date(2020, 07, 1), y: 0.0 }
-      ]
-      }
-      ]
-      });
-      chart.render();
-      }
-
-      function test() {
-        document.getElementById("numWarnings").innerHTML= "test";
-      };
-    
       function togglePHSmoothing() {
         if (window.PHSmooth == "best") {
           window.PHSmooth = "false";
@@ -334,6 +140,7 @@ html
 
         displayPHHeatmap(window.PHSmooth);
       };
+
 
       function toggleCOSmoothing() {
         if (window.COSmooth == "best") {
@@ -347,6 +154,7 @@ html
         displayCOHeatmap(window.COSmooth);
       };
 
+
       function toggleMoistSmoothing() {
         if (window.moistSmooth == "best") {
           window.moistSmooth = "false";
@@ -358,6 +166,7 @@ html
 
         displayMoistHeatmap(window.moistSmooth);
       };
+
 
       function displayCOHeatmap(COSmooth) {
         window.PLOTLYENV = { BASE_URL: "https://plot.ly" };
@@ -491,6 +300,193 @@ html
             height: 500,
           });
       };
+
+
+      function displayCOTrends() {
+        var chart = new CanvasJS.Chart("chartContainer1",
+          {
+          title:{
+            text: "Carbon Monoxide",
+            fontFamily: "sans-serif",
+            fontSize: 20
+          },
+          axisX: {
+            interval: 1,
+            title: "Month",
+            gridThickness: 0,
+            lineThickness: 2,
+            tickLength: 7,
+            tickThickness: 2,
+
+          },
+          axisY:{
+            interval: 1,
+            title: "Average CO (ppm)",
+            gridThickness: 0,
+            lineThickness: 2,
+            tickLength: 7,
+            tickThickness: 2,
+            viewportMinimum: 0,
+            viewportMaximum: 10,
+            stripLines: [
+              {                
+                value: parseFloat(#{userCO}),  // ---------- get desired value -------
+                thickness: 1,
+                color: "blue",
+              },
+              {                
+                startValue: parseFloat(#{userCO}) - 0.5,  // ---------- get desired value -------
+                endValue: parseFloat(#{userCO}) + 0.5,  // ---------- get desired value -------
+                thickness: 1,
+                color: "#99e6ff"
+            }
+              ]                 
+          },
+          data: [
+          {
+          type: "line",
+          color: "orange",
+          showInLegend: true,
+          legendText: "Average CO",
+          dataPoints: [
+          { x: new Date(2020, 00, 1), y: 4.0 },
+          { x: new Date(2020, 01, 1), y: 4.3 },
+          { x: new Date(2020, 02, 1), y: 4.2 },
+          { x: new Date(2020, 03, 1), y: Math.round((#{accumulatedCO}/#{numberOfSurveys}) * 100 + Number.EPSILON ) / 100},
+          ]
+          }
+          ]
+          });
+        chart.render();
+      }
+
+
+      function displayMoistTrends() {
+        var chart = new CanvasJS.Chart("chartContainer2",
+          {
+          title:{
+            text: "Soil Moisture",
+            fontFamily: "sans-serif",
+            fontSize: 20
+          },
+          axisX: {
+            interval: 2,
+            title: "Month",
+            gridThickness: 0,
+            lineThickness: 2,
+            tickLength: 7,
+            tickThickness: 2,
+            crosshair: {
+              enabled: true
+            }
+          },
+          axisY:{
+            interval: 10,
+            title: "Average Soil Moisture (%)",
+            gridThickness: 0,
+            lineThickness: 2,
+            tickLength: 7,
+            tickThickness: 2,
+            viewportMaximum: 100,
+            minimum: 40,
+            maximum: 100,
+            stripLines: [
+              {                
+                value: parseFloat(#{userMoist}),  // ---------- get desired value -------
+                thickness: 1,
+                color: "blue"
+              },
+              {                
+                startValue: parseFloat(#{userMoist}) -5,  // ---------- get desired value -------
+                endValue: parseFloat(#{userMoist}) + 5,  // ---------- get desired value -------
+                thickness: 1,
+                color: "#99e6ff"
+            }
+              ]                 
+          },
+          data: [
+            {
+              type: "line",
+              color: "green",
+              showInLegend: true,
+              legendText: "Average Soil Moisture",
+              dataPoints: [
+                { x: new Date(2020, 00, 1), y: 75 },
+                { x: new Date(2020, 01, 1), y: 75 },
+                { x: new Date(2020, 02, 1), y: 73 },
+                { x: new Date(2020, 03, 1), y: Math.round(((#{accumulatedMoist})/(#{numberOfSurveys})) * 100 + Number.EPSILON ) / 100}
+              ]
+            }
+          ]
+          });
+        chart.render();
+      }
+
+
+      function displayPHTrends() {
+        var chart = new CanvasJS.Chart("chartContainer3",
+          {
+          title:{
+            text: "pH",
+            fontFamily: "sans-serif",
+            fontSize: 20
+          },
+          axisX: {
+            interval: 1,
+            title: "Month",
+            gridThickness: 0,
+            lineThickness: 2,
+            tickLength: 7,
+            tickThickness: 2,
+            crosshair: [
+              {
+                enanled: true
+              }
+            ]
+
+          },
+          axisY:{
+            interval: 1,
+            title: "Average pH",
+            gridThickness: 0,
+            lineThickness: 2,
+            tickLength: 7,
+            tickThickness: 2,
+            viewportMaximum: 10,
+            maximum: 10,
+            minimum: 2,
+            stripLines: [
+              {                
+                value: parseFloat(#{userPH}),  
+                thickness: 1,
+                color: "blue"
+              },
+              {                
+                startValue: (parseFloat(#{userPH}) - 0.5),
+                endValue: (parseFloat(#{userPH}) + 0.5),  
+                thickness: 1,
+                color: "#99e6ff"
+            }
+              ]                 
+
+          },
+          data: [
+            {
+            type: "line",
+            color: "red",
+            showInLegend: true,
+            legendText: "Average pH",
+            dataPoints: [
+              { x: new Date(2020, 00, 1), y: 6.3 },
+              { x: new Date(2020, 01, 1), y: 6.3 },
+              { x: new Date(2020, 02, 1), y: 6.2 },
+              { x: new Date(2020, 03, 1), y: (Math.round(((#{accumulatedPH})/(#{numberOfSurveys})) * 100 + Number.EPSILON) / 100)},
+            ]
+            }
+          ]
+          });
+       chart.render();
+      }
     
 
     script(type='text/javascript' src='https://canvasjs.com/assets/script/canvasjs.min.js')
