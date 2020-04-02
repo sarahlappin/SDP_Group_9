@@ -268,14 +268,14 @@ html
       type: "line",
       color: "orange",
       dataPoints: [
-      { x: new Date(2019, 00, 1), y: 4.0 },
-      { x: new Date(2019, 01, 1), y: 4.3 },
-      { x: new Date(2019, 02, 1), y: 4.2 },
-      { x: new Date(2019, 03, 1), y: 3.6 },
-      { x: new Date(2019, 04, 1), y: 3.7 },
-      { x: new Date(2019, 05, 1), y: 3.9 },
-      { x: new Date(2019, 06, 1), y: 4.1 },
-      { x: new Date(2019, 07, 1), y: 3.8 },
+      { x: new Date(2020, 00, 1), y: 4.0 },
+      { x: new Date(2020, 01, 1), y: 4.3 },
+      { x: new Date(2020, 02, 1), y: 4.2 },
+      { x: new Date(2020, 03, 1), y: Math.round((#{accumulatedCO}/#{numberOfSurveys}) * 100 + Number.EPSILON ) / 100},
+      { x: new Date(2020, 04, 1), y: 0.0 },
+      { x: new Date(2020, 05, 1), y: 0.0 },
+      { x: new Date(2020, 06, 1), y: 0.0 },
+      { x: new Date(2020, 07, 1), y: 0.0 },
       ]
       }
       ]
@@ -326,14 +326,14 @@ html
       type: "line",
       color: "green",
       dataPoints: [
-      { x: new Date(2019, 00, 1), y: 65 },
-      { x: new Date(2019, 01, 1), y: 75 },
-      { x: new Date(2019, 02, 1), y: 73 },
-      { x: new Date(2019, 03, 1), y: 76 },
-      { x: new Date(2019, 04, 1), y: 77 },
-      { x: new Date(2019, 05, 1), y: 79 },
-      { x: new Date(2019, 06, 1), y: 71 },
-      { x: new Date(2019, 07, 1), y: 68 },
+      { x: new Date(2020, 00, 1), y: 75 },
+      { x: new Date(2020, 01, 1), y: 75 },
+      { x: new Date(2020, 02, 1), y: 73 },
+      { x: new Date(2020, 03, 1), y: Math.round((#{accumulatedMoist}/#{numberOfSurveys}) * 100 + Number.EPSILON ) / 100},
+      { x: new Date(2020, 04, 1), y: 0.0 },
+      { x: new Date(2020, 05, 1), y: 0.0 },
+      { x: new Date(2020, 06, 1), y: 0.0 },
+      { x: new Date(2020, 07, 1), y: 0.0 }
       ]
       }
       ]
@@ -387,18 +387,14 @@ html
       showInLegend: true,
       legendText: "Average pH",
       dataPoints: [
-      { x: new Date(2019, 00, 1), y: 6.3 },
-      { x: new Date(2019, 01, 1), y: 6.3 },
-      { x: new Date(2019, 02, 1), y: 6.2 },
-      { x: new Date(2019, 03, 1), y: 5.6 },
-      { x: new Date(2019, 04, 1), y: 6.7 },
-      { x: new Date(2019, 05, 1), y: 6.9 },
-      { x: new Date(2019, 06, 1), y: 6.1 },
-      { x: new Date(2019, 07, 1), y: 6.8 },
-      { x: new Date(2019, 08, 1), y: 6.3 },
-      { x: new Date(2019, 09, 1), y: 6.2 },
-      { x: new Date(2019, 10, 1), y: 6.3 },
-      { x: new Date(2019, 11, 1), y: 6.0 }
+      { x: new Date(2020, 00, 1), y: 6.3 },
+      { x: new Date(2020, 01, 1), y: 6.3 },
+      { x: new Date(2020, 02, 1), y: 6.2 },
+      { x: new Date(2020, 03, 1), y: Math.round((#{accumulatedPH}/#{numberOfSurveys}) * 100 + Number.EPSILON ) / 100},
+      { x: new Date(2020, 04, 1), y: 0.0 },
+      { x: new Date(2020, 05, 1), y: 0.0 },
+      { x: new Date(2020, 06, 1), y: 0.0 },
+      { x: new Date(2020, 07, 1), y: 0.0 }
       ]
       }
       ]
