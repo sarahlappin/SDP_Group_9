@@ -11,6 +11,11 @@ export const home = async (req, res) => {
   }
 };
 
+export const getAbout = (req, res) =>
+  res.render("about", { pageTitle: "About" });
+export const getContact = (req, res) =>
+  res.render("contact", { pageTitle: "Contact" });
+
 export const getJoin = (req, res) => res.render("join", { pageTitle: "Join" });
 export const getLogin = (req, res) =>
   res.render("login", { pageTitle: "Login" });
