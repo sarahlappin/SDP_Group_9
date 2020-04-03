@@ -3,7 +3,7 @@ extends main
 block content
     div
     // THE ENTIRE THING
-    .row.title-area()
+    .row(style="margin-left: 3%;").title-area
         //- .col-sm-1
             //- a(href=routes.deleteLand(land.id)) 
             //-         button.delete.top-small Back to My Land
@@ -23,10 +23,10 @@ block content
             |  #{pointBLong}, #{pointBLat}
             br
             b Desired CO:
-            |  #{userCO}
+            |  #{userCO} ppm
             br
             b Desired Moisture:
-            |  #{userMoist}
+            |  #{userMoist} %
             br
             b Desired pH:
             |  #{userPH}
@@ -34,100 +34,114 @@ block content
             b Last reading:
             |  #{surveyDate}
 
-            br
-            br
-            a(href='/')
-                button.BackToLand Back to My Land
+            //- br
+            //- a(href='/')
+            //-     button.BackToLand Back to My Land
 
         .col-xl-8
             .form-container.survey
-                form(method="get", action=routes.startSurvey(land.id))
+                a(href='/' style="margin-bottom: 2%")
+                    button.BackToLand Back to My Land
+
+                form.survey(method="get", action=routes.startSurvey(land.id))
                     input(type="submit", value="Request Survey")
                 
-                a(href=routes.deleteLand(land.id)) 
-                    button.delete.top-small Remove Land Entry
-    
+                //- a(href=routes.deleteLand(land.id)) 
+                //-     button.delete.top-small Remove Land Entry
+
     // Div after the title
-    div(style='background-color: #f8f8f8')
+    div(style='background-color: #f8f8f8; margin: 5%;')
         // RECENT READINGS
-        div
-        .title-with-margins.analysis-section-title
-            h3 Most recent readings
+        h2
+            button.collapsible(type='button') 
+                    | Recent Readings
+                    //- svg(viewbox='0 0 5 5' aria-hidden='true' focusable='false')
+                    //-     rect.vert(height='8' width='2' y='1' x='4')
+                    //-     rect(height='2' width='8' y='4' x='1')
+            .content
+                div
+                    #recent-readings.title-with-margins.analysis-section-title
+                        h3 Most Recent Readings
 
-            #numWarnings
+                        #numWarnings
 
-        .row.reading
-            .col-xs-4.col-centered
-            .card.card-1.card-contents.reading
-                h1(class='big green font-weight-light')
-                .reading-title
-                    p Carbon Monoxide:
-                p
-                | #{surveyCO} ppm
-                #COStatus
-                |
+                    .row.reading
+                        .col-xs-4.col-centered
+                        .card.card-1.card-contents.reading
+                            h5(class='big green font-weight-light')
+                            .reading-title
+                                h5
+                                    Average Carbon Monoxide:
+                            
+                            p #{surveyCO} ppm
+                            #COStatus
+                            
+                        .col-xs-4.col-centered
+                        .card.card-1.card-contents.reading
+                            h1(class='big green font-weight-light')
+                            .reading-title 
+                                h5 Average Soil Moisture:
+                            P #{surveyMoist} %
+                            br
+                            #moistStatus
+                        .col-xs-4.col-centered
+                        .card.card-1.card-contents.reading
+                            h1(class= 'big red font-weight-light')
+                            .reading-title
+                                p Average pH:
+                            | #{surveyPH}
+                            br
+                            #PHStatus
+            // <div id="pHtable"></div>
+        h2
+            button.collapsible(type='button') Heatmaps
+            .content
+                #Visualisation.title-with-margins.analysis-section-title
+                    h3 Visualisation of Recent Readings
+                    p These heatmaps visualise the values of the recent set of readings accross the land area. The bars on the side show the colour scale, on the heatmaps the colour of an area correspond to the value in the colour scale. The x and y co-ordinates of the heatmaps show the latitude and longitide of the position of each reading, respectively.
+                    #co-heatmap
+                    p Smoothing the heatmap will estimate values acrross the land where there is no data. This may give a more realistic view of the land. 
+                    button#toggleCOButton.smooth-button(onclick="toggleCOSmoothing()") Toggle Smoothing
+                    br
+                    br
+                    #moisture-heatmap
+                    p Smoothing the heatmap will estimate values acrross the land where there is no data. This may give a more realistic view of the land. 
+                    button#toggleMoistButton.smooth-button(onclick="toggleMoistSmoothing()") Toggle Smoothing
+                    br
+                    br
+                    #pH-heatmap
+                    p Smoothing the heatmap will estimate values acrross the land where there is no data. This may give a more realistic view of the land. 
+                    button#togglePHButton.smooth-button(onclick="togglePHSmoothing()") Toggle Smoothing
+                    br
+                    br
+        h2
+            button.collapsible(type='button') Trends
+            .content
+                .title-with-margins.analysis-section-title
+                    h3 Trends
+                    p These graphs show the change in readings values over time. The dark blue lines indicate the desired values and the light blue blocks indicate the acceptable values, based on your desired values. The acceptable values are those values that are within a acceptable range from the desired value.  
                 
-            .col-xs-4.col-centered
-            .card.card-1.card-contents.reading
-                h1(class='big green font-weight-light')
-                .reading-title 
-                    p Soil Moisture:
-                P
-                | #{surveyMoist} %
-                #moistStatus
-            .col-xs-4.col-centered
-            .card.card-1.card-contents.reading
-                h1(class= 'big red font-weight-light')
-                .reading-title
-                    p pH:
-                | #{surveyPH}
-                p(class='red')
-                #PHStatus
-        // <div id="pHtable"></div>
 
-        .title-with-margins.analysis-section-title
-            h3 Visualisation of Recent Readings
-            p These heatmaps visualise the values of the recent set of readings accross the land area. The bars on the side show the colour scale, on the heatmaps the colour of an area correspond to the value in the colour scale. The x and y co-ordinates of the heatmaps show the latitude and longitide of the position of each reading, respectively.
-            #co-heatmap
-            p Smoothing the heatmap will estimate values acrross the land where there is no data. This may give a more realistic view of the land. 
-            button#toggleCOButton.smooth-button(onclick="toggleCOSmoothing()") Toggle Smoothing
-            br
-            br
-            #moisture-heatmap
-            p Smoothing the heatmap will estimate values acrross the land where there is no data. This may give a more realistic view of the land. 
-            button#toggleMoistButton.smooth-button(onclick="toggleMoistSmoothing()") Toggle Smoothing
-            br
-            br
-            #pH-heatmap
-            p Smoothing the heatmap will estimate values acrross the land where there is no data. This may give a more realistic view of the land. 
-            button#togglePHButton.smooth-button(onclick="togglePHSmoothing()") Toggle Smoothing
-            br
-            br
+                .row.trends
+                    .col-xs-4.col-centered
+                    .card.card-1.card-contents.trends
+                        .col-md-5
+                        #chartContainer1(style='height: 250px; width: 100%;')
+                        //- p Start Date: 
+                        //-     input#myDate(type='date')
+                        //- p End Date:
+                        //-     input#myDate(type='date')
 
-        .title-with-margins.analysis-section-title
-            h3 Trends
-            p These graphs show the change in readings values over time. The dark blue lines indicate the desired values and the light blue blocks indicate the acceptable values, based on your desired values. The acceptable values are those values that are within a acceptable range from the desired value.  
-            
+                    .col-xs-4.col-centered
+                    .card.card-1.card-contents.trends
+                        #chartContainer2(style='height: 250px; width: 100%;')
+                
+                    .col-xs-4.col-centered
+                    .card.card-1.card-contents.trends
+                        #chartContainer3(style='height: 250px; width: 100%;')
+                    br
 
-        .row.trends
-            .col-xs-4.col-centered
-            .card.card-1.card-contents.trends
-                .col-md-5
-                #chartContainer1(style='height: 300px; width: 100%;')
-                //- p Start Date: 
-                //-     input#myDate(type='date')
-                //- p End Date:
-                //-     input#myDate(type='date')
-
-            .col-xs-4.col-centered
-            .card.card-1.card-contents.trends
-                #chartContainer2(style='height: 300px; width: 100%;')
-        
-            .col-xs-4.col-centered
-            .card.card-1.card-contents.trends
-                #chartContainer3(style='height: 300px; width: 100%;')
-
-
+        //- br
         // LAND ANALYSIS AREA ENDS HERE
         a(href=routes.deleteLand(land.id)) 
             button.delete Remove Land Entry

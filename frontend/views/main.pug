@@ -30,6 +30,21 @@ html
         displayMoistTrends();
         displayPHTrends();
 
+        var coll = document.getElementsByClassName("collapsible");
+        var i;
+
+        for (i = 0; i < coll.length; i++) {
+          coll[i].addEventListener("click", function() {
+            this.classList.toggle("active");
+            var content = this.nextElementSibling;
+           if (content.style.maxHeight){
+            content.style.maxHeight = null;
+          } else {
+            content.style.maxHeight = content.scrollHeight + "px";
+          } 
+          });
+        }
+
       }
 
       function getWarningMessages() {
@@ -42,28 +57,26 @@ html
           var str = "DANGER: Very High Levels of CO";
           var result = str.fontcolor("red");
           numSevere++;
-          document.getElementById("COStatus").innerHTML=result;
         } else if (currCO > (userCO + 1)) {
           var str = "WARNING: High Levels of CO";
           var result = str.fontcolor("red");
           numWarning++;
-          document.getElementById("COStatus").innerHTML=result;
         } else if (currCO < (userCO - 2.5)) {
           var str = "DANGER: Very Low Levels of CO";
           var result = str.fontcolor("red");
           numSevere++;
-          document.getElementById("COStatus").innerHTML=result;
         }  else if (currCO < (userCO - 1)) {
           var str = "WARNING: Low Levels of CO";
           var result = str.fontcolor("red");
           numWarning++;
-          document.getElementById("COStatus").innerHTML=result;
         } else {
           var str = "OK";
           var result = str.fontcolor("green");
-          document.getElementById("COStatus").innerHTML=result;
         }       
 
+        document.getElementById("COStatus").style.fontSize = "medium";     
+        document.getElementById("COStatus").style.padding = "2px";    
+        document.getElementById("COStatus").innerHTML= result;
 
         //- Text for most recent readings - moisture
         var currMoist = parseFloat(#{surveyMoist});
@@ -72,28 +85,25 @@ html
           var str = "DANGER: Soil is Very Moist";
           var result = str.fontcolor("red");
           numSevere++;
-          document.getElementById("moistStatus").innerHTML=result;
         } else if (currMoist > (userMoist + 5)) {
           var str = "WARNING: Soil is Too Moist";
           var result = str.fontcolor("red");
           numWarning++;
-          document.getElementById("moistStatus").innerHTML=result;
         } else if (currMoist < (userMoist - 15)) {
           var str = "DANGER: Soil is Too Dry";
           var result = str.fontcolor("red");
           numSevere++;
-          document.getElementById("moistStatus").innerHTML=result;
         }  else if (currMoist < (userMoist - 5)) {
           var str = "WARNING: Soil is Very Dry";
           var result = str.fontcolor("red");
           numWarning++;
-          document.getElementById("moistStatus").innerHTML=result;
         } else {
           var str = "OK";
           var result = str.fontcolor("green");
-          document.getElementById("moistStatus").innerHTML=result;
         }
 
+        document.getElementById("moistStatus").style.fontSize = "medium";     
+        document.getElementById("moistStatus").innerHTML= result;
         
         //- Text for most recent readings - pH
         var currPH = parseFloat(#{surveyPH});
@@ -102,27 +112,25 @@ html
           var str = "DANGER: Soil is very alkaline";
           var result = str.fontcolor("red");
           numSevere++;
-          document.getElementById("PHStatus").innerHTML=result;
         } else if (currPH > (userPH + 0.5)) {
           var str = "WARNING: Soil is too alkaline";
           var result = str.fontcolor("red");
           numWarning++;
-          document.getElementById("PHStatus").innerHTML=result;
         } else if (currPH < (userPH - 1.2)) {
           var str = "DANGER: Soil is very acidic";
           var result = str.fontcolor("red");
           numSevere++;
-          document.getElementById("PHStatus").innerHTML=result;
         } else if (currPH < (userPH - 0.5)) {
           var str = "WARNING: Soil Too Acidic";
           var result = str.fontcolor("red");
           numWarning++;
-          document.getElementById("PHStatus").innerHTML=result;
         } else {
           var str = "OK";
           var result = str.fontcolor("green");
-          document.getElementById("PHStatus").innerHTML=result;
-        }       
+        }  
+
+        document.getElementById("PHStatus").style.fontSize = "medium";     
+        document.getElementById("PHStatus").innerHTML= result;     
 
         var warningStr = numSevere + " severe warnings, " + numWarning + " warnings.";
         document.getElementById("numWarnings").innerHTML = warningStr;

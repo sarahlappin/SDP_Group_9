@@ -181,7 +181,8 @@ input {
 
 button {
   background-color: #0097e6;
-  color: white; }
+  color: white; 
+}
 
 a {
   text-decoration: none;
@@ -558,9 +559,44 @@ hr {
   border: none;
   background-color: none;
 }
-.smooth-button {
+/* .smooth-button {
   width: 20%;
 }
+main h2 {
+  margin: 0;
+}
+
+main > div + h2 {
+  border-top: 2px solid;
+}
+
+h2 button {
+  all: inherit;
+  border: 0;
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  padding: 0.5em 0;
+}
+
+
+
+h2 button:focus svg {
+  outline: 2px solid;
+}
+
+button svg {
+  height: 1em;
+  margin-left: 0.5em;
+}
+
+[aria-expanded="true"] .vert {
+  display: none;
+} */
+
+
+
+
 .intro {
   width: 100%;
   text-align: center;
@@ -621,7 +657,14 @@ hr {
   margin-top: 5px;
   color: red
 }
-
+.navigation {
+  /* background-color: grey; */
+  width: 20%;
+  text-align: center;
+  vertical-align: center;
+  color: white;
+  text-emphasis-color: white;
+}
 .land-warning {
   font-size: 15px;
   color: red;
@@ -679,12 +722,16 @@ hr {
   width: auto;
 }
 
+.landDetail-navigation {
+  text-align: center;
+}
 .reading, .trends {
   display: flex;
   text-align: center;
   justify-content: center;
   size: auto;
   padding: 8px;
+  font-size: large;
   /* max-height: 150px;
   max-width: 300px */
 
@@ -694,6 +741,47 @@ hr {
   pointer-events: none;
 } */
 
+.collapsible {
+  /* border-color: red; */
+  border: 10px solid red;
+  color:  white;
+  cursor: pointer;
+  padding: 18px;
+  width: 100%;
+  border: none;
+  text-align: left;
+  outline: none;
+  font-size: 15px;
+  height: auto;
+  
+}
+
+.collapsible:after {
+  content: '\002B';
+  color: white;
+  font-weight: bold;
+  float: right;
+  margin-left: 5px;
+}
+
+.active, .collapsible:hover {
+  background-color: rgb(16, 85, 122);
+}
+
+.active:after {
+  content: "\2212";
+}
+
+.content {
+  padding: 0 18px;
+  /* display: none; */
+  background-color: #f1f1f1;
+  /* height: 100%; */
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.2s ease-out;
+  background-color: #f1f1f1;
+}
 
 small,
 .small {
@@ -10681,7 +10769,7 @@ button.delete.top-small {
   border-radius: 5px;
   height: 45px;
   position: static;
-  margin-top: 30px;
+  margin-top: 2%;
  }
 
 button.delete {
@@ -10693,13 +10781,14 @@ button.BackToLand {
   height: auto;
   border-radius: 5px;
   position: static;
+  padding: 3%
 }
 
 .title-with-margins {
   padding: 30px 30px 0px 30px; }
 
 .title-area {
-  padding: 30px 30px 30px 30px; }
+  padding: 0px 30px 0 30px; }
 
 .heatmap-format {
   padding: 30px 30px 30px 30px; }
