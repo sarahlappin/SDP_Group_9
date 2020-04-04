@@ -10603,7 +10603,7 @@ a.text-dark:hover, a.text-dark:focus {
   margin-bottom: 50px; }
   .header .header_wrapper {
     padding: 5px 0px;
-    width: 100%;
+    width: auto;
     max-width: 100%;
     min-width: 80%;
     margin-left: 5px;

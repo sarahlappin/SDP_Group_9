@@ -134,8 +134,34 @@ html
         document.getElementById("PHStatus").style.padding = "2px";    
         document.getElementById("PHStatus").innerHTML= result;     
 
-        var warningStr = numSevere + " severe warnings, " + numWarning + " warnings.";
-        document.getElementById("numWarnings").innerHTML = warningStr;
+        var warningStr;
+        if ((numSevere > 0) && (numWarning > 0)) {
+          var severeStr = numSevere + " severe warnings";
+          var warningStr = ", " + numWarning + " warnings"
+          var result = severeStr.fontcolor("red") + warningStr.fontcolor("orange");
+        } else if (numSevere > 0) {
+          warningStr = numSevere + " severe warnings"
+          var result = warningStr.fontcolor("red");
+        } else {
+          warningStr = "zero";
+        }
+        //- if ((numSevere > 0) and (numWarning > 0)) {
+        //-   var warningStr = "Sever";
+        //-   //- var warningStr = numSevere + " severe warnings, " + numWarning + " warnings.";
+        //- }
+          //- warningStr.fontcolor("red");
+        //- } else if (numSevere > 0) {
+        //-   var warningStr = numSevere + " severe warnings";
+        //-   //- warningStr.fontcolor("red");
+        //- } else if (numWarning > 0) {
+        //-   var warningStr = numWarning + " severe warnings";
+        //-   //- warningStr.fontcolor("red");
+        //- } else {
+        //-   var warningStr = "0 warnings";
+        //-   //- warningStr.fontcolor("green");
+        //- }
+        
+        document.getElementById("numWarnings").innerHTML = result;
       }
    
 
