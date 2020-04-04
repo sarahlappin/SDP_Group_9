@@ -2,6 +2,8 @@ const HOME = "/";
 const JOIN = "/join";
 const LOGIN = "/login";
 const LOGOUT = "/logout";
+const ABOUT = "/about";
+const CONTACT = "/contact";
 
 const USERS = "/users";
 const USER_DETAIL = "/:id";
@@ -17,6 +19,8 @@ const routes = {
   join: JOIN,
   login: LOGIN,
   logout: LOGOUT,
+  about: ABOUT,
+  contact: CONTACT,
   users: USERS,
   userDetail: id => {
     if (id) return `/users/${id}`;
