@@ -59,7 +59,7 @@ html
           numSevere++;
         } else if (currCO > (userCO + 1)) {
           var str = "WARNING: High Levels of CO";
-          var result = str.fontcolor("red");
+          var result = str.fontcolor("orange");
           numWarning++;
         } else if (currCO < (userCO - 2.5)) {
           var str = "DANGER: Very Low Levels of CO";
@@ -67,7 +67,7 @@ html
           numSevere++;
         }  else if (currCO < (userCO - 1)) {
           var str = "WARNING: Low Levels of CO";
-          var result = str.fontcolor("red");
+          var result = str.fontcolor("orange");
           numWarning++;
         } else {
           var str = "OK";
@@ -87,15 +87,15 @@ html
           numSevere++;
         } else if (currMoist > (userMoist + 5)) {
           var str = "WARNING: Soil is Too Moist";
-          var result = str.fontcolor("red");
+          var result = str.fontcolor("orange");
           numWarning++;
         } else if (currMoist < (userMoist - 15)) {
-          var str = "DANGER: Soil is Too Dry";
+          var str = "DANGER: Soil is Very Dry";
           var result = str.fontcolor("red");
           numSevere++;
         }  else if (currMoist < (userMoist - 5)) {
-          var str = "WARNING: Soil is Very Dry";
-          var result = str.fontcolor("red");
+          var str = "WARNING: Soil is Too Dry";
+          var result = str.fontcolor("orange");
           numWarning++;
         } else {
           var str = "OK";
@@ -115,7 +115,7 @@ html
           numSevere++;
         } else if (currPH > (userPH + 0.5)) {
           var str = "WARNING: Soil is too alkaline";
-          var result = str.fontcolor("red");
+          var result = str.fontcolor("orange");
           numWarning++;
         } else if (currPH < (userPH - 1.2)) {
           var str = "DANGER: Soil is very acidic";
@@ -123,7 +123,7 @@ html
           numSevere++;
         } else if (currPH < (userPH - 0.5)) {
           var str = "WARNING: Soil Too Acidic";
-          var result = str.fontcolor("red");
+          var result = str.fontcolor("orange");
           numWarning++;
         } else {
           var str = "OK";
@@ -134,16 +134,20 @@ html
         document.getElementById("PHStatus").style.padding = "2px";    
         document.getElementById("PHStatus").innerHTML= result;     
 
-        var warningStr;
+        var warningResult;
         if ((numSevere > 0) && (numWarning > 0)) {
           var severeStr = numSevere + " severe warnings";
           var warningStr = ", " + numWarning + " warnings"
-          var result = severeStr.fontcolor("red") + warningStr.fontcolor("orange");
+          warningResult = severeStr.fontcolor("red") + warningStr.fontcolor("orange");
         } else if (numSevere > 0) {
           warningStr = numSevere + " severe warnings"
-          var result = warningStr.fontcolor("red");
+          warningResult = warningStr.fontcolor("red");
+        } else if (numWarning > 0) {
+          warningStr = numjWarning + "  warnings"
+          warningResult = warningStr.fontcolor("orange");
         } else {
-          warningStr = "zero";
+          var warningStr = "0 warnings";
+          warningResult = warningStr.fontcolor("green");
         }
         //- if ((numSevere > 0) and (numWarning > 0)) {
         //-   var warningStr = "Sever";
@@ -161,7 +165,7 @@ html
         //-   //- warningStr.fontcolor("green");
         //- }
         
-        document.getElementById("numWarnings").innerHTML = result;
+        document.getElementById("numWarnings").innerHTML = warningResult;
       }
    
 
