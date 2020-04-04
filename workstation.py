@@ -4,6 +4,10 @@ import sys
 import imageFilter
 import fileTransfer
 import datetime
+import detectTargets
+
+
+targetCoordinates = detectTargets.getTargets()
 
 BAUD = 9600
 
@@ -121,6 +125,7 @@ def interpretLine(line):
 
 manualMode = False
 surveyMode = False
+
 
 print("Starting workstation")
 while True:
