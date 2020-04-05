@@ -43,8 +43,6 @@ block content
                 form.survey(method="get", action=routes.startSurvey(land.id))
                     input(type="submit", value="Request Survey")
                 
-                //- a(href=routes.deleteLand(land.id)) 
-                //-     button.delete.top-small Remove Land Entry
 
     .div(style="margin-left: 5%;") 
         b Alerts:
@@ -139,6 +137,6 @@ block content
 
         //- br
         // LAND ANALYSIS AREA ENDS HERE
-        a(href=routes.deleteLand(land.id)) 
-            button.delete Remove Land Entry
+        a.col(href=routes.deleteLand(land.id) data-confirm="Are you sure to delete this item?") 
+            button(onclick="confirmDelete()").delete Remove Land Entry
     
