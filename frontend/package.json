@@ -32,9 +32,9 @@
     "dev:server-windows": "nodemon --exec ./node_modules/.bin/babel-node.cmd init.js --ignore 'scss'",
     "dev:assets-windows": "set WEBPACK_ENV=development webpack -w",
     "build:assets-windows": "set WEBPACK_ENV=production webpack",
-    "dev:server-linux": "nodemon --exec ./node_modules/.bin/babel-node init.js --ignore 'scss'",
-    "dev:assets-linux": "WEBPACK_ENV=development webpack -w",
-    "build:assets-linux": "WEBPACK_ENV=production webpack"
+    "dev:server-default": "nodemon --exec ./node_modules/.bin/babel-node init.js --ignore 'scss'",
+    "dev:assets-default": "WEBPACK_ENV=development webpack -w",
+    "build:assets-default": "WEBPACK_ENV=production webpack"
   },
   "devDependencies": {
     "nodemon": "^2.0.2"
