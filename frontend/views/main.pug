@@ -26,6 +26,17 @@ html
         displayPHHeatmap(window.PHSmooth);
 
         //- Display Co, Moisture and pH Trend Graphs
+        //- var ne_lat = #{pointALat};
+        //- var ne_lon = #{pointALon};
+        //- var sw_lat = #{pointBLat};
+        //- var sw_lon = #{pointBLon};
+        
+        //- var lat_diff = (ne_lat - sw_lat) / 4;
+        //- var lon_diff = (ne_lon - sw_lon) / 2;
+
+        //- var x_coords = [sw_lat, (sw_lat + lat_diff), (sw_lat + (lat_diff * 2)), (sw_lat + (lat_diff * 3))];
+        //- var x_coords = [sw_lat, (sw_lat + lon_diff), (sw_lon + (lon_diff * 2)), (sw_lon + (lon_diff * 3))];
+
         displayCOTrends();
         displayMoistTrends();
         displayPHTrends();

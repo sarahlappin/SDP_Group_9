@@ -7,9 +7,8 @@ header.header
                 h3 eIEIO
         .header_column.header-columns-right
             ul
+                
                 if !user.isAuthenticated
-                    li 
-                        a(href='/') About
                     li
                         a(href='/Contact') Contact Us
                     li
@@ -17,6 +16,8 @@ header.header
                     li
                         a(href='/login') Log In
                 else
+                    li
+                        a(href="/About") About
                     li
                         a(href=`/lands${routes.addLand}`) Add Land
                     li 
