@@ -26,20 +26,20 @@ html
         displayPHHeatmap(window.PHSmooth);
 
         //- Display Co, Moisture and pH Trend Graphs
-        //- var ne_lat = #{pointALat};
-        //- var ne_lon = #{pointALon};
-        //- var sw_lat = #{pointBLat};
-        //- var sw_lon = #{pointBLon};
+        var ne_lat = #{pointALat};
+        var ne_lon = #{pointALong};
+        var sw_lat = #{pointBLat};
+        var sw_lon = #{pointBLong};
         
-        //- var lat_diff = (ne_lat - sw_lat) / 4;
-        //- var lon_diff = (ne_lon - sw_lon) / 2;
+        var lat_diff = (ne_lat - sw_lat) / 4;
+        var lon_diff = (ne_lon - sw_lon) / 2;
 
-        //- var x_coords = [sw_lat, (sw_lat + lat_diff), (sw_lat + (lat_diff * 2)), (sw_lat + (lat_diff * 3))];
-        //- var x_coords = [sw_lat, (sw_lat + lon_diff), (sw_lon + (lon_diff * 2)), (sw_lon + (lon_diff * 3))];
+        var x_coords = [sw_lat, (sw_lat + lat_diff), (sw_lat + (lat_diff * 2)), (sw_lat + (lat_diff * 3))];
+        var y_coords = [sw_lat, (sw_lat + lon_diff), (sw_lon + (lon_diff * 2)), (sw_lon + (lon_diff * 3))];
 
-        displayCOTrends();
-        displayMoistTrends();
-        displayPHTrends();
+        displayCOTrends(x_coords, y_coords);
+        displayMoistTrends(x_coords, y_coords);
+        displayPHTrends(x_coords, y_coords);
 
         var coll = document.getElementsByClassName("collapsible");
         var i;
@@ -225,12 +225,12 @@ html
       };
 
 
-      function displayCOHeatmap(COSmooth) {
+      function displayCOHeatmap(COSmooth, x_coords, y_coords) {
         window.PLOTLYENV = { BASE_URL: "https://plot.ly" };
 
         var COheatmap = document.getElementById("co-heatmap");
 
-        var x = [-3.1964814, -3.1930868, -3.1896922, -3.1862976];
+        //- var x =  x_coords;
         var y = [55.94071, 55.94153];
         var z = [[1,3,2,2],[3,2,3,1]];
 
