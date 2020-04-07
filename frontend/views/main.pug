@@ -16,30 +16,29 @@ html
       var COSmooth = "false";
       var moistSmooth = "false";
 
+      var ne_lat = #{pointALat};
+      var ne_lon = #{pointALong};
+      var sw_lat = #{pointBLat};
+      var sw_lon = #{pointBLong};
+      
+      var lat_diff = (ne_lat - sw_lat) / 4;
+      var lon_diff = (sw_lon - ne_lon) / 2;
+
+      var x_coords = [sw_lat, (sw_lat + lat_diff), (sw_lat + (lat_diff * 2)), (sw_lat + (lat_diff * 3)), ne_lat];
+      var y_coords = [sw_lon, ne_lon];
+
       window.onload = function () {
 
         getWarningMessages();
-
         //- Display Co, Moisture and pH Heatmaps
-        displayCOHeatmap(window.COSmooth);
-        displayMoistHeatmap(window.moistSmooth);
-        displayPHHeatmap(window.PHSmooth);
+        displayCOHeatmap(window.COSmooth, window.x_coords, window.y_coords);
+        displayMoistHeatmap(window.moistSmooth, window.x_coords, window.y_coords);
+        displayPHHeatmap(window.PHSmooth, window.x_coords, window.y_coords);
 
         //- Display Co, Moisture and pH Trend Graphs
-        var ne_lat = #{pointALat};
-        var ne_lon = #{pointALong};
-        var sw_lat = #{pointBLat};
-        var sw_lon = #{pointBLong};
-        
-        var lat_diff = (ne_lat - sw_lat) / 4;
-        var lon_diff = (ne_lon - sw_lon) / 2;
-
-        var x_coords = [sw_lat, (sw_lat + lat_diff), (sw_lat + (lat_diff * 2)), (sw_lat + (lat_diff * 3))];
-        var y_coords = [sw_lat, (sw_lat + lon_diff), (sw_lon + (lon_diff * 2)), (sw_lon + (lon_diff * 3))];
-
-        displayCOTrends(x_coords, y_coords);
-        displayMoistTrends(x_coords, y_coords);
-        displayPHTrends(x_coords, y_coords);
+        displayCOTrends();
+        displayMoistTrends();
+        displayPHTrends();
 
         var coll = document.getElementsByClassName("collapsible");
         var i;
@@ -166,21 +165,7 @@ html
           var warningStr = "0 warnings";
           warningResult = warningStr.fontcolor("green");
         }
-        //- if ((numSevere > 0) and (numWarning > 0)) {
-        //-   var warningStr = "Sever";
-        //-   //- var warningStr = numSevere + " severe warnings, " + numWarning + " warnings.";
-        //- }
-          //- warningStr.fontcolor("red");
-        //- } else if (numSevere > 0) {
-        //-   var warningStr = numSevere + " severe warnings";
-        //-   //- warningStr.fontcolor("red");
-        //- } else if (numWarning > 0) {
-        //-   var warningStr = numWarning + " severe warnings";
-        //-   //- warningStr.fontcolor("red");
-        //- } else {
-        //-   var warningStr = "0 warnings";
-        //-   //- warningStr.fontcolor("green");
-        //- }
+
         
         document.getElementById("numWarnings").innerHTML = warningResult;
       }
@@ -195,7 +180,7 @@ html
           document.getElementById("togglePHButton").innerHTML= "Un-toggle Smoothing";
         }
 
-        displayPHHeatmap(window.PHSmooth);
+        displayPHHeatmap(window.PHSmooth, window.x_coords, window.y_coords);
       };
 
 
@@ -208,7 +193,7 @@ html
           document.getElementById("toggleCOButton").innerHTML= "Un-toggle Smoothing";
         }
 
-        displayCOHeatmap(window.COSmooth);
+        displayCOHeatmap(window.COSmooth, window.x_coords, window.y_coords);
       };
 
 
@@ -221,18 +206,20 @@ html
           document.getElementById("toggleMoistButton").innerHTML= "Un-toggle Smoothing";
         }
 
-        displayMoistHeatmap(window.moistSmooth);
+        displayMoistHeatmap(window.moistSmooth, window.x_coords, window.y_coords);
       };
 
 
-      function displayCOHeatmap(COSmooth, x_coords, y_coords) {
+      function displayCOHeatmap(COSmooth, x, y) {
         window.PLOTLYENV = { BASE_URL: "https://plot.ly" };
 
         var COheatmap = document.getElementById("co-heatmap");
-
-        //- var x =  x_coords;
-        var y = [55.94071, 55.94153];
+        //- var x = [-3.1964814, -3.1930868, -3.1896922, -3.1862976];
+        //- var y = [55.94071, 55.94153];
         var z = [[1,3,2,2],[3,2,3,1]];
+
+        //- x = x_coords; 
+
 
         var text = z.map (function(z, i) { return z.map (function (value, j) {
           return ` Longitude: ${y[i]}<br> Latitude: ${x[j]} <br> Value: ${value.toFixed(2)} `
@@ -268,13 +255,11 @@ html
       }
 
 
-      function displayMoistHeatmap(moistSmooth) {
+      function displayMoistHeatmap(moistSmooth, x, y) {
         window.PLOTLYENV = { BASE_URL: "https://plot.ly" };
 
         var moistureheatmap = document.getElementById("moisture-heatmap");
 
-        var x = [-3.1964814, -3.1930868, -3.1896922, -3.1862976];
-        var y = [55.94071, 55.94153];
         var z = [[150,250,580,700],[200,400,550,650]];
 
         var text = z.map (function(z, i) { return z.map (function (value, j) {
@@ -311,15 +296,13 @@ html
       }
 
 
-      function displayPHHeatmap(PHsmooth) {
+      function displayPHHeatmap(PHsmooth, x, y) {
 
         // pH Heatmap
         window.PLOTLYENV = { BASE_URL: "https://plot.ly" };
 
         var pHheatmap = document.getElementById("pH-heatmap");
-
-        var x = [-3.1964814, -3.1930868, -3.1896922, -3.1862976];
-        var y = [55.94071, 55.94153];
+        
         var z = [[7,6,5,6],[6,7,8,7]];
 
         var text = z.map (function(z, i) { return z.map (function (value, j) {
