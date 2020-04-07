@@ -63,25 +63,25 @@ block content
 
                     .row.reading
                         .col-xs-4.col-centered
-                        .card.card-1.card-contents.reading
+                        .card.card-1.card-contents.reading.noHover
                             .reading-title
                                 h5 Average Carbon Monoxide:
                             
-                            p #{surveyCO} ppm
+                            #COValue(style="padding: 6px;")
                             #COStatus
                             
                         .col-xs-4.col-centered
-                        .card.card-1.card-contents.reading
+                        .card.card-1.card-contents.reading.noHover
                             .reading-title 
                                 h5 Average Soil Moisture:
-                            P #{surveyMoist} (~10)%
+                            #moistValue(style="padding: 6px;")
                             #moistStatus
 
                         .col-xs-4.col-centered
                         .card.card-1.card-contents.reading
-                            .reading-title(style="padding: 1px;")
+                            .reading-title
                                 h5 Average pH:
-                            | #{surveyPH}
+                            #phValue(style="padding: 6px;")
                             #PHStatus
 
         h2
@@ -92,19 +92,34 @@ block content
                 .analysis-text 
                     p These heatmaps visualise the values of the recent set of readings accross the land area. The bars on the side show the colour scale, on the heatmaps the colour of an area correspond to the value in the colour scale. The x and y co-ordinates of the heatmaps show the latitude and longitide of the position of each reading, respectively.
                     #co-heatmap
-                    p Smoothing the heatmap will estimate values acrross the land where there is no data. This may give a more realistic view of the land. 
-                    button#toggleCOButton.smooth-button(onclick="toggleCOSmoothing()") Toggle Smoothing
-                    br
-                    br
+                    #co-smoothing
+                        br
+                        p 
+                            | The heatmap displays the average readings for each qaudrant. Smoothing the heatmap will add a blurring affect which creates gradients between the blocks.
+                            | Although this may look more realistic, smoothing makes assumptions and therefore may make it more challenging to identify problem areas.
+                        
+                        button#toggleCOButton.smooth-button(onclick="toggleCOSmoothing()") Toggle Smoothing
+                        br
+                        br
                     #moisture-heatmap
-                    p Smoothing the heatmap will estimate values acrross the land where there is no data. This may give a more realistic view of the land. 
-                    button#toggleMoistButton.smooth-button(onclick="toggleMoistSmoothing()") Toggle Smoothing
-                    br
-                    br
+                    #moist-smoothing
+                        br
+                        p
+                            | The heatmap displays the average readings for each qaudrant. Smoothing the heatmap will add a blurring affect which creates gradients between the blocks.
+                            | Although this may look more realistic, smoothing makes assumptions and therefore may make it more challenging to identify problem areas.
+
+                        button#toggleMoistButton.smooth-button(onclick="toggleMoistSmoothing()") Toggle Smoothing
+                        br
+                        br
                     .analysis-text
                     #pH-heatmap
-                    p Smoothing the heatmap will estimate values acrross the land where there is no data. This may give a more realistic view of the land. 
-                    button#togglePHButton.smooth-button(onclick="togglePHSmoothing()") Toggle Smoothing
+                    #ph-smoothing
+                        br
+                        p
+                            | The heatmap displays the average readings for each qaudrant. Smoothing the heatmap will add a blurring affect which creates gradients between the blocks.
+                            | Although this may look more realistic, smoothing makes assumptions and therefore may make it more challenging to identify problem areas.
+                        
+                        button#togglePHButton.smooth-button(onclick="togglePHSmoothing()") Toggle Smoothing
                     br
                     br
         h2

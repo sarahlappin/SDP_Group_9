@@ -72,6 +72,23 @@ export const startSurvey = async (req, res) => {
     const coValue = coValues[(coValues.length * Math.random()) | 0];
     const moistValue = moistValues[(moistValues.length * Math.random()) | 0];
     const phValue = phValues[(phValues.length * Math.random()) | 0];
+
+    // var COReadings = [[],[]];
+    // var PHReadings = [[],[]];
+    // var moistReadings = [[],[]];
+    // for (i = 0; i < 2; i++) {
+    //   for (j = 0; j < 4; j++) {
+    //     COReadings[i].push(coValues[(coValues.length * Math.random()) | 0]);
+    //     PHReadings[i].push(phValues[(coValues.length * Math.random()) | 0]);
+    //     moistReadings[i].push(moistValues[(moistValues.length * Math.random()) | 0]);
+    //   }
+    // }
+
+    // const coValue = COReadings.reduce((previous, current) => current += previous) / COReadings.length;
+    // const moistValue = PHReadings.reduce((previous, current) => current += previous) / PHReadings.length;
+    // const phValue = moistReadings.reduce((previous, current) => current += previous) / moistReadings.length;
+
+
     const prevLand = await Land.findById(id);
     const land = await Land.findOneAndUpdate(
       { _id: id },

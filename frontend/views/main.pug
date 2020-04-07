@@ -69,27 +69,35 @@ html
         //- Text for most recent readings - CO
         var currCO = parseFloat(#{surveyCO});
         var userCO = parseFloat(#{userCO});
-        if (currCO > (userCO + 2.5)) {
-          var str = "DANGER: Very High Levels of CO";
-          var result = str.fontcolor("red");
-          numSevere++;
-        } else if (currCO > (userCO + 1)) {
-          var str = "WARNING: High Levels of CO";
-          var result = str.fontcolor("orange");
-          numWarning++;
-        } else if (currCO < (userCO - 2.5)) {
-          var str = "DANGER: Very Low Levels of CO";
-          var result = str.fontcolor("red");
-          numSevere++;
-        }  else if (currCO < (userCO - 1)) {
-          var str = "WARNING: Low Levels of CO";
-          var result = str.fontcolor("orange");
-          numWarning++;
-        } else {
-          var str = "OK";
-          var result = str.fontcolor("green");
-        }       
 
+        if (currCO == 0 || currCO == null) {
+          var coVal = "No Readings".fontcolor("orange");
+          var result = ""; 
+        } else {
+          var coVal = currCO + " ppm"
+          if (currCO > (userCO + 2.5)) {
+            var str = "DANGER: Very High Levels of CO";
+            var result = str.fontcolor("red");
+            numSevere++;
+          } else if (currCO > (userCO + 1)) {
+            var str = "WARNING: High Levels of CO";
+            var result = str.fontcolor("orange");
+            numWarning++;
+          } else if (currCO < (userCO - 2.5)) {
+            var str = "DANGER: Very Low Levels of CO";
+            var result = str.fontcolor("red");
+            numSevere++;
+          }  else if (currCO < (userCO - 1)) {
+            var str = "WARNING: Low Levels of CO";
+            var result = str.fontcolor("orange");
+            numWarning++;
+          } else {
+            var str = "OK";
+            var result = str.fontcolor("green");
+          }
+        }       
+        
+        document.getElementById("COValue").innerHTML= coVal;
         document.getElementById("COStatus").style.fontSize = "medium";     
         document.getElementById("COStatus").style.padding = "2px";    
         document.getElementById("COStatus").innerHTML= result;
@@ -97,27 +105,35 @@ html
         //- Text for most recent readings - moisture
         var currMoist = parseFloat(#{surveyMoist});
         var userMoist = parseFloat(#{userMoist});
-        if (currMoist > (userMoist + 15)) {
-          var str = "DANGER: Soil is Very Moist";
-          var result = str.fontcolor("red");
-          numSevere++;
-        } else if (currMoist > (userMoist + 5)) {
-          var str = "WARNING: Soil is Too Moist";
-          var result = str.fontcolor("orange");
-          numWarning++;
-        } else if (currMoist < (userMoist - 15)) {
-          var str = "DANGER: Soil is Very Dry";
-          var result = str.fontcolor("red");
-          numSevere++;
-        }  else if (currMoist < (userMoist - 5)) {
-          var str = "WARNING: Soil is Too Dry";
-          var result = str.fontcolor("orange");
-          numWarning++;
+        
+        if (currMoist == 0 || currMoist == null) {
+          var moistVal = "No Readings".fontcolor("orange");
+          var result = ""; 
         } else {
-          var str = "OK";
-          var result = str.fontcolor("green");
+          var moistVal = currMoist + "(~10)%";
+          if (currMoist > (userMoist + 15)) {
+            var str = "DANGER: Soil is Very Moist";
+            var result = str.fontcolor("red");
+            numSevere++;
+          } else if (currMoist > (userMoist + 5)) {
+            var str = "WARNING: Soil is Too Moist";
+            var result = str.fontcolor("orange");
+            numWarning++;
+          } else if (currMoist < (userMoist - 15)) {
+            var str = "DANGER: Soil is Very Dry";
+            var result = str.fontcolor("red");
+            numSevere++;
+          }  else if (currMoist < (userMoist - 5)) {
+            var str = "WARNING: Soil is Too Dry";
+            var result = str.fontcolor("orange");
+            numWarning++;
+          } else {
+            var str = "OK";
+            var result = str.fontcolor("green");
+          }
         }
 
+        document.getElementById("moistValue").innerHTML= moistVal;
         document.getElementById("moistStatus").style.fontSize = "medium";    
         document.getElementById("moistStatus").style.padding = "2px";   
         document.getElementById("moistStatus").innerHTML= result;
@@ -125,27 +141,35 @@ html
         //- Text for most recent readings - pH
         var currPH = parseFloat(#{surveyPH});
         var userPH = parseFloat(#{userPH});
-        if (currPH > (userPH + 1.2)) {
-          var str = "DANGER: Soil is very alkaline";
-          var result = str.fontcolor("red");
-          numSevere++;
-        } else if (currPH > (userPH + 0.5)) {
-          var str = "WARNING: Soil is too alkaline";
-          var result = str.fontcolor("orange");
-          numWarning++;
-        } else if (currPH < (userPH - 1.2)) {
-          var str = "DANGER: Soil is very acidic";
-          var result = str.fontcolor("red");
-          numSevere++;
-        } else if (currPH < (userPH - 0.5)) {
-          var str = "WARNING: Soil Too Acidic";
-          var result = str.fontcolor("orange");
-          numWarning++;
-        } else {
-          var str = "OK";
-          var result = str.fontcolor("green");
-        }  
 
+        if (currPH == 0 || currPH == null) {
+          var phVal = "No Readings".fontcolor("orange");
+          var result = ""; 
+        } else {
+          var phVal = currPH;
+          if (currPH > (userPH + 1.2)) {
+            var str = "DANGER: Soil is very alkaline";
+            var result = str.fontcolor("red");
+            numSevere++;
+          } else if (currPH > (userPH + 0.5)) {
+            var str = "WARNING: Soil is too alkaline";
+            var result = str.fontcolor("orange");
+            numWarning++;
+          } else if (currPH < (userPH - 1.2)) {
+            var str = "DANGER: Soil is very acidic";
+            var result = str.fontcolor("red");
+            numSevere++;
+          } else if (currPH < (userPH - 0.5)) {
+            var str = "WARNING: Soil Too Acidic";
+            var result = str.fontcolor("orange");
+            numWarning++;
+          } else {
+            var str = "OK";
+            var result = str.fontcolor("green");
+          }  
+        }
+
+        document.getElementById("phValue").innerHTML= phVal;  
         document.getElementById("PHStatus").style.fontSize = "medium";    
         document.getElementById("PHStatus").style.padding = "2px";    
         document.getElementById("PHStatus").innerHTML= result;     
@@ -211,134 +235,145 @@ html
 
 
       function displayCOHeatmap(COSmooth, x, y) {
-        window.PLOTLYENV = { BASE_URL: "https://plot.ly" };
+        if (parseFloat(#{surveyCO}) != null && parseFloat(#{surveyCO})) {
+          window.PLOTLYENV = { BASE_URL: "https://plot.ly" };
 
-        var COheatmap = document.getElementById("co-heatmap");
-        //- var x = [-3.1964814, -3.1930868, -3.1896922, -3.1862976];
-        //- var y = [55.94071, 55.94153];
-        var z = [[1,3,2,2],[3,2,3,1]];
+          var COheatmap = document.getElementById("co-heatmap");
+          //- var x = [-3.1964814, -3.1930868, -3.1896922, -3.1862976];
+          //- var y = [55.94071, 55.94153];
+          var z = [[1,3,2,2],[3,2,3,1]];
 
-        //- x = x_coords; 
+          //- x = x_coords; 
 
 
-        var text = z.map (function(z, i) { return z.map (function (value, j) {
-          return ` Longitude: ${y[i]}<br> Latitude: ${x[j]} <br> Value: ${value.toFixed(2)} `
+          var text = z.map (function(z, i) { return z.map (function (value, j) {
+            return ` Longitude: ${y[i]}<br> Latitude: ${x[j]} <br> Value: ${value.toFixed(2)} `
+              });
             });
-          });
 
-          Plotly.plot(COheatmap, [{
-            type: 'heatmap',
-            x: x,
-            y: y,
-            z: z,
-            zmin: 0,
-            zmax: 9,
-            text: text,
-            hoverinfo: 'text',
-            zsmooth: COSmooth,
-            colorscale: [
-                [0, "#ffffff"],
-                [1, "#862d2d"]
-              ]
-          }], {
-            title: "Carbon Monoxide Levels",
-            xaxis: { title: 'Latitude' },
-            yaxis: { title: 'Longitude' },
-            autosize: true,
-            showLegend: true,
-            font: {
-              size: 12,
-              family: "Arial, sans serif"
-            },
-            height: 500,
-          });
+            Plotly.plot(COheatmap, [{
+              type: 'heatmap',
+              x: x,
+              y: y,
+              z: z,
+              zmin: 0,
+              zmax: 9,
+              text: text,
+              hoverinfo: 'text',
+              zsmooth: COSmooth,
+              colorscale: [
+                  [0, "#ffffff"],
+                  [1, "#862d2d"]
+                ]
+            }], {
+              title: "Carbon Monoxide Levels",
+              xaxis: { title: 'Latitude' },
+              yaxis: { title: 'Longitude' },
+              autosize: true,
+              showLegend: true,
+              font: {
+                size: 12,
+                family: "Arial, sans serif"
+              },
+              height: 500,
+            });
+        } else {
+          document.getElementById("co-smoothing").innerHTML = "</br>No Readings".fontcolor("orange");
+        }
       }
 
 
       function displayMoistHeatmap(moistSmooth, x, y) {
-        window.PLOTLYENV = { BASE_URL: "https://plot.ly" };
+        if (parseFloat(#{surveyMoist}) != null && parseFloat(#{surveyMoist})) {
+          window.PLOTLYENV = { BASE_URL: "https://plot.ly" };
 
-        var moistureheatmap = document.getElementById("moisture-heatmap");
+          var moistureheatmap = document.getElementById("moisture-heatmap");
 
-        var z = [[150,250,580,700],[200,400,550,650]];
+          var z = [[150,250,580,700],[200,400,550,650]];
 
-        var text = z.map (function(z, i) { return z.map (function (value, j) {
-          return ` Longitude: ${y[i]}<br> Latitude: ${x[j]} <br> Value: ${value.toFixed(2)} `
+          var text = z.map (function(z, i) { return z.map (function (value, j) {
+            return ` Longitude: ${y[i]}<br> Latitude: ${x[j]} <br> Value: ${value.toFixed(2)} `
+              });
             });
-          });
 
-          Plotly.plot(moistureheatmap, [{
-            type: 'heatmap',
-            x: x,
-            y: y,
-            z: z,
-            zmax: 950,
-            zmin: 0,
-            text: text,
-            hoverinfo: 'text',
-            zsmooth: moistSmooth,
-            colorscale: [
-          [0, "#ffffff"],
-          [1, "#1f3d7a"]
-        ]
-          }], {
-            title: "Soil Moisture",
-            xaxis: { title: 'Latitude' },
-            yaxis: { title: 'Longitude' },
-            autosize: true,
-            showLegend: true,
-            font: {
-              size: 12,
-              family: "Arial, sans serif"
-            },
-            height: 500,
-          });
+            Plotly.plot(moistureheatmap, [{
+              type: 'heatmap',
+              x: x,
+              y: y,
+              z: z,
+              zmax: 950,
+              zmin: 0,
+              text: text,
+              hoverinfo: 'text',
+              zsmooth: moistSmooth,
+              colorscale: [
+            [0, "#ffffff"],
+            [1, "#1f3d7a"]
+          ]
+            }], {
+              title: "Soil Moisture",
+              xaxis: { title: 'Latitude' },
+              yaxis: { title: 'Longitude' },
+              autosize: true,
+              showLegend: true,
+              font: {
+                size: 12,
+                family: "Arial, sans serif"
+              },
+              height: 500,
+            });
+        } else {
+          document.getElementById("moist-smoothing").innerHTML = "";
+        }
       }
 
 
       function displayPHHeatmap(PHsmooth, x, y) {
+        if (parseFloat(#{surveyPH}) != null && parseFloat(#{surveyPH})) {
+          // pH Heatmap
+          window.PLOTLYENV = { BASE_URL: "https://plot.ly" };
 
-        // pH Heatmap
-        window.PLOTLYENV = { BASE_URL: "https://plot.ly" };
+          var pHheatmap = document.getElementById("pH-heatmap");
 
-        var pHheatmap = document.getElementById("pH-heatmap");
-        
-        var z = [[7,6,5,6],[6,7,8,7]];
+          var z = [[7,6,5,6],[6,7,8,7]];
 
-        var text = z.map (function(z, i) { return z.map (function (value, j) {
-          return ` Longitude: ${y[i]}<br> Latitude: ${x[j]} <br> Value: ${value.toFixed(2)} `
+          var text = z.map (function(z, i) { return z.map (function (value, j) {
+            return ` Longitude: ${y[i]}<br> Latitude: ${x[j]} <br> Value: ${value.toFixed(2)} `
+              });
             });
-          });
 
-          Plotly.plot(pHheatmap, [{
-            type: 'heatmap',
-            x: x,
-            y: y,
-            z: z,
-            zmax: 14,
-            zmin: 0,
-            text: text,
-            hoverinfo: 'text',
-            zsmooth: PHSmooth,
-            colorscale: [
-          [0, "#ff9f80"],
-          [0.25, "#ffcc99"],
-          [0.5, "#c6ebd8"],
-          [0.75, "#ddccff"],
-          [1, "#adadeb"]
-        ]
-          }], {
-            title: "Soil pH",
-            xaxis: { title: 'Latitude' },
-            yaxis: { title: 'Longitude' },
-            autosize: true,
-            showLegend: true,
-            font: {
-              size: 12,
-              family: "Arial, sans serif"
-            },
-            height: 500,
-          });
+            Plotly.plot(pHheatmap, [{
+              type: 'heatmap',
+              x: x,
+              y: y,
+              z: z,
+              zmax: 14,
+              zmin: 0,
+              text: text,
+              hoverinfo: 'text',
+              zsmooth: PHSmooth,
+              colorscale: [
+            [0, "#ff9f80"],
+            [0.25, "#ffcc99"],
+            [0.5, "#c6ebd8"],
+            [0.75, "#ddccff"],
+            [1, "#adadeb"]
+          ]
+            }], {
+              title: "Soil pH",
+              xaxis: { title: 'Latitude' },
+              yaxis: { title: 'Longitude' },
+              autosize: true,
+              showLegend: true,
+              font: {
+                size: 12,
+                family: "Arial, sans serif"
+              },
+              height: 500,
+            });
+        } else {
+          document.getElementById("ph-smoothing").innerHTML = "";
+        }
       };
 
 
@@ -535,6 +570,35 @@ html
       }
 
       var deleteLinks = document.querySelectorAll('.delete');
+
+      function validate() {
+      
+      //-   if( document.myForm.Name.value == "" ) {
+      //-     alert( "Please provide your name!" );
+      //-     document.myForm.Name.focus() ;
+      //-     return false;
+      //-   } 
+      
+      //-   if( document.myForm.pointALong.value == "" ) {
+      //-       alert( "Please provide your the NE longitude!" );
+      //-       document.myForm.Name.focus() ;
+      //-       return false;
+      //-   } 
+
+      //-  if( document.myForm.pointALat.value == "" ) {
+      //-       alert( "Please provide your the NE latitude!" );
+      //-       document.myForm.Name.focus() ;
+      //-       return false;
+      //-   } 
+
+        if (document.myForm.pointALong.value <  document.myForm.pointBLong.value) {
+          alert("Invalid coordinates!");
+          document.myForm.Name.focus() ;
+          return false;
+        }
+
+        return true;
+      }
 
    
     
