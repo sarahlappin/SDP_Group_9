@@ -1,10 +1,20 @@
 extends main
 
-block content
+block content 
+  div(style="text-align: center;")
+    img(src='images/sdp-logo.png' alt='eIEIO Logo' height="220")
+    br
+    br
 
+
+  
+
+  .text
     h3
-      | What is eIEIO?
-    p
+      | What is eIEIO? 
+      
+    
+    p(style="text-align: justify;")
       | eIEIO is a soil sampling system that allows an autonomous robot to travel around a given area 
       | taking various reading of soil characteristics. 
       | This service allows you to view the data and make informed decisions about your land.
@@ -13,8 +23,22 @@ block content
       | This also allows you to test whether changes you make to your land are being effective.
       br
       br
-      |           eIEIO allows our users to check various characteristics of land, such as CO and soil moisture,
-      |           and reflecting on these readings they can maintain better soil environment, which can assist them in maximizing plant growth or crop production.
-      |           For instance, some farmers are worried that chemicals from nearby factories would make their land acidic.
-      |           With eIEIO, they will figure out whether their land has become more acidic and by how much percentage, much sooner than without one.
-      |           Moreover, our users (mostly farmers and gardeners) can utilise eIEIO to find the best land for their purposes before purchasing or renting one.
+      | eIEIO allows our users to check various characteristics of land, such as CO and soil moisture,
+      | and reflecting on these readings they can maintain better soil environment, which can assist them in maximizing plant growth or crop production.
+      | For instance, some farmers are worried that chemicals from nearby factories would make their land acidic.
+      | With eIEIO, they will figure out whether their land has become more acidic and by how much percentage, much sooner than without one.
+      | Moreover, our users (mostly farmers and gardeners) can utilise eIEIO to find the best land for their purposes before purchasing or renting one.
+
+    p 
+      a(href="https://sdp2020.gitlab.io/group9/") Find out more  
+      |   or 
+      a(href="/Contact") contact us
+      |.
+    br
+    div(style="text-align: center;")
+      img(src='../../images/robot.jpeg' alt='eIEIO Logo' height="200" style="margin: 5px")
+      img(src='../../images/robot-wild.jpg' alt='eIEIO Logo' height="200" style="margin: 5px")
+      img(src='../../images/US-sensor.jpg' alt='eIEIO Logo' height="200" style="margin: 5px")
+    
+ 
+

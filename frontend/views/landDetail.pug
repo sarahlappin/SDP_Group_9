@@ -26,7 +26,7 @@ block content
             |  #{userCO} ppm
             br
             b Desired Moisture:
-            |  #{userMoist} %
+            |  #{userMoist}%
             br
             b Desired pH:
             |  #{userPH}
@@ -34,9 +34,6 @@ block content
             b Last reading:
             |  #{surveyDate}
 
-            //- br
-            //- a(href='/')
-            //-     button.BackToLand Back to My Land
 
         .col-xl-8
             .form-container.survey
@@ -46,9 +43,10 @@ block content
                 form.survey(method="get", action=routes.startSurvey(land.id))
                     input(type="submit", value="Request Survey")
                 
-                //- a(href=routes.deleteLand(land.id)) 
-                //-     button.delete.top-small Remove Land Entry
 
+    .div(style="margin-left: 5%;") 
+        b Alerts:
+            #numWarnings
     // Div after the title
     div(style='background-color: #f8f8f8; margin: 5%;')
         // RECENT READINGS
@@ -61,33 +59,29 @@ block content
                     #recent-readings.title-with-margins.analysis-section-title
                         h3 Most Recent Readings
 
-                        #numWarnings
+                        //- #numWarnings
 
                     .row.reading
                         .col-xs-4.col-centered
-                        .card.card-1.card-contents.reading
-                            h5(class='big green font-weight-light')
+                        .card.card-1.card-contents.reading.noHover
                             .reading-title
-                                h5
-                                    Average Carbon Monoxide:
+                                h5 Average Carbon Monoxide:
                             
-                            p #{surveyCO} ppm
+                            #COValue(style="padding: 6px;")
                             #COStatus
                             
                         .col-xs-4.col-centered
-                        .card.card-1.card-contents.reading
-                            h1(class='big green font-weight-light')
+                        .card.card-1.card-contents.reading.noHover
                             .reading-title 
                                 h5 Average Soil Moisture:
-                            P #{surveyMoist} (~10)%
+                            #moistValue(style="padding: 6px;")
                             #moistStatus
 
                         .col-xs-4.col-centered
                         .card.card-1.card-contents.reading
-                            h1(class= 'big red font-weight-light')
                             .reading-title
-                                p Average pH:
-                            | #{surveyPH}
+                                h5 Average pH:
+                            #phValue(style="padding: 6px;")
                             #PHStatus
 
         h2
@@ -95,20 +89,37 @@ block content
             .content
                 #Visualisation.title-with-margins.analysis-section-title
                     h3 Visualisation of Recent Readings
+                .analysis-text 
                     p These heatmaps visualise the values of the recent set of readings accross the land area. The bars on the side show the colour scale, on the heatmaps the colour of an area correspond to the value in the colour scale. The x and y co-ordinates of the heatmaps show the latitude and longitide of the position of each reading, respectively.
                     #co-heatmap
-                    p Smoothing the heatmap will estimate values acrross the land where there is no data. This may give a more realistic view of the land. 
-                    button#toggleCOButton.smooth-button(onclick="toggleCOSmoothing()") Toggle Smoothing
-                    br
-                    br
+                    #co-smoothing
+                        br
+                        p 
+                            | The heatmap displays the average readings for each qaudrant. Smoothing the heatmap will add a blurring affect which creates gradients between the blocks.
+                            | Although this may look more realistic, smoothing makes assumptions and therefore may make it more challenging to identify problem areas.
+                        
+                        button#toggleCOButton.smooth-button(onclick="toggleCOSmoothing()") Toggle Smoothing
+                        br
+                        br
                     #moisture-heatmap
-                    p Smoothing the heatmap will estimate values acrross the land where there is no data. This may give a more realistic view of the land. 
-                    button#toggleMoistButton.smooth-button(onclick="toggleMoistSmoothing()") Toggle Smoothing
-                    br
-                    br
+                    #moist-smoothing
+                        br
+                        p
+                            | The heatmap displays the average readings for each qaudrant. Smoothing the heatmap will add a blurring affect which creates gradients between the blocks.
+                            | Although this may look more realistic, smoothing makes assumptions and therefore may make it more challenging to identify problem areas.
+
+                        button#toggleMoistButton.smooth-button(onclick="toggleMoistSmoothing()") Toggle Smoothing
+                        br
+                        br
+                    .analysis-text
                     #pH-heatmap
-                    p Smoothing the heatmap will estimate values acrross the land where there is no data. This may give a more realistic view of the land. 
-                    button#togglePHButton.smooth-button(onclick="togglePHSmoothing()") Toggle Smoothing
+                    #ph-smoothing
+                        br
+                        p
+                            | The heatmap displays the average readings for each qaudrant. Smoothing the heatmap will add a blurring affect which creates gradients between the blocks.
+                            | Although this may look more realistic, smoothing makes assumptions and therefore may make it more challenging to identify problem areas.
+                        
+                        button#togglePHButton.smooth-button(onclick="togglePHSmoothing()") Toggle Smoothing
                     br
                     br
         h2
@@ -116,6 +127,7 @@ block content
             .content
                 .title-with-margins.analysis-section-title
                     h3 Trends
+                .analysis-text
                     p These graphs show the change in readings values over time. The dark blue lines indicate the desired values and the light blue blocks indicate the acceptable values, based on your desired values. The acceptable values are those values that are within a acceptable range from the desired value.  
                 
 
@@ -140,6 +152,6 @@ block content
 
         //- br
         // LAND ANALYSIS AREA ENDS HERE
-        a(href=routes.deleteLand(land.id)) 
-            button.delete Remove Land Entry
+        a(href=routes.deleteLand(land.id) data-confirm="Are you sure to delete this item?") 
+            button.delete(onclick="confirmDelete()").delete Remove Land Entry
     

@@ -6,24 +6,23 @@ header.header
             a(href='/')
                 h3 eIEIO
         .header_column.header-columns-right
-            ul
+            ul                
                 if !user.isAuthenticated
-                    li 
-                        a(href='/') About
                     li
-                        a(href='/') Contact Us
+                        a(href='/Contact') Contact Us
                     li
                         a(href='/join') Join
                     li
                         a(href='/login') Log In
                 else
                     li
-                        a(href=`/lands${routes.addLand}`) Add Land
-                    li 
-                        a(href='/') Help
+                        a(href="/About") About
                     li
-                        a(href='/') Contact Us
+                        a(href=`/lands${routes.addLand}`) Add Land
+                    li
+                        a(href='/Contact') Contact Us
                     li
                         a(href='/') Log Out
+                            
 
                         

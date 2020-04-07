@@ -13,10 +13,6 @@ block content
         //- br
 
     .land-box
-      //- h3 My Land 
-      //- .warnings-total
-      //-   //- Don't hardcode this ---- make dynamic
-      //-   h5  1 severe warning and 3 warnings: 
       br
       .home-lands
         each land in lands.sort()
@@ -30,7 +26,7 @@ block content
               //- p 1 Severe Warning, 3 Warnings
 
 
-        #add-land.grid-tem
+        grid-tem
           .form-container
-            form(action=`/lands${routes.addLand}`, method="get")
+            form(action=`/lands${routes.addLand}`, method="get").addland
               input(type="submit", value="+ Add Land")

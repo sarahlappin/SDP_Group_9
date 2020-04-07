@@ -222,7 +222,7 @@ a {
   --breakpoint-md: 768px;
   --breakpoint-lg: 992px;
   --breakpoint-xl: 1200px;
-  --font-family-sans-serif: "sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  --font-family-sans-serif: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
   --font-family-monospace: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; }
 
 *,
@@ -558,46 +558,13 @@ hr {
   font-size: medium;
   border: none;
   background-color: none;
+  height: 60px;
 }
 
 
 .smooth-button { 
   width: 20%;
 }
-
-/* main h2 {
-  margin: 0;
-}
-
-main > div + h2 {
-  border-top: 2px solid;
-}
-
-h2 button {
-  all: inherit;
-  border: 0;
-  display: flex;
-  justify-content: space-between;
-  width: 100%;
-  padding: 0.5em 0;
-}
-
-
-
-h2 button:focus svg {
-  outline: 2px solid;
-}
-
-button svg {
-  height: 1em;
-  margin-left: 0.5em;
-}
-
-[aria-expanded="true"] .vert {
-  display: none;
-} */ */
-
-
 
 
 .intro {
@@ -614,21 +581,39 @@ button svg {
   height: auto;
 }
 
-.about {
+.about, .meet-the-robot {
   width: 100%;
   text-align: center;
+  padding: 10px;
   margin: 0;
-  right: 0;
   left: 0;
-  padding: 0;
-  background-color: white;
+  right: 0;
   float: left;
   position: absolute;
   height: auto;
+  align-items: center;
+  height: auto;
+  /* padding: 10px; */
 }
+
+.about {
+  background-color: rgb(197, 197, 197);
+}
+.meet-the-robot {
+  background-color: #99ccff;
+
+}
+
+.text {
+  padding-left: 5%;
+  padding-right: 5%;
+  padding-top: 2%;
+  padding-bottom: 2%;
+}
+
 .land-box {
   padding: 10px;
-  background-color: #e6e6e6;
+  background-color: rgb(228, 224, 224);
   text-align: center;
   color: #3a88c8;
   width: 90%;
@@ -650,6 +635,11 @@ button svg {
 
 .landBlock .land_name {
   color: #0984e3;
+}
+
+.noHover{
+  pointer-events: none;
+  background-color: #0984e3;
 }
 
 .warnings {
@@ -694,11 +684,12 @@ button svg {
 
 .grid-item {
   background-color: rgba(255, 255, 255, 0.8);
-  border: 1px solid #3a88c3;
+  border: 1.5px solid #3a88c3;
   padding: 10px;
   text-align: center;
-  /* max-height: 50px; */
+  max-height: 46px;
   border-radius: 5px;
+  vertical-align: center;
 }
 
 .logo-block {
@@ -706,8 +697,9 @@ button svg {
   margin-bottom: 3%;
 }
 
-#add-land {
+.addland {
   width: 100%;
+  height: 100%;
 }
 
 .analysis-section-title {
@@ -786,6 +778,10 @@ button svg {
   background-color: #f1f1f1;
 }
 
+.analysis-text {
+  text-align: center;
+  font-size: medium;
+}
 small,
 .small {
   font-size: 80%;
@@ -10767,13 +10763,13 @@ a.text-dark:hover, a.text-dark:focus {
     width: 100%; }
 
 
-button.delete.top-small {
+/* button.delete.top-small {
   background-color: #bb2f2a;
   border-radius: 5px;
   height: 45px;
   position: static;
   margin-top: 2%;
- }
+ } */
 
 button.delete {
   background-color: #bb2f2a;
@@ -10829,7 +10825,6 @@ button.BackToLand {
   width: 425px; }
 
 .card-1 {
-  -webkit-box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
      -moz-box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
           box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
   -webkit-transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);

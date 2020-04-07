@@ -2,7 +2,7 @@ extends main
 
 block content
     .form-container
-        form(action=`/lands${routes.addLand}`, method="post")
+        form(action=`/lands${routes.addLand}`, method="post" onsubmit = "return(validate());")
             label(for='Name') Name of land:
             input(type='text', name='name', placeholder='Name', required=true)
             label(for='PointA') North East (NE) Point of land:
