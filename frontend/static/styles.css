@@ -566,40 +566,6 @@ hr {
   width: 20%;
 }
 
-/* main h2 {
-  margin: 0;
-}
-
-main > div + h2 {
-  border-top: 2px solid;
-}
-
-h2 button {
-  all: inherit;
-  border: 0;
-  display: flex;
-  justify-content: space-between;
-  width: 100%;
-  padding: 0.5em 0;
-}
-
-
-
-h2 button:focus svg {
-  outline: 2px solid;
-}
-
-button svg {
-  height: 1em;
-  margin-left: 0.5em;
-}
-
-[aria-expanded="true"] .vert {
-  display: none;
-} */ */
-
-
-
 
 .intro {
   width: 100%;
@@ -615,18 +581,36 @@ button svg {
   height: auto;
 }
 
-.about {
+.about, .meet-the-robot {
   width: 100%;
   text-align: center;
+  padding: 10px;
   margin: 0;
-  right: 0;
   left: 0;
-  padding: 0;
-  background-color: white;
+  right: 0;
   float: left;
   position: absolute;
   height: auto;
+  align-items: center;
+  height: auto;
+  /* padding: 10px; */
 }
+
+.about {
+  background-color: rgb(197, 197, 197);
+}
+.meet-the-robot {
+  background-color: #99ccff;
+
+}
+
+.text {
+  padding-left: 5%;
+  padding-right: 5%;
+  padding-top: 2%;
+  padding-bottom: 2%;
+}
+
 .land-box {
   padding: 10px;
   background-color: #e6e6e6;
