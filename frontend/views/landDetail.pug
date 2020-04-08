@@ -58,6 +58,7 @@ block content
                 div
                     #recent-readings.title-with-margins.analysis-section-title
                         h3 Most Recent Readings
+                        p Averages of your most recent readings from your latest survey.
 
                         //- #numWarnings
 
@@ -85,12 +86,19 @@ block content
                             #PHStatus
 
         h2
-            button.collapsible(type='button') Heatmaps
+            button.collapsible(type='button') Data Visualisation
             .content
                 #Visualisation.title-with-margins.analysis-section-title
-                    h3 Visualisation of Recent Readings
+                    h3 Visualisation of Most Recent Survey Readings
                 .analysis-text 
-                    p These heatmaps visualise the values of the recent set of readings accross the land area. The bars on the side show the colour scale, on the heatmaps the colour of an area correspond to the value in the colour scale. The x and y co-ordinates of the heatmaps show the latitude and longitide of the position of each reading, respectively.
+                    p(style="text-align: justify;") 
+                        | These heatmaps visualise the values of the most recent set of readings accross the land area. The bars on the side show the colour scale. 
+                        | The colour displayed on the heatmap will correspond the a value as shown on the colour scale.
+                        | The x and y co-ordinates of the heatmaps show the latitude and longitide of the position of each reading, respectively.
+                        br
+                        br
+                    p Explore the heatmaps tools and options on the top right of each heatmap to investigate the data further. 
+                    br
                     #co-heatmap
                     #co-smoothing
                         br
